@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shuffle_native/HomePage.dart';
 import 'package:shuffle_native/SignInPage.dart';
 import 'package:shuffle_native/SignUpPage.dart';
+import 'package:shuffle_native/providers/auth_provider.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  runApp(ChangeNotifierProvider(
+    create: (context) => AuthProvider()..checkLoginStatus(),
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -11,10 +17,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
     return MaterialApp(
       title: 'Shuffle',
       debugShowCheckedModeBanner: false,
-      home: WelcomePage(),
+      home: authProvider.isLoggedIn ? Homepage() : WelcomePage(),
+      routes: {
+        '/signin': (context) => SignInPage(),
+        '/signup': (context) => SignUpPage(),
+        '/home': (context) => Homepage(),
+        '/welcome': (context) => WelcomePage(),
+      },
     );
   }
 }
@@ -70,12 +83,7 @@ class WelcomePage extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SignInPage(),
-                            ),
-                          );
+                          Navigator.pushNamed(context, '/signup');
                         },
                         child: const Text(
                           'Get Started',
@@ -86,12 +94,7 @@ class WelcomePage extends StatelessWidget {
                     const SizedBox(height: 15),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SignUpPage(),
-                            ),
-                          );
+                        Navigator.pushNamed(context, '/signin');
                       },
                       child: const Text(
                         'Sign in',
