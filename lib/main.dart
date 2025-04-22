@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shuffle_native/LoginPage.dart';
+import 'package:shuffle_native/SignInPage.dart';
+import 'package:shuffle_native/SignUpPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Shuffle',
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      home: WelcomePage(),
     );
   }
 }
@@ -37,10 +38,7 @@ class WelcomePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 60),
-                    Image.asset(
-                      'assesets/images/MainLogo.png',
-                      height: 120,
-                    ),
+                    Image.asset('assesets/images/MainLogo.png', height: 120),
                     const SizedBox(height: 0),
                     const Text(
                       'Shuffle',
@@ -54,7 +52,11 @@ class WelcomePage extends StatelessWidget {
                     const Text(
                       'Rent anything from people near you',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 18, color: Colors.black54, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black54,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 55),
                     SizedBox(
@@ -67,7 +69,14 @@ class WelcomePage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SignInPage(),
+                            ),
+                          );
+                        },
                         child: const Text(
                           'Get Started',
                           style: TextStyle(fontSize: 16, color: Colors.white),
@@ -76,7 +85,14 @@ class WelcomePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 15),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SignUpPage(),
+                            ),
+                          );
+                      },
                       child: const Text(
                         'Sign in',
                         style: TextStyle(
