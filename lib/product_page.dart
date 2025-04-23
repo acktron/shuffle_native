@@ -1,28 +1,9 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Shuffle',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: Colors.white,
-      ),
-      home: const ProductDetailPage(),
-    );
-  }
-}
+import 'package:shuffle_native/models/item.dart';
 
 class ProductDetailPage extends StatefulWidget {
-  const ProductDetailPage({Key? key}) : super(key: key);
+  final Item item;
+  const ProductDetailPage({Key? key, required this.item}) : super(key: key);
 
   @override
   _ProductDetailPageState createState() => _ProductDetailPageState();
@@ -67,30 +48,30 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ],
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Product Image Carousel
-          Expanded(
-            flex: 3,
-            child: ProductImageCarousel(
-              pageController: _pageController,
-              currentPage: _currentPage,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentPage = index;
-                });
-              },
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Product Image Carousel
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.4,
+              child: ProductImageCarousel(
+                pageController: _pageController,
+                currentPage: _currentPage,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+              ),
             ),
-          ),
 
-          // Product Info
-          Expanded(
-            flex: 4,
-            child: Container(
+            // Product Info
+            Container(
               color: Colors.white,
               padding: const EdgeInsets.all(16.0),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Three dots menu
@@ -105,19 +86,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   // const SizedBox(height: 10),
 
                   // Product title
-                  const Text(
-                    'Casio FX-991ES',
+                  Text(
+                    widget.item.name,
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
-                  const Text(
-                    'Scientific Calculator',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
+
                   const SizedBox(height: 4),
 
                   // Owner info
                   Text(
-                    'Owner: Rehman Bhaijan',
+                    'Owner: ${widget.item.owner}',
                     style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 16),
@@ -126,7 +104,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   Row(
                     children: [
                       Text(
-                        'Rs 10/day',
+                        'Rs ${widget.item.pricePerDay}/day',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -174,40 +152,38 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ],
               ),
             ),
-          ),
-
-          // Bottom Navigation Bar
-          Container(
-            height: 60,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  offset: Offset(0, -1),
-                ),
-              ],
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        height: 60,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: Offset(0, -1),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                GestureDetector(
-                  child: NavBarItem(
-                    icon: Icons.home,
-                    label: 'Home',
-                    isSelected: true,
-                  ),
-                  onTap: () => Navigator.pushNamed(context, '/homepage'),
-                ),
-                NavBarItem(icon: Icons.inventory_2, label: 'Rented'),
-                NavBarItem(icon: Icons.add_box, label: 'Upload Item'),
-                NavBarItem(icon: Icons.person, label: 'Profile'),
-              ],
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            GestureDetector(
+              child: NavBarItem(
+                icon: Icons.home,
+                label: 'Home',
+                isSelected: true,
+              ),
+              onTap: () => Navigator.pushNamed(context, '/homepage'),
             ),
-          ),
-        ],
+            NavBarItem(icon: Icons.inventory_2, label: 'Rented'),
+            NavBarItem(icon: Icons.add_box, label: 'Upload Item'),
+            NavBarItem(icon: Icons.person, label: 'Profile'),
+          ],
+        ),
       ),
     );
   }

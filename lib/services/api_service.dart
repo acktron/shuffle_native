@@ -50,6 +50,7 @@ class ApiService {
                 List<double>.from(data['location']['coordinates']),
               )
             : null,
+        owner_name: data['owner_name'],
         createdAt: DateTime.parse(data['created_at']),
         updatedAt: DateTime.parse(data['updated_at']),
       );
@@ -95,6 +96,7 @@ class ApiService {
                   [parsedLocation['longitude']!, parsedLocation['latitude']!],
                 )
               : null,
+          owner_name: item['owner_name'] ?? '',
           createdAt: DateTime.tryParse(item['created_at'] ?? '') ?? DateTime.now(),
           updatedAt: DateTime.tryParse(item['updated_at'] ?? '') ?? DateTime.now(),
         );

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shuffle_native/providers/auth_provider.dart';
 import 'package:shuffle_native/widget/rent_card.dart'; // Import the RentCard widget
 import 'package:shuffle_native/models/item.dart'; // Import the shared RentItem class
 import 'package:shuffle_native/services/location_service.dart'; // Import the LocationService
@@ -53,14 +55,15 @@ class _HomepageState extends State<Homepage> {
         // Fetch items based on location
         final location = loc.Location('Point', [longitude, latitude]);
         print('Location: $location');
-        final items = await _apiService.getItems(location, 10000); // Radius = 10 km
+        final items = await _apiService.getItems(
+          location,
+          10000,
+        ); // Radius = 10 km
 
         setState(() {
           _items = items; // Update the items list
         });
-        print(
-          items
-        );
+        print(items);
       } catch (e) {
         print('Error fetching items: $e');
         setState(() {
@@ -130,6 +133,30 @@ class _HomepageState extends State<Homepage> {
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                             color: Colors.black87,
+                          ),
+                        ),
+                        // Logout text
+                        TextButton(
+                          onPressed: () async {
+                            final success =
+                                await Provider.of<AuthProvider>(
+                                  context,
+                                  listen: false,
+                                ).logout();
+                            if (success) {
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                '/signin',
+                                (route) => false,
+                              );
+                            }
+                          },
+                          child: const Text(
+                            'Logout',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF21C7A7),
+                            ),
                           ),
                         ),
                       ],

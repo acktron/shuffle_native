@@ -14,6 +14,7 @@ class Item {
   final Location? location;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String? owner_name;
 
   Item({
     required this.id,
@@ -29,6 +30,7 @@ class Item {
     this.location,
     required this.createdAt,
     required this.updatedAt,
+    required this.owner_name,
   });
 }
 
