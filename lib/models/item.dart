@@ -31,3 +31,14 @@ class Item {
     required this.updatedAt,
   });
 }
+
+class RentItem {
+  final String price, title, location, imageAsset;
+
+  const RentItem({
+    required this.price,
+    required this.title,
+    required this.location,
+    required this.imageAsset,
+  });
+}
