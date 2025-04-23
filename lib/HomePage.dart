@@ -259,7 +259,10 @@ class _HomepageState extends State<Homepage> {
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
       ],
       onTap: (i) {
-        // handle tab changes
+        switch (i) {
+          case 2:
+            Navigator.pushNamed(context, '/uploadpage');
+        }
       },
     );
   }
