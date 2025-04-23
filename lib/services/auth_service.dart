@@ -8,7 +8,7 @@ class AuthService {
 
   Future<bool> login(String email, String password) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/login/'), // adjust this path as needed
+      Uri.parse('$baseUrl/api/users/login/'), // adjust this path as needed
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email, 'password': password}),
     );
@@ -28,7 +28,7 @@ class AuthService {
 
   Future<bool> register(String name, String email, String password) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/register/'), // adjust this path as needed
+      Uri.parse('$baseUrl/api/users/register/'), // adjust this path as needed
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'name': name, 'email': email, 'password': password}),
     );

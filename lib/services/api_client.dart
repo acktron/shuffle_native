@@ -29,7 +29,6 @@ class ApiClient {
             return handler.resolve(clonedRequest);
           }
         }
-
         handler.next(error);
       },
     ));

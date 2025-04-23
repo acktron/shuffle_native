@@ -40,8 +40,8 @@ class ApiService {
         description: data['description'],
         conditionNotes: data['condition_notes'],
         category: data['category'],
-        pricePerDay: (data['price_per_day'] as num).toDouble(),
-        depositAmount: (data['deposit_amount'] as num).toDouble(),
+        pricePerDay: data['price_per_day'],
+        depositAmount: data['deposit_amount'],
         image: data['image'],
         isAvailable: data['is_available'],
         location: data['location'] != null
@@ -67,9 +67,17 @@ class ApiService {
     final response = await _dio.get('/api/rentals/items/$queryParameters');
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data;
+      print(data);
 
       // Map the API response to a list of Item objects
       return data.map((item) {
+        // Parse the location string
+        final locationString = item['location'] as String?;
+        Map<String, double>? parsedLocation;
+        if (locationString != null) {
+          parsedLocation = _parseLocation(locationString);
+        }
+
         return Item(
           id: item['id'] ?? 0,
           owner: item['owner'] ?? '',
@@ -77,14 +85,14 @@ class ApiService {
           description: item['description'] ?? '',
           conditionNotes: item['condition_notes'],
           category: item['category'],
-          pricePerDay: (item['price_per_day'] as num?)?.toDouble() ?? 0.0,
-          depositAmount: (item['deposit_amount'] as num?)?.toDouble() ?? 0.0,
+          pricePerDay: item['price_per_day'] ?? 0,
+          depositAmount: item['deposit_amount'] ?? 0,
           image: item['image'] ?? '',
           isAvailable: item['is_available'] ?? false,
-          location: item['location'] != null
+          location: parsedLocation != null
               ? Location(
-                  item['location']['type'] ?? '',
-                  List<double>.from(item['location']['coordinates']),
+                  'Point',
+                  [parsedLocation['longitude']!, parsedLocation['latitude']!],
                 )
               : null,
           createdAt: DateTime.tryParse(item['created_at'] ?? '') ?? DateTime.now(),
@@ -99,5 +107,19 @@ class ApiService {
   Future<Response> deleteItem(String id) async {
     return await _dio.delete('/api/rentals/items/$id');
   }
-  
+
+  // Helper function to parse the location string
+  Map<String, double> _parseLocation(String location) {
+    final regex = RegExp(r'POINT \(([-\d.]+) ([-\d.]+)\)');
+    final match = regex.firstMatch(location);
+
+    if (match != null) {
+      final longitude = double.parse(match.group(1)!);
+      final latitude = double.parse(match.group(2)!);
+
+      return {'latitude': latitude, 'longitude': longitude};
+    } else {
+      throw FormatException('Invalid location format');
+    }
+  }
 }

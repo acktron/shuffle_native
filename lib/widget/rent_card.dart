@@ -1,13 +1,173 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:shuffle_native/constants.dart';
 import 'package:shuffle_native/models/item.dart';
 import 'package:shuffle_native/product_page.dart'; // Import the shared RentItem class
 
-// Card widget
 class RentCard extends StatelessWidget {
-  final RentItem item;
+  final Item item;
   final Color tealColor;
 
   const RentCard({required this.item, required this.tealColor});
+
+  // Calculate distance between user and item location
+  Future<double> _calculateDistance(Position userPosition) async {
+    if (item.location != null) {
+      return Geolocator.distanceBetween(
+        userPosition.latitude,
+        userPosition.longitude,
+        item.location!.coordinates[1], // Latitude of the item
+        item.location!.coordinates[0], // Longitude of the item
+      );
+    }
+    return 0.0;
+  }
+
+  // Build the image section of the card
+  Widget _buildImageSection() {
+    return Expanded(
+      flex: 5,
+      child: Stack(
+        children: [
+          Image.network(
+            "$baseUrl${item.image}",
+            fit: BoxFit.contain,
+            width: double.infinity,
+            errorBuilder: (context, error, stackTrace) {
+              return const Center(
+                child: Icon(
+                  Icons.broken_image,
+                  size: 50,
+                  color: Colors.grey,
+                ),
+              );
+            },
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return const Center(child: CircularProgressIndicator());
+            },
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              color: const Color(0xFF087272),
+              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+              child: Text(
+                '${item.pricePerDay} / day',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Build the distance display section
+  Widget _buildDistanceSection() {
+    return FutureBuilder<Position>(
+      future: Geolocator.getCurrentPosition(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Text(
+            'Calculating distance...',
+            style: TextStyle(color: Colors.white70, fontSize: 12),
+          );
+        } else if (snapshot.hasError) {
+          return const Text(
+            'Error fetching location',
+            style: TextStyle(color: Colors.white70, fontSize: 12),
+          );
+        } else if (snapshot.hasData) {
+          final userPosition = snapshot.data!;
+          return FutureBuilder<double>(
+            future: _calculateDistance(userPosition),
+            builder: (context, distanceSnapshot) {
+              if (distanceSnapshot.connectionState == ConnectionState.waiting) {
+                return const Text(
+                  'Calculating distance...',
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                );
+              } else if (distanceSnapshot.hasError) {
+                return const Text(
+                  'Error calculating distance',
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                );
+              } else {
+                final distance = distanceSnapshot.data!;
+                return Text(
+                  '${(distance / 1000).toStringAsFixed(2)} km away',
+                  style: const TextStyle(color: Colors.white70, fontSize: 12),
+                );
+              }
+            },
+          );
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  // Build the info section of the card
+  Widget _buildInfoSection() {
+    return Container(
+      color: const Color(0xFF087272),
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Title
+          Text(
+            item.name,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 4),
+
+          // Location and Distance
+          _buildDistanceSection(),
+          const SizedBox(height: 8),
+
+          // Rent button
+          SizedBox(
+            width: double.infinity,
+            height: 30,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: tealColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+              onPressed: () {
+                // Rent action
+              },
+              child: const Text(
+                'Rent Now',
+                style: TextStyle(
+                  color: Color(0xFF087272),
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,111 +179,8 @@ class RentCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Image section
-          Expanded(
-            flex: 5,
-            child: Stack(
-              children: [
-                Image.asset(
-                  item.imageAsset,
-                  fit: BoxFit.contain,
-                  width: double.infinity,
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    color: const Color(0xFF087272),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 0,
-                      horizontal: 8,
-                    ),
-                    child: Text(
-                      item.price,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Info section
-          Container(
-            color: const Color(0xFF087272),
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title
-                Text(
-                  item.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 4),
-
-                // Location
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.location_on,
-                      size: 12,
-                      color: Colors.white70,
-                    ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        item.location,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-
-                // Rent button
-                SizedBox(
-                  width: double.infinity,
-                  height: 30,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: tealColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/productpage');
-                    },
-                    child: const Text(
-                      'Rent Now',
-                      style: TextStyle(
-                        color: Color(0xFF087272),
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _buildImageSection(),
+          _buildInfoSection(),
         ],
       ),
     );
