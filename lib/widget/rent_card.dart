@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shuffle_native/constants.dart';
 import 'package:shuffle_native/models/item.dart';
+import 'package:shuffle_native/product_page.dart'; // Import the shared RentItem class
 
 class RentCard extends StatelessWidget {
   final Item item;
@@ -180,6 +181,41 @@ class RentCard extends StatelessWidget {
         children: [
           _buildImageSection(),
           _buildInfoSection(),
+        ],
+      ),
+    );
+  }
+}
+
+class NavBarItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback? onTap; // Added onTap as a nullable parameter
+
+  const NavBarItem({
+    Key? key,
+    required this.icon,
+    required this.label,
+    this.isSelected = false,
+    this.onTap, // Initialize onTap
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap, // Use onTap here
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: isSelected ? const Color(0xFF26C6DA) : Colors.grey),
+          Text(
+            label,
+            style: TextStyle(
+              color: isSelected ? const Color(0xFF26C6DA) : Colors.grey,
+              fontSize: 12,
+            ),
+          ),
         ],
       ),
     );
