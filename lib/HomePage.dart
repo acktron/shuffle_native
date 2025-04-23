@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shuffle_native/main.dart';
+import 'package:shuffle_native/providers/auth_provider.dart';
 
 class Homepage extends StatelessWidget {
   @override
@@ -15,12 +17,13 @@ class Homepage extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          child: Text("HomePage"),
+          child: Text("Logout"),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => WelcomePage()),
-            );
+            // Call the logout method from the AuthProvider
+            Provider.of<AuthProvider>(context, listen: false).logout();
+
+            // Navigate back to the SignInPage
+            Navigator.pushReplacementNamed(context, '/welcome');
           },
         ),
       ),

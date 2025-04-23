@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shuffle_native/HomePage.dart';
 import 'package:shuffle_native/SignUpPage.dart';
+import 'package:shuffle_native/providers/auth_provider.dart';
 
 void main() {
   runApp(const ShuffleApp());
@@ -11,15 +13,15 @@ class ShuffleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const SignInPage(),
-      debugShowCheckedModeBanner: false,
-    );
+    return MaterialApp(home: SignInPage(), debugShowCheckedModeBanner: false);
   }
 }
 
 class SignInPage extends StatelessWidget {
-  const SignInPage({super.key});
+  SignInPage({super.key});
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +51,8 @@ class SignInPage extends StatelessWidget {
               const SizedBox(height: 32),
               // Email TextField
               TextField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: 'Email address',
                   border: OutlineInputBorder(
@@ -59,6 +63,7 @@ class SignInPage extends StatelessWidget {
               const SizedBox(height: 16),
               // Password TextField
               TextField(
+                controller: passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Password',
@@ -84,11 +89,27 @@ class SignInPage extends StatelessWidget {
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Homepage()),
-            );
+                  onPressed: () async {
+                    // Implement sign-in logic here
+                    final success = await Provider.of<AuthProvider>(
+                      context,
+                      listen: false,
+                    ).login(emailController.text, passwordController.text);
+
+                    if (success) {
+                      // Navigate to the homepage if login is successful
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => Homepage()),
+                      );
+                    } else {
+                      // Show error message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Login failed. Please try again.'),
+                        ),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00C2A8),
@@ -107,10 +128,7 @@ class SignInPage extends StatelessWidget {
                   const Text("Don't have an account? "),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignUpPage()),
-                      );
+                      Navigator.pushNamed(context, '/signup');
                     },
                     child: const Text(
                       'Sign up',
