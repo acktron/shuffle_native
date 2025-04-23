@@ -53,14 +53,15 @@ class _HomepageState extends State<Homepage> {
         // Fetch items based on location
         final location = loc.Location('Point', [longitude, latitude]);
         print('Location: $location');
-        final items = await _apiService.getItems(location, 10000); // Radius = 10 km
+        final items = await _apiService.getItems(
+          location,
+          10000,
+        ); // Radius = 10 km
 
         setState(() {
           _items = items; // Update the items list
         });
-        print(
-          items
-        );
+        print(items);
       } catch (e) {
         print('Error fetching items: $e');
         setState(() {
@@ -232,7 +233,10 @@ class _HomepageState extends State<Homepage> {
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
       ],
       onTap: (i) {
-        // handle tab changes
+        switch (i) {
+          case 2:
+            Navigator.pushNamed(context, '/uploadpage');
+        }
       },
     );
   }
