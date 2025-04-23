@@ -29,24 +29,24 @@ class RentCard extends StatelessWidget {
       flex: 5,
       child: Stack(
         children: [
-          Image.network(
-            "$baseUrl${item.image}",
-            fit: BoxFit.contain,
-            width: double.infinity,
-            errorBuilder: (context, error, stackTrace) {
-              return const Center(
-                child: Icon(
-                  Icons.broken_image,
-                  size: 50,
-                  color: Colors.grey,
-                ),
-              );
-            },
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return const Center(child: CircularProgressIndicator());
-            },
-          ),
+          // Image.network(
+          //   "$baseUrl${item.image}",
+          //   fit: BoxFit.contain,
+          //   width: double.infinity,
+          //   errorBuilder: (context, error, stackTrace) {
+          //     return const Center(
+          //       child: Icon(
+          //         Icons.broken_image,
+          //         size: 50,
+          //         color: Colors.grey,
+          //       ),
+          //     );
+          //   },
+          //   loadingBuilder: (context, child, loadingProgress) {
+          //     if (loadingProgress == null) return child;
+          //     return const Center(child: CircularProgressIndicator());
+          //   },
+          // ),
           Positioned(
             bottom: 0,
             left: 0,
@@ -115,7 +115,7 @@ class RentCard extends StatelessWidget {
   }
 
   // Build the info section of the card
-  Widget _buildInfoSection() {
+  Widget _buildInfoSection(BuildContext context) { // Accept context as a parameter
     return Container(
       color: const Color(0xFF087272),
       padding: const EdgeInsets.all(8),
@@ -152,7 +152,11 @@ class RentCard extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                // Rent action
+                Navigator.push(context, 
+                  MaterialPageRoute(
+                    builder: (context) => ProductDetailPage(item: item),
+                  ),
+                );
               },
               child: const Text(
                 'Rent Now',
@@ -180,7 +184,7 @@ class RentCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _buildImageSection(),
-          _buildInfoSection(),
+          _buildInfoSection(context), // Pass context here
         ],
       ),
     );

@@ -30,9 +30,10 @@ class AuthProvider with ChangeNotifier {
     return success;
   }
 
-  Future<void> logout() async {
+  Future<bool> logout() async {
     await TokenStorage().clearTokens();
     _isLoggedIn = false;
     notifyListeners();
+    return true;
   }
 }
