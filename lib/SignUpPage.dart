@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shuffle_native/HomePage.dart';
-import 'package:shuffle_native/SignInPage.dart';
 import 'package:shuffle_native/providers/auth_provider.dart';
 
 class ShuffleApp extends StatelessWidget {

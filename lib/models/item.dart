@@ -7,8 +7,8 @@ class Item {
   final String description;
   final String? conditionNotes;
   final String? category; // can also be an int if it's an ID
-  final double pricePerDay;
-  final double depositAmount;
+  final String pricePerDay;
+  final String depositAmount;
   final String image; // path or URL
   final bool isAvailable;
   final Location? location;
@@ -32,13 +32,13 @@ class Item {
   });
 }
 
-class RentItem {
-  final String price, title, location, imageAsset;
+// class RentItem {
+//   final String price, title, location, imageAsset;
 
-  const RentItem({
-    required this.price,
-    required this.title,
-    required this.location,
-    required this.imageAsset,
-  });
-}
+//   const RentItem({
+//     required this.price,
+//     required this.title,
+//     required this.location,
+//     required this.imageAsset,
+//   });
+// }
