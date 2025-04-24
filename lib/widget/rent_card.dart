@@ -29,24 +29,24 @@ class RentCard extends StatelessWidget {
       flex: 5,
       child: Stack(
         children: [
-          // Image.network(
-          //   "$baseUrl${item.image}",
-          //   fit: BoxFit.contain,
-          //   width: double.infinity,
-          //   errorBuilder: (context, error, stackTrace) {
-          //     return const Center(
-          //       child: Icon(
-          //         Icons.broken_image,
-          //         size: 50,
-          //         color: Colors.grey,
-          //       ),
-          //     );
-          //   },
-          //   loadingBuilder: (context, child, loadingProgress) {
-          //     if (loadingProgress == null) return child;
-          //     return const Center(child: CircularProgressIndicator());
-          //   },
-          // ),
+          Image.network(
+            "$baseUrl${item.image}",
+            fit: BoxFit.contain,
+            width: double.infinity,
+            errorBuilder: (context, error, stackTrace) {
+              return const Center(
+                child: Icon(
+                  Icons.broken_image,
+                  size: 50,
+                  color: Colors.grey,
+                ),
+              );
+            },
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return const Center(child: CircularProgressIndicator());
+            },
+          ),
           Positioned(
             bottom: 0,
             left: 0,

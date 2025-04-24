@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shuffle_native/models/item.dart';
+import 'package:shuffle_native/services/api_service.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final Item item;
   const ProductDetailPage({Key? key, required this.item}) : super(key: key);
+  
 
   @override
   _ProductDetailPageState createState() => _ProductDetailPageState();
@@ -12,6 +14,7 @@ class ProductDetailPage extends StatefulWidget {
 class _ProductDetailPageState extends State<ProductDetailPage> {
   int _currentPage = 0;
   final PageController _pageController = PageController();
+  final ApiService _apiService = ApiService(); // Initialize ApiService
 
   @override
   Widget build(BuildContext context) {
@@ -171,14 +174,160 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   void _showBottomModalSheet(BuildContext context) {
+    DateTime? startDate;
+    DateTime? endDate;
+
+  
+
     showModalBottomSheet(
       context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      isScrollControlled: true,
       builder: (context) {
-        return Container(
-          height: 300,
-          child: Center(
-            child: Text('Bottom Modal Sheet'),
-          ),
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 24,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      height: 4,
+                      width: 40,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'Select Dates',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+
+                  Row(
+                    children: [
+                      // Start Date
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            final selectedDate = await showDatePicker(
+                              context: context,
+                              initialDate: startDate ?? DateTime.now(),
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime(2100),
+                            );
+                            if (selectedDate != null) {
+                              setState(() {
+                                startDate = selectedDate;
+                                if (endDate != null &&
+                                    endDate!.isBefore(startDate!)) {
+                                  endDate = null;
+                                }
+                              });
+                            }
+                          },
+                          icon: Icon(Icons.calendar_today, size: 18),
+                          label: Text(
+                            startDate == null
+                                ? 'Start Date'
+                                : '${startDate!.toLocal().toString().split(' ')[0]}',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: Size(0, 50),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(width: 12),
+
+                      // End Date
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed:
+                              startDate == null
+                                  ? null
+                                  : () async {
+                                    final selectedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: endDate ?? startDate!,
+                                      firstDate: startDate!,
+                                      lastDate: DateTime(2100),
+                                    );
+                                    if (selectedDate != null) {
+                                      setState(() {
+                                        endDate = selectedDate;
+                                      });
+                                    }
+                                  },
+                          icon: Icon(Icons.calendar_today, size: 18),
+                          label: Text(
+                            endDate == null
+                                ? 'End Date'
+                                : '${endDate!.toLocal().toString().split(' ')[0]}',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: Size(0, 50),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // Confirm Button
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (startDate != null && endDate != null) {
+                        // Call the booking API
+                        final success = await _apiService.bookItem(widget.item.id, startDate!, endDate!);
+                        if (success) {
+                          Navigator.pop(context);
+                        }
+                      } else {
+                        // Show Toast
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Please select both dates.'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF087272),
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      'Book',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         );
       },
     );
