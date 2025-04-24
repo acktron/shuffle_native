@@ -125,5 +125,15 @@ class ApiService {
     }
   }
 
-  // Future<Response> 
+  Future<bool> bookItem(int id, DateTime startDate, DateTime endDate) async {
+    print('Booking item with ID: $id from $startDate to $endDate');
+    final response = await _dio.post(
+      '/api/rentals/bookings/$id/',
+      data: {
+        'start_date': startDate.toIso8601String(), // Convert to ISO 8601 string
+        'end_date': endDate.toIso8601String(),     // Convert to ISO 8601 string
+      },
+    );
+    return response.statusCode == 200;
+  }
 }
