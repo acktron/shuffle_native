@@ -16,8 +16,8 @@ class RentCard extends StatelessWidget {
       return Geolocator.distanceBetween(
         userPosition.latitude,
         userPosition.longitude,
-        item.location!.coordinates[1], // Latitude of the item
-        item.location!.coordinates[0], // Longitude of the item
+        item.location!.coordinates[1]!, // Latitude of the item
+        item.location!.coordinates[0]!, // Longitude of the item
       );
     }
     return 0.0;

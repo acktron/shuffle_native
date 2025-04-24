@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:shuffle_native/models/location.dart';
+import 'package:shuffle_native/services/api_service.dart';
+import 'package:shuffle_native/services/location_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,13 +37,15 @@ class _UploadItemPageState extends State<UploadItemPage> {
   final _formKey = GlobalKey<FormState>();
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
-  bool _isAvailable = true;
+  final ApiService _apiService = ApiService();
+  bool _isLoading = false;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _depositController = TextEditingController();
+  final TextEditingController _noteController = TextEditingController();
 
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(
@@ -91,300 +96,281 @@ class _UploadItemPageState extends State<UploadItemPage> {
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Upload Item',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 24),
-
-                // Item Data Header
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF087272),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(8),
-                      topRight: Radius.circular(8),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Upload Item',
+                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  child: const Text(
-                    'Item Data:',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+                    const SizedBox(height: 24),
 
-                // Image Upload Section
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: const [
-                                Icon(Icons.image, color: Color(0xFF087272)),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Image',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
+                    // Item Data Header
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF087272),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        'Item Data:',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+
+                    // Image Upload Section
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      margin: const EdgeInsets.only(bottom: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: const [
+                                    Icon(Icons.image, color: Color(0xFF087272)),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Image',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+
+                                GestureDetector(
+                                  onTap: _pickImage,
+                                  child: Container(
+                                    height: 200,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade200,
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: Colors.grey.shade400,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child:
+                                        _imageFile != null
+                                            ? ClipRRect(
+                                              borderRadius: BorderRadius.circular(
+                                                8,
+                                              ),
+                                              child: Image.file(
+                                                _imageFile!,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            )
+                                            : Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: const [
+                                                Icon(
+                                                  Icons.add_a_photo,
+                                                  size: 48,
+                                                  color: Color(0xFF087272),
+                                                ),
+                                                SizedBox(height: 8),
+                                                Text(
+                                                  'Tap to upload image',
+                                                  style: TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 12),
-
-                            GestureDetector(
-                              onTap: _pickImage,
-                              child: Container(
-                                height: 200,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade200,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: Colors.grey.shade400,
-                                    width: 1,
-                                  ),
-                                ),
-                                child:
-                                    _imageFile != null
-                                        ? ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                          child: Image.file(
-                                            _imageFile!,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        )
-                                        : Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: const [
-                                            Icon(
-                                              Icons.add_a_photo,
-                                              size: 48,
-                                              color: Color(0xFF087272),
-                                            ),
-                                            SizedBox(height: 8),
-                                            Text(
-                                              'Tap to upload image',
-                                              style: TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Item Name
-                buildTextFormField(
-                  controller: _nameController,
-                  label: 'Name',
-                  icon: Icons.label,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter item name';
-                    }
-                    return null;
-                  },
-                ),
-
-                // Description
-                buildTextFormField(
-                  controller: _descriptionController,
-                  label: 'Description',
-                  icon: Icons.description,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter item description';
-                    }
-                    return null;
-                  },
-                  maxLines: 3,
-                ),
-
-                // Category
-                buildTextFormField(
-                  controller: _categoryController,
-                  label: 'Category',
-                  icon: Icons.category,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter item category';
-                    }
-                    return null;
-                  },
-                ),
-
-                // Price Per Day
-                buildTextFormField(
-                  controller: _priceController,
-                  label: 'Price per day',
-                  icon: Icons.attach_money,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter price per day';
-                    }
-                    if (double.tryParse(value) == null) {
-                      return 'Please enter a valid price';
-                    }
-                    return null;
-                  },
-                  keyboardType: TextInputType.number,
-                  prefix: 'Rs ',
-                ),
-
-                // Deposit Amount
-                buildTextFormField(
-                  controller: _depositController,
-                  label: 'Deposit amount',
-                  icon: Icons.account_balance_wallet,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter deposit amount';
-                    }
-                    if (double.tryParse(value) == null) {
-                      return 'Please enter a valid amount';
-                    }
-                    return null;
-                  },
-                  keyboardType: TextInputType.number,
-                  prefix: 'Rs ',
-                ),
-
-                // Availability
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: const [
-                            Icon(
-                              Icons.check_circle_outline,
-                              color: Color(0xFF087272),
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              'Availability',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Switch(
-                              value: _isAvailable,
-                              onChanged: (value) {
-                                setState(() {
-                                  _isAvailable = value;
-                                });
-                              },
-                              activeTrackColor: const Color(
-                                0xFF087272,
-                              ).withOpacity(0.5),
-                              activeColor: const Color(0xFF087272),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              _isAvailable
-                                  ? 'Available for rent'
-                                  : 'Not available',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color:
-                                    _isAvailable ? Colors.black : Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // Upload Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        // Handle form submission
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Item uploaded successfully!'),
                           ),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF087272),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        ],
                       ),
                     ),
-                    child: const Text(
-                      'Upload Item',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+
+                    // Item Name
+                    buildTextFormField(
+                      controller: _nameController,
+                      label: 'Name',
+                      icon: Icons.label,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter item name';
+                        }
+                        return null;
+                      },
+                    ),
+
+                    // Description
+                    buildTextFormField(
+                      controller: _descriptionController,
+                      label: 'Description',
+                      icon: Icons.description,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter item description';
+                        }
+                        return null;
+                      },
+                      maxLines: 3,
+                    ),
+                    // Note (Optional)
+                    buildTextFormField(
+                      controller: _noteController,
+                      label: 'Note (Optional)',
+                      icon: Icons.description,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return null; // Optional field, no validation needed
+                        }
+                        return null;
+                      },
+                      maxLines: 3,
+                    ),
+
+                    // Price Per Day
+                    buildTextFormField(
+                      controller: _priceController,
+                      label: 'Price per day',
+                      icon: Icons.attach_money,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter price per day';
+                        }
+                        if (double.tryParse(value) == null) {
+                          return 'Please enter a valid price';
+                        }
+                        return null;
+                      },
+                      keyboardType: TextInputType.number,
+                      prefix: 'Rs ',
+                    ),
+
+                    // Deposit Amount
+                    buildTextFormField(
+                      controller: _depositController,
+                      label: 'Deposit amount',
+                      icon: Icons.account_balance_wallet,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter deposit amount';
+                        }
+                        if (double.tryParse(value) == null) {
+                          return 'Please enter a valid amount';
+                        }
+                        return null;
+                      },
+                      keyboardType: TextInputType.number,
+                      prefix: 'Rs ',
+                    ),
+
+                    // Upload Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: _isLoading
+                            ? null
+                            : () async {
+                                if (_formKey.currentState!.validate()) {
+                                  setState(() {
+                                    _isLoading = true; // Show loader
+                                  });
+
+                                  final locationService = LocationService();
+                                  final locationData =
+                                      await locationService.getLocation();
+
+                                  final success = await _apiService.listNewItem(
+                                    name: _nameController.text,
+                                    description: _descriptionController.text,
+                                    pricePerDay: _priceController.text,
+                                    depositAmount: _depositController.text,
+                                    image: _imageFile,
+                                    conditionNotes: _noteController.text,
+                                    location: Location("Point", [
+                                      locationData?.longitude,
+                                      locationData?.latitude,
+                                    ]),
+                                  );
+
+                                  setState(() {
+                                    _isLoading = false; // Hide loader
+                                  });
+
+                                  if (success) {
+                                    Navigator.pushNamed(context, '/homepage');
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Failed to upload item'),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF087272),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          'Upload',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
+          if (_isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: CircularProgressIndicator(
+                  color: Color(0xFF087272),
+                ),
+              ),
+            ),
+        ],
       ),
       bottomNavigationBar: Container(
         height: 60,
