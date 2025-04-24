@@ -8,6 +8,8 @@ import 'package:shuffle_native/providers/auth_provider.dart';
 import 'package:shuffle_native/rented_page.dart';
 import 'package:shuffle_native/services/api_client.dart';
 import 'package:shuffle_native/uploadpage.dart';
+import 'package:shuffle_native/forgot_password.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
