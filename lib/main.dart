@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shuffle_native/HomePage.dart';
 import 'package:shuffle_native/SignInPage.dart';
 import 'package:shuffle_native/SignUpPage.dart';
-import 'package:shuffle_native/product_page.dart';
+import 'package:shuffle_native/product_page.dart'; // Ensure this import is correct
 import 'package:shuffle_native/providers/auth_provider.dart';
 import 'package:shuffle_native/rented_page.dart';
 import 'package:shuffle_native/services/api_client.dart';
@@ -21,24 +21,71 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    const Homepage(),
+    const RentedItemsPage(),
+    const UploadItemPage(),
+    // const ProductDetailPage(), // Ensure this page is correctly referenced
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+
+    if (!authProvider.isLoggedIn) {
+      return MaterialApp(
+        title: 'Shuffle',
+        debugShowCheckedModeBanner: false,
+        home: const WelcomePage(),
+        routes: {
+          '/signin': (context) =>  SignInPage(),
+          '/signup': (context) => SignUpPage(),
+          '/welcome': (context) => WelcomePage(),
+        },
+      );
+    }
+
     return MaterialApp(
       title: 'Shuffle',
       debugShowCheckedModeBanner: false,
-      home: authProvider.isLoggedIn ? Homepage() : WelcomePage(),
-      routes: {
-        '/signin': (context) => SignInPage(),
-        '/signup': (context) => SignUpPage(),
-        '/home': (context) => Homepage(),
-        '/welcome': (context) => WelcomePage(),
-        '/homepage': (context) => Homepage(),
-        '/uploadpage': (context) => UploadItemPage(),
-      },
+      home: Scaffold(
+        body: IndexedStack(index: _selectedIndex, children: _pages),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: const Color(0xFF087272),
+          unselectedItemColor: Colors.grey,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.inventory_2),
+              label: 'Rented',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add_box),
+              label: 'Upload Item',
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -120,7 +167,7 @@ class WelcomePage extends StatelessWidget {
                 ),
               ),
 
-              //Terms of Service
+              // Terms of Service
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: Column(

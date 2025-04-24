@@ -372,33 +372,6 @@ class _UploadItemPageState extends State<UploadItemPage> {
             ),
         ],
       ),
-      bottomNavigationBar: Container(
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              spreadRadius: 1,
-              blurRadius: 5,
-              offset: const Offset(0, -1),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: const [
-            NavBarItem(icon: Icons.home, label: 'Home'),
-            NavBarItem(icon: Icons.inventory_2, label: 'Rented'),
-            NavBarItem(
-              icon: Icons.add_box,
-              label: 'Upload Item',
-              isSelected: true,
-            ),
-            NavBarItem(icon: Icons.person, label: 'Profile'),
-          ],
-        ),
-      ),
     );
   }
 
