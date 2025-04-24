@@ -1,0 +1,309 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Shuffle',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: const Color(0xFF087272),
+      ),
+      home: const RentedItemsPage(),
+    );
+  }
+}
+
+class RentalItem {
+  final String name;
+  final String category;
+  final double pricePerDay;
+  final int rentedDays;
+  final String returnDate;
+  final String imageUrl;
+  final bool isActive;
+
+  RentalItem({
+    required this.name,
+    required this.category,
+    required this.pricePerDay,
+    required this.rentedDays,
+    required this.returnDate,
+    required this.imageUrl,
+    this.isActive = true,
+  });
+}
+
+class RentedItemsPage extends StatelessWidget {
+  const RentedItemsPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Sample data for rented items
+    final List<RentalItem> rentedItems = [
+      RentalItem(
+        name: 'Casio FX-991MS',
+        category: 'Scientific Calculator',
+        pricePerDay: 10.0,
+        rentedDays: 3,
+        returnDate: 'March 10',
+        imageUrl: 'assets/images/calculator.png',
+      ),
+      RentalItem(
+        name: 'Casio FX-991MS',
+        category: 'Scientific Calculator',
+        pricePerDay: 10.0,
+        rentedDays: 3,
+        returnDate: 'March 10',
+        imageUrl: 'assets/images/calculator.png',
+      ),
+      RentalItem(
+        name: 'Casio FX-991MS',
+        category: 'Scientific Calculator',
+        pricePerDay: 10.0,
+        rentedDays: 3,
+        returnDate: 'March 10',
+        imageUrl: 'assets/images/calculator.png',
+      ),
+      RentalItem(
+        name: 'Casio FX-991MS',
+        category: 'Scientific Calculator',
+        pricePerDay: 10.0,
+        rentedDays: 3,
+        returnDate: 'March 10',
+        imageUrl: 'assets/images/calculator.png',
+      ),
+      RentalItem(
+        name: 'Casio FX-991MS',
+        category: 'Scientific Calculator',
+        pricePerDay: 10.0,
+        rentedDays: 3,
+        returnDate: 'March 10',
+        imageUrl: 'assets/images/calculator.png',
+      ),
+    ];
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Row(
+          children: const [
+            Text(
+              'X',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Text(
+              'Shuffle',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                fontSize: 24,
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Rented Items',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              itemCount: rentedItems.length,
+              itemBuilder: (context, index) {
+                final item = rentedItems[index];
+                return RentedItemCard(item: item);
+              },
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: Container(
+        height: 60,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: const Offset(0, -1),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: const [
+            NavBarItem(icon: Icons.home, label: 'Home'),
+            NavBarItem(icon: Icons.inventory_2, label: 'Rented', isSelected: true),
+            NavBarItem(icon: Icons.add_box, label: 'Upload Item'),
+            NavBarItem(icon: Icons.person, label: 'Profile'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class RentedItemCard extends StatelessWidget {
+  final RentalItem item;
+
+  const RentedItemCard({Key? key, required this.item}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16.0),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Item Image
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Image.asset(
+                item.imageUrl,
+                fit: BoxFit.contain,
+              ),
+            ),
+            const SizedBox(width: 16.0),
+            
+            // Item Details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    item.category,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                    'Rs ${item.pricePerDay.toInt()}/day',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                    'Rented for ${item.rentedDays} days',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  Text(
+                    'Return by ${item.returnDate}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Active Status
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+              decoration: BoxDecoration(
+                color: const Color(0x1A4CAF50),
+                borderRadius: BorderRadius.circular(4.0),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Text(
+                    'Active !',
+                    style: TextStyle(
+                      color: Color(0xFF4CAF50),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class NavBarItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+
+  const NavBarItem({
+    Key? key,
+    required this.icon,
+    required this.label,
+    this.isSelected = false,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          icon,
+          color: isSelected ? const Color(0xFF26C6DA) : Colors.grey,
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? const Color(0xFF26C6DA) : Colors.grey,
+            fontSize: 12,
+          ),
+        ),
+      ],
+    );
+  }
+}

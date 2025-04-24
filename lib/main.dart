@@ -5,6 +5,7 @@ import 'package:shuffle_native/SignInPage.dart';
 import 'package:shuffle_native/SignUpPage.dart';
 import 'package:shuffle_native/product_page.dart';
 import 'package:shuffle_native/providers/auth_provider.dart';
+import 'package:shuffle_native/rented_page.dart';
 import 'package:shuffle_native/services/api_client.dart';
 import 'package:shuffle_native/uploadpage.dart';
 
@@ -36,6 +37,8 @@ class MyApp extends StatelessWidget {
         '/home': (context) => Homepage(),
         '/welcome': (context) => WelcomePage(),
         '/homepage': (context) => Homepage(),
+        '/uploadpage': (context) => UploadItemPage(),
+        '/rentedpage' : (context) => RentedItemsPage(),
       },
     );
   }
