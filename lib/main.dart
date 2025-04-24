@@ -9,6 +9,7 @@ import 'package:shuffle_native/rented_page.dart';
 import 'package:shuffle_native/services/api_client.dart';
 import 'package:shuffle_native/uploadpage.dart';
 import 'package:shuffle_native/forgot_password.dart';
+import 'package:shuffle_native/profile_page.dart'; // Ensure this import is correct
 
 
 void main() async {
@@ -37,7 +38,7 @@ class _MyAppState extends State<MyApp> {
     const Homepage(),
     const RentedItemsPage(),
     const UploadItemPage(),
-    // const ProductDetailPage(), // Ensure this page is correctly referenced
+    const ProfilePage(), // Ensure this page is correctly referenced
   ];
 
   void _onItemTapped(int index) {
