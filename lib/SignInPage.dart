@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shuffle_native/HomePage.dart';
+import 'package:shuffle_native/forgot_password.dart';
 import 'package:shuffle_native/providers/auth_provider.dart';
 
 void main() {
@@ -75,7 +76,12 @@ class SignInPage extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ForgotPasswordUI()),
+                    );
+                  },
                   child: const Text(
                     'Forgot password?',
                     style: TextStyle(color: Colors.grey),
