@@ -57,6 +57,7 @@ class _MyAppState extends State<MyApp> {
           '/signin': (context) =>  SignInPage(),
           '/signup': (context) => SignUpPage(),
           '/welcome': (context) => WelcomePage(),
+          '/homepage': (context) => const Homepage(),
         },
       );
     }

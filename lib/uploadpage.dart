@@ -312,6 +312,21 @@ class _UploadItemPageState extends State<UploadItemPage> {
                                   final locationData =
                                       await locationService.getLocation();
 
+                                  print("Location Data: $locationData");
+
+                                    
+                                  if (locationData == null) {
+                                    setState(() {
+                                      _isLoading = false; // Hide loader
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Location permission denied'),
+                                      ),
+                                    );
+                                    return;
+                                  }
+
                                   final success = await _apiService.listNewItem(
                                     name: _nameController.text,
                                     description: _descriptionController.text,
