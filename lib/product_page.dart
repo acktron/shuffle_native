@@ -28,15 +28,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         title: Row(
           children: [
             Image.asset('assesets/images/MainLogo.png', height: 25),
-
-            // Text(
-            //   'X',
-            //   style: TextStyle(
-            //     color: Colors.black,
-            //     fontWeight: FontWeight.bold,
-            //     fontSize: 24,
-            //   ),
-            // ),
             Text(
               'Shuffle',
               style: TextStyle(
@@ -74,17 +65,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Three dots menu
-                  // Align(
-                  //   alignment: Alignment.center,
-                  //   child: Icon(
-                  //     Icons.more_horiz,
-                  //     color: Color(0xFF26C6DA),
-                  //     size: 30,
-                  //   ),
-                  // ),
-                  // const SizedBox(height: 10),
-
                   // Product title
                   Text(
                     widget.item.name,
@@ -95,7 +75,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
                   // Owner info
                   Text(
-                    'Owner: ${widget.item.owner}',
+                    'Owner: ${widget.item.owner_name}',
                     style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 16),
@@ -113,14 +93,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ],
                   ),
                   Text(
-                    'Deposit: Rs 500',
+                    'Deposit: Rs ${widget.item.depositAmount}',
                     style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 16),
 
                   // Rent Now button
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _showBottomModalSheet(context);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF087272),
                       minimumSize: Size(double.infinity, 50),
@@ -146,7 +128,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Cheez badiya hai, bas isme kharcha itna hai na but lena hai to le le, lekin agar kuch hua to to maa chod dunga teri badkismat sab ahar me gake paisa chadunga sab',
+                    widget.item.description,
                     style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                 ],
@@ -185,6 +167,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showBottomModalSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: 300,
+          child: Center(
+            child: Text('Bottom Modal Sheet'),
+          ),
+        );
+      },
     );
   }
 }

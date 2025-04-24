@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => Homepage(),
         '/welcome': (context) => WelcomePage(),
         '/homepage': (context) => Homepage(),
+        '/uploadpage': (context) => UploadItemPage(),
       },
     );
   }

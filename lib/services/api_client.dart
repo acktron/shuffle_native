@@ -4,13 +4,17 @@ import 'token_storage.dart';
 
 class ApiClient {
   static final Dio _dio = Dio(BaseOptions(baseUrl: baseUrl));
+  static final Dio _tokenDio = Dio(BaseOptions(baseUrl: baseUrl)); // for token refresh
+
+  static bool _isRefreshing = false;
+  static List<void Function(String)> _queuedRequests = [];
 
   static Future<void> init() async {
-    _dio.options.validateStatus = (status) => true; // Allow all status codes
+    _dio.options.validateStatus = (status) => true;
+
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          // Attach the access token to the request header
           final token = await TokenStorage().getAccessToken();
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
@@ -21,20 +25,39 @@ class ApiClient {
           final isAuthError = error.response?.statusCode == 401;
           final requestOptions = error.requestOptions;
 
-          if (isAuthError) {
-            // Try to refresh the access token
+          if (isAuthError && requestOptions.extra['retried'] != true) {
+            requestOptions.extra['retried'] = true;
+
+            if (_isRefreshing) {
+              _queuedRequests.add((String token) {
+                requestOptions.headers['Authorization'] = 'Bearer $token';
+                _dio.fetch(requestOptions).then(
+                  (r) => handler.resolve(r),
+                  onError: (e) => handler.reject(e),
+                );
+              });
+              return;
+            }
+
+            _isRefreshing = true;
             final newToken = await _refreshAccessToken();
+            _isRefreshing = false;
 
             if (newToken != null) {
               requestOptions.headers['Authorization'] = 'Bearer $newToken';
-              final clonedRequest = await _dio.fetch(requestOptions);
-              return handler.resolve(clonedRequest);
+              final clonedResponse = await _dio.fetch(requestOptions);
+              handler.resolve(clonedResponse);
+
+              for (final callback in _queuedRequests) {
+                callback(newToken);
+              }
+              _queuedRequests.clear();
+              return;
             } else {
-              print('Error: Token refresh failed. Clearing tokens.');
+              await TokenStorage().clearTokens();
             }
-          } else {
-            print('Error: ${error.response?.statusCode} - ${error.response?.statusMessage}');
           }
+
           handler.next(error);
         },
       ),
@@ -44,27 +67,25 @@ class ApiClient {
   static Future<String?> _refreshAccessToken() async {
     final refreshToken = await TokenStorage().getRefreshToken();
     if (refreshToken == null) {
-      print('Error: No refresh token available.');
+      print('No refresh token available');
       return null;
     }
 
     try {
-      final response = await _dio.post(
+      final response = await _tokenDio.post(
         '/api/token/refresh/',
-        data: {'refresh': refreshToken}, // Django Simple JWT expects 'refresh'
+        data: {'refresh': refreshToken},
         options: Options(headers: {'Content-Type': 'application/json'}),
       );
 
-      final newAccess = response.data['access']; // Django Simple JWT returns 'access'
-      final newRefresh = response.data['refresh']; // Optional: 'refresh' if provided
+      final newAccess = response.data['access'];
+      final newRefresh = response.data['refresh'];
 
-      // Save new tokens
       await TokenStorage().saveTokens(newAccess, newRefresh);
-
+      print('Token refreshed');
       return newAccess;
     } catch (e) {
-      print('Error: Failed to refresh token - $e');
-      // In case refresh fails, clear tokens
+      print('Token refresh failed: $e');
       await TokenStorage().clearTokens();
       return null;
     }

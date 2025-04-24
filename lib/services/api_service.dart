@@ -68,7 +68,7 @@ class ApiService {
     final response = await _dio.get('/api/rentals/items/$queryParameters');
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data;
-      print(data);
+      print('Got Data from API');
 
       // Map the API response to a list of Item objects
       return data.map((item) {
@@ -124,4 +124,6 @@ class ApiService {
       throw FormatException('Invalid location format');
     }
   }
+
+  // Future<Response> 
 }
