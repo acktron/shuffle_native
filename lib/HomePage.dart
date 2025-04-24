@@ -30,8 +30,10 @@ class _HomepageState extends State<Homepage> {
   Future<void> _fetchLocationAndAddress() async {
     final locationService = LocationService();
     final locationData = await locationService.getLocation();
+    print("Location data:");
 
     if (locationData != null) {
+      print("Location data: ${locationData.latitude}, ${locationData.longitude}");
       final latitude = locationData.latitude;
       final longitude = locationData.longitude;
 
@@ -59,7 +61,7 @@ class _HomepageState extends State<Homepage> {
           location,
           10000,
         ); // Radius = 10 km
-
+        print('Items: $items');
         setState(() {
           _items = items; // Update the items list
         });
@@ -259,10 +261,7 @@ class _HomepageState extends State<Homepage> {
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
       ],
       onTap: (i) {
-        switch (i) {
-          case 2:
-            Navigator.pushNamed(context, '/uploadpage');
-        }
+        // handle tab changes
       },
     );
   }
