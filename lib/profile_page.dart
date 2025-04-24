@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shuffle_native/change_password.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -58,12 +59,62 @@ class ProfilePage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
-                  _buildTile(Icons.image_outlined, "My Rentals", tealColor),
-                  _buildTile(Icons.check_circle_outline, "Rent Request", tealColor),
-                  _buildTile(Icons.location_on_outlined, "My Address", tealColor),
+                  _buildTile(
+                    Icons.image_outlined,
+                    "My Rentals",
+                    tealColor,
+                    () {
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => MyRentalsPage()),
+                      // );
+                    },
+                  ),
+                  _buildTile(
+                    Icons.check_circle_outline,
+                    "Rent Request",
+                    tealColor,
+                    () {
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => RentRequestPage()),
+                      // );
+                    },
+                  ),
+                  _buildTile(
+                    Icons.location_on_outlined,
+                    "My Address",
+                    tealColor,
+                    () {
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => MyAddressPage()),
+                      // );
+                    },
+                  ),
                   const SizedBox(height: 16),
-                  _buildTile(Icons.lock_outline, "Change Password", tealColor),
-                  _buildTile(Icons.support_agent, "Contact Us", tealColor),
+                  _buildTile(
+                    Icons.lock_outline,
+                    "Change Password",
+                    tealColor,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ChangePasswordPage()),
+                      );
+                    },
+                  ),
+                  _buildTile(
+                    Icons.support_agent,
+                    "Contact Us",
+                    tealColor,
+                    () {
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => ContactUsPage()),
+                      // );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -93,7 +144,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTile(IconData icon, String title, Color color) {
+  Widget _buildTile(IconData icon, String title, Color color, VoidCallback onTap) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
       elevation: 0,
@@ -103,9 +154,7 @@ class ProfilePage extends StatelessWidget {
         leading: Icon(icon, color: color),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
         trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-        onTap: () {
-          // TODO: Navigate to respective screens
-        },
+        onTap: onTap,
       ),
     );
   }
