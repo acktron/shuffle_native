@@ -33,7 +33,9 @@ class _HomepageState extends State<Homepage> {
     print("Location data:");
 
     if (locationData != null) {
-      print("Location data: ${locationData.latitude}, ${locationData.longitude}");
+      print(
+        "Location data: ${locationData.latitude}, ${locationData.longitude}",
+      );
       final latitude = locationData.latitude;
       final longitude = locationData.longitude;
 
@@ -86,11 +88,10 @@ class _HomepageState extends State<Homepage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: _buildBottomNav(tealColor),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // Top App Bar with Shuffle logo
+            // Top App Bar with Shuffle logo and Logout button
             SliverToBoxAdapter(
               child: Container(
                 height: 56,
@@ -137,33 +138,33 @@ class _HomepageState extends State<Homepage> {
                             color: Colors.black87,
                           ),
                         ),
-                        // Logout text
-                        TextButton(
-                          onPressed: () async {
-                            final success =
-                                await Provider.of<AuthProvider>(
-                                  context,
-                                  listen: false,
-                                ).logout();
-                            if (success) {
-                              Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                '/signin',
-                                (route) => false,
-                              );
-                            }
-                          },
-                          child: const Text(
-                            'Logout',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xFF21C7A7),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                     const Spacer(),
+                    // Logout button
+                    TextButton(
+                      onPressed: () async {
+                        final success =
+                            await Provider.of<AuthProvider>(
+                              context,
+                              listen: false,
+                            ).logout();
+                        if (success) {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            '/signin',
+                            (route) => false,
+                          );
+                        }
+                      },
+                      child: const Text(
+                        'Logout',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF21C7A7),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -244,93 +245,89 @@ class _HomepageState extends State<Homepage> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildBottomNav(Color tealColor) {
-    return Container(
-      height: 60,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, -1),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.pushNamed(context, '/homepage'),
-            child: const NavBarItem(
-              icon: Icons.home,
-              label: 'Home',
-              isSelected: true,
-            ),
-          ),
-          GestureDetector(
-            onTap: () => Navigator.pushNamed(context, '/rentedpage'),
-            child: const NavBarItem(
-              icon: Icons.history,
-              label: 'Rented',
-            ),
-          ),
-          GestureDetector(
-            onTap: () => Navigator.pushNamed(context, '/uploadpage'),
-            child: const NavBarItem(
-              icon: Icons.upload_file,
-              label: 'Upload',
-            ),
-          ),
-          GestureDetector(
-            onTap: () => Navigator.pushNamed(context, '/profilepage'),
-            child: const NavBarItem(
-              icon: Icons.person,
-              label: 'Profile',
-            ),
-          ),
-        ],
-      ),
+      // Removed the redundant bottom navigation bar
     );
   }
 }
 
-class NavBarItem extends StatelessWidget {
+class NavBarItem extends StatefulWidget {
   final IconData icon;
   final String label;
   final bool isSelected;
+  final VoidCallback? onTap;
 
   const NavBarItem({
     Key? key,
     required this.icon,
     required this.label,
     this.isSelected = false,
+    this.onTap,
   }) : super(key: key);
 
   @override
+  _NavBarItemState createState() => _NavBarItemState();
+}
+
+class _NavBarItemState extends State<NavBarItem>
+    with SingleTickerProviderStateMixin {
+  double _scale = 1.0;
+
+  void _onTapDown(TapDownDetails details) {
+    setState(() {
+      _scale = 0.9; // Scale down on tap
+    });
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    setState(() {
+      _scale = 1.0; // Scale back to normal
+    });
+    if (widget.onTap != null) {
+      widget.onTap!(); // Trigger the onTap callback
+    }
+  }
+
+  void _onTapCancel() {
+    setState(() {
+      _scale = 1.0; // Reset scale if tap is canceled
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          icon,
-          color: isSelected ? const Color(0xFF21C7A7) : Colors.grey,
-          size: isSelected ? 28 : 24, // Larger size for selected icons
+    return GestureDetector(
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      child: AnimatedScale(
+        scale: _scale,
+        duration: const Duration(milliseconds: 200),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              widget.icon,
+              color: widget.isSelected ? const Color(0xFF087272) : Colors.grey,
+              size:
+                  widget.isSelected ? 28 : 24, // Larger size for selected icons
+            ),
+            const SizedBox(height: 4),
+            Text(
+              widget.label,
+              style: TextStyle(
+                color:
+                    widget.isSelected ? const Color(0xFF087272) : Colors.grey,
+                fontSize:
+                    widget.isSelected
+                        ? 14
+                        : 12, // Larger font size for selected labels
+                fontWeight:
+                    widget.isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? const Color(0xFF21C7A7) : Colors.grey,
-            fontSize: isSelected ? 14 : 12, // Larger font size for selected labels
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

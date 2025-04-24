@@ -132,7 +132,10 @@ class RentedItemsPage extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
               itemCount: rentedItems.length,
               itemBuilder: (context, index) {
                 final item = rentedItems[index];
@@ -141,29 +144,6 @@ class RentedItemsPage extends StatelessWidget {
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: Container(
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              spreadRadius: 1,
-              blurRadius: 5,
-              offset: const Offset(0, -1),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: const [
-            NavBarItem(icon: Icons.home, label: 'Home'),
-            NavBarItem(icon: Icons.inventory_2, label: 'Rented', isSelected: true),
-            NavBarItem(icon: Icons.add_box, label: 'Upload Item'),
-            NavBarItem(icon: Icons.person, label: 'Profile'),
-          ],
-        ),
       ),
     );
   }
@@ -179,9 +159,7 @@ class RentedItemCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 16.0),
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
@@ -195,13 +173,10 @@ class RentedItemCard extends StatelessWidget {
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8.0),
               ),
-              child: Image.asset(
-                item.imageUrl,
-                fit: BoxFit.contain,
-              ),
+              child: Image.asset(item.imageUrl, fit: BoxFit.contain),
             ),
             const SizedBox(width: 16.0),
-            
+
             // Item Details
             Expanded(
               child: Column(
@@ -232,25 +207,22 @@ class RentedItemCard extends StatelessWidget {
                   const SizedBox(height: 4.0),
                   Text(
                     'Rented for ${item.rentedDays} days',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                   Text(
                     'Return by ${item.returnDate}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                 ],
               ),
             ),
-            
+
             // Active Status
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 6.0,
+              ),
               decoration: BoxDecoration(
                 color: const Color(0x1A4CAF50),
                 borderRadius: BorderRadius.circular(4.0),
@@ -292,10 +264,7 @@ class NavBarItem extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(
-          icon,
-          color: isSelected ? const Color(0xFF26C6DA) : Colors.grey,
-        ),
+        Icon(icon, color: isSelected ? const Color(0xFF26C6DA) : Colors.grey),
         Text(
           label,
           style: TextStyle(

@@ -5,7 +5,6 @@ import 'package:shuffle_native/services/api_service.dart';
 class ProductDetailPage extends StatefulWidget {
   final Item item;
   const ProductDetailPage({Key? key, required this.item}) : super(key: key);
-  
 
   @override
   _ProductDetailPageState createState() => _ProductDetailPageState();
@@ -140,44 +139,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              spreadRadius: 1,
-              blurRadius: 5,
-              offset: Offset(0, -1),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            GestureDetector(
-              child: NavBarItem(
-                icon: Icons.home,
-                label: 'Home',
-                isSelected: true,
-              ),
-              onTap: () => Navigator.pushNamed(context, '/homepage'),
-            ),
-            NavBarItem(icon: Icons.inventory_2, label: 'Rented'),
-            NavBarItem(icon: Icons.add_box, label: 'Upload Item'),
-            NavBarItem(icon: Icons.person, label: 'Profile'),
-          ],
-        ),
-      ),
     );
   }
 
   void _showBottomModalSheet(BuildContext context) {
     DateTime? startDate;
     DateTime? endDate;
-
-  
 
     showModalBottomSheet(
       context: context,
@@ -294,7 +261,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     onPressed: () async {
                       if (startDate != null && endDate != null) {
                         // Call the booking API
-                        final success = await _apiService.bookItem(widget.item.id, startDate!, endDate!);
+                        final success = await _apiService.bookItem(
+                          widget.item.id,
+                          startDate!,
+                          endDate!,
+                        );
                         if (success) {
                           Navigator.pop(context);
                         }
