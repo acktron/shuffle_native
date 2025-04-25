@@ -1,28 +1,8 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: const Color(0xFF26C6B7),
-        scaffoldBackgroundColor: Colors.white,
-        fontFamily: 'Roboto',
-      ),
-      home: const CheckoutPage(),
-    );
-  }
-}
-
 class CheckoutPage extends StatelessWidget {
-  const CheckoutPage({Key? key}) : super(key: key);
+  final int bookingId;
+  const CheckoutPage({Key? key, required this.bookingId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +11,7 @@ class CheckoutPage extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(0),
-        child: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-        ),
+        child: AppBar(elevation: 0, backgroundColor: Colors.white),
       ),
       body: SafeArea(
         child: Padding(
@@ -63,7 +40,7 @@ class CheckoutPage extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               // Main content with scrolling
               Expanded(
                 child: Padding(
@@ -153,19 +130,19 @@ class CheckoutPage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        
+
                         // Summary rows
                         buildSummaryRow('Rental Charge', '₹ 40'),
                         buildSummaryRow('Deposit', '₹ 500'),
                         buildSummaryRow('Platform Fee', '₹ 8'),
-                        
+
                         const Divider(height: 32, color: Color(0xFFEEEEEE)),
-                        
+
                         // Total amount
                         buildTotalRow('Total Amount', '₹ 448'),
-                        
+
                         const SizedBox(height: 24),
-                        
+
                         // Payment method
                         const Text(
                           'Online Payment',
@@ -175,7 +152,7 @@ class CheckoutPage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        
+
                         // Razorpay option
                         Container(
                           height: 60,
@@ -189,8 +166,8 @@ class CheckoutPage extends StatelessWidget {
                               'assets/razorpay_logo.png',
                               height: 30,
                               // If you don't have the asset, use a placeholder
-                              errorBuilder: (context, error, stackTrace) => 
-                                  const Text(
+                              errorBuilder:
+                                  (context, error, stackTrace) => const Text(
                                     'Razorpay',
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
@@ -200,9 +177,9 @@ class CheckoutPage extends StatelessWidget {
                             ),
                           ),
                         ),
-                        
+
                         const SizedBox(height: 24),
-                        
+
                         // Confirm button
                         ElevatedButton(
                           onPressed: () {},
@@ -223,7 +200,7 @@ class CheckoutPage extends StatelessWidget {
                             ),
                           ),
                         ),
-                        
+
                         const SizedBox(height: 24),
                       ],
                     ),
@@ -245,17 +222,11 @@ class CheckoutPage extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 15,
-              color: Color(0xFF333333),
-            ),
+            style: const TextStyle(fontSize: 15, color: Color(0xFF333333)),
           ),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 15,
-              color: Color(0xFF333333),
-            ),
+            style: const TextStyle(fontSize: 15, color: Color(0xFF333333)),
           ),
         ],
       ),
