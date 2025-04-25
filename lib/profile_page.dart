@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shuffle_native/change_password.dart';
+import 'package:shuffle_native/request_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -11,42 +11,45 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const tealColor = Color(0xFF00C6A2);
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 4,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: "Rented"),
+          BottomNavigationBarItem(icon: Icon(Icons.add), label: "Upload"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications),
+            label: "Notifications",
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+        ],
+      ),
       body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _refreshProfile, // Pull-to-refresh logic
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
+        child: SingleChildScrollView(
+          // 👈 Wrap the whole page in this
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
-                // Header
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      Image.asset('assesets/images/MainLogo.png', height: 32),
-                      const SizedBox(width: 8),
-                      const Text(
-                        "Shuffle",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+                Row(
+                  children: [
+                    Image.asset("assesets/images/MainLogo.png", height: 30),
+                    const SizedBox(width: 10),
+                    const Text(
+                      "Shuffle",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-
-                // Profile Avatar & Name
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 const CircleAvatar(
-                  radius: 48,
-                  backgroundColor: tealColor,
-                  child: Icon(Icons.person, size: 48, color: Colors.white),
+                  radius: 40,
+                  backgroundColor: Colors.teal,
+                  child: Icon(Icons.person, size: 50, color: Colors.white),
                 ),
                 const SizedBox(height: 12),
                 const Text(
@@ -54,101 +57,46 @@ class ProfilePage extends StatelessWidget {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
-                TextButton(
-                  onPressed: () {},
+                GestureDetector(
+                  onTap: () {
+                    // Edit profile logic
+                  },
                   child: const Text(
                     "Edit Profile",
-                    style: TextStyle(decoration: TextDecoration.underline),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // List Tiles
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: [
-                      _buildTile(
-                        Icons.image_outlined,
-                        "My Rentals",
-                        tealColor,
-                        () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => MyRentalsPage()),
-                          // );
-                        },
-                      ),
-                      _buildTile(
-                        Icons.check_circle_outline,
-                        "Rent Request",
-                        tealColor,
-                        () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => RentRequestPage()),
-                          // );
-                        },
-                      ),
-                      _buildTile(
-                        Icons.location_on_outlined,
-                        "My Address",
-                        tealColor,
-                        () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => MyAddressPage()),
-                          // );
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTile(
-                        Icons.lock_outline,
-                        "Change Password",
-                        tealColor,
-                        () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ChangePasswordPage(),
-                            ),
-                          );
-                        },
-                      ),
-                      _buildTile(
-                        Icons.support_agent,
-                        "Contact Us",
-                        tealColor,
-                        () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => ContactUsPage()),
-                          // );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                // Logout Button
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // TODO: Handle logout
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.black,
-                      elevation: 0,
-                      side: const BorderSide(color: Colors.black12),
-                      minimumSize: const Size.fromHeight(48),
+                    style: TextStyle(
+                      color: Colors.deepPurple,
+                      decoration: TextDecoration.underline,
                     ),
-                    child: const Text("Logout"),
                   ),
                 ),
+                const SizedBox(height: 30),
+
+                // Your profile options
+                _buildProfileOption(context, Icons.image, "My Rentals"),
+                GestureDetector(
+                  child: _buildProfileOption(
+                    context,
+                    Icons.check_circle_outline,
+                    "Rent Request",
+                    routeTo: "/requestpage",
+                  ),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/requestpage');
+                  },
+                ),
+                _buildProfileOption(
+                  context,
+                  Icons.location_on_outlined,
+                  "My Address",
+                ),
+                _buildProfileOption(
+                  context,
+                  Icons.lock_outline,
+                  "Change Password",
+                  routeTo: "/change-password",
+                ),
+                _buildProfileOption(context, Icons.support_agent, "Contact Us"),
+                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -157,22 +105,33 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTile(
+  Widget _buildProfileOption(
+    BuildContext context,
     IconData icon,
-    String title,
-    Color color,
-    VoidCallback onTap,
-  ) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      elevation: 0,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        leading: Icon(icon, color: color),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
-        trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-        onTap: onTap,
+    String title, {
+    String? routeTo,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        if (routeTo != null) {
+          Navigator.pushNamed(context, routeTo);
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8F9FA),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.teal),
+            const SizedBox(width: 16),
+            Expanded(child: Text(title, style: const TextStyle(fontSize: 16))),
+            const Icon(Icons.chevron_right),
+          ],
+        ),
       ),
     );
   }
