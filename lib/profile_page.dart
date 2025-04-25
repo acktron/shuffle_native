@@ -91,7 +91,22 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 30),
 
                 // Your profile options
-                _buildProfileOption(context, Icons.image, "My Rentals"),
+                GestureDetector(
+                  onTap: () {
+                    print("Tapped My Rentals");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const MyRentalsPage()),
+                    );
+                  },
+                  child: _buildProfileOption(
+                    context,
+                    Icons.image,
+                    "My Rentals",
+                    routeTo: "/myrentalspage",
+                  ),
+                ),
+
                 GestureDetector(
                   child: _buildProfileOption(
                     context,
