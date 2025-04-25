@@ -199,7 +199,7 @@ class _MyAppState extends State<MyApp> {
         '/myrentalspage': (context) => MyRentalsPage(),
         // '/homepage': (context) => const Homepage(),
         '/homepage': (context) => const Homepage(),
-        '/approvepage': (context) => const RentRequestDetailsPage(),
+        // '/approvepage': (context) => const RentRequestDetailsPage(),
         '/otppage': (context) => const OtpPage(),
         '/newpass': (context) => const NewPass(),
         '/contactus' : (context) =>  ContactUsPage(),
