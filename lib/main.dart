@@ -5,15 +5,17 @@ import 'package:shuffle_native/HomePage.dart';
 import 'package:shuffle_native/SignInPage.dart';
 import 'package:shuffle_native/SignUpPage.dart';
 import 'package:shuffle_native/change_password.dart';
+import 'package:shuffle_native/pages/notification_page.dart';
 import 'package:shuffle_native/product_page.dart'; // Ensure this import is correct
 import 'package:shuffle_native/providers/auth_provider.dart';
 import 'package:shuffle_native/rented_page.dart';
 import 'package:shuffle_native/profile_page.dart';
 import 'package:shuffle_native/request_page.dart';
 import 'package:shuffle_native/services/api_client.dart';
+import 'package:shuffle_native/services/web_socket_service.dart';
 import 'package:shuffle_native/uploadpage.dart';
 import 'package:shuffle_native/forgot_password.dart'; // Ensure this import is correct
-import 'package:shuffle_native/notification_page.dart'; // Updated import
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +43,7 @@ class _MyAppState extends State<MyApp> {
     const Homepage(),
     const RentedItemsPage(),
     const UploadItemPage(),
-    const NotificationPage(),
+    NotificationPage(userId: "1",),
     const ProfilePage(),
   ];
 
@@ -107,56 +109,81 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Shuffle',
       debugShowCheckedModeBanner: false,
-      home:
-          authProvider.isLoggedIn
-              ? Builder(
-                builder:
-                    (context) => Scaffold(
-                      body: IndexedStack(
-                        index: _selectedIndex,
-                        children: _pages,
-                      ),
-                      bottomNavigationBar: BottomNavigationBar(
-                        currentIndex: _selectedIndex,
-                        onTap: (index) {
-                          if (index == 2) {
-                            // Navigate to the upload page
-                            Navigator.pushNamed(context, '/uploadpage');
-                            return;
-                          }
-                          setState(() {
-                            _selectedIndex = index;
-                          });
-                        },
-                        type: BottomNavigationBarType.fixed,
-                        selectedItemColor: const Color(0xFF087272),
-                        unselectedItemColor: Colors.grey,
-                        items: const [
-                          BottomNavigationBarItem(
-                            icon: Icon(Icons.home),
-                            label: 'Home',
-                          ),
-                          BottomNavigationBarItem(
-                            icon: Icon(Icons.inventory_2),
-                            label: 'Rented',
-                          ),
-                          BottomNavigationBarItem(
-                            icon: Icon(Icons.add_box),
-                            label: 'Upload Item',
-                          ),
-                          BottomNavigationBarItem(
-                            icon: Icon(Icons.notifications),
-                            label: 'Notifications',
-                          ),
-                          BottomNavigationBarItem(
-                            icon: Icon(Icons.person),
-                            label: 'Profile',
-                          ),
-                        ],
-                      ),
+      home: authProvider.isLoggedIn
+          ? Builder(
+              builder: (context) => Scaffold(
+                body: IndexedStack(
+                  index: _selectedIndex,
+                  children: _pages,
+                ),
+                bottomNavigationBar: BottomNavigationBar(
+                  currentIndex: _selectedIndex,
+                  onTap: (index) {
+                    if (index == 2) {
+                      // Navigate to the upload page
+                      Navigator.pushNamed(context, '/uploadpage');
+                      return;
+                    }
+                    setState(() {
+                      _selectedIndex = index;
+                      if (index == 3) {
+                        WebSocketService.notificationCount.value = 0; // Reset count on Notifications tab
+                      }
+                    });
+                  },
+                  type: BottomNavigationBarType.fixed,
+                  selectedItemColor: const Color(0xFF087272),
+                  unselectedItemColor: Colors.grey,
+                  items: [
+                    const BottomNavigationBarItem(
+                      icon: Icon(Icons.home),
+                      label: 'Home',
                     ),
-              )
-              : const WelcomePage(),
+                    const BottomNavigationBarItem(
+                      icon: Icon(Icons.inventory_2),
+                      label: 'Rented',
+                    ),
+                    const BottomNavigationBarItem(
+                      icon: Icon(Icons.add_box),
+                      label: 'Upload Item',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: ValueListenableBuilder<int>(
+                        valueListenable: WebSocketService.notificationCount,
+                        builder: (context, count, child) {
+                          return Stack(
+                            children: [
+                              const Icon(Icons.notifications),
+                              if (count > 0)
+                                Positioned(
+                                  right: 0,
+                                  child: CircleAvatar(
+                                    radius: 8,
+                                    backgroundColor: Colors.red,
+                                    child: Text(
+                                      '$count',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
+                      ),
+                      label: 'Notifications',
+                    ),
+                    const BottomNavigationBarItem(
+                      icon: Icon(Icons.person),
+                      label: 'Profile',
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : const WelcomePage(),
       routes: {
         '/signin': (context) => SignInPage(),
         '/signup': (context) => SignUpPage(),
@@ -164,6 +191,7 @@ class _MyAppState extends State<MyApp> {
         '/uploadpage': (context) => const UploadItemPage(),
         '/change-password': (context) => const ChangePasswordPage(),
         '/requestpage': (context) => RentRequestsPage(),
+        '/homepage': (context) => const Homepage(),
 
       },
     );
