@@ -210,4 +210,19 @@ class ApiService {
       throw Exception('Failed to fetch user name');
     }
   }
+
+  Future<List<Booking>> getUserBookings() async {
+    final response = await _dio.get('/api/rentals/bookings/');
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data;
+      print('Got bookings from API: $data');
+
+      // Map the API response to a list of Booking objects
+      return data.map((booking) {
+        return Booking.fromJson(booking);
+      }).toList();
+    } else {
+      throw Exception('Failed to fetch user bookings');
+    }
+  }
 }
