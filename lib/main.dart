@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shuffle_native/HomePage.dart';
 import 'package:shuffle_native/SignInPage.dart';
 import 'package:shuffle_native/SignUpPage.dart';
+import 'package:shuffle_native/pages/notification_page.dart';
 import 'package:shuffle_native/product_page.dart'; // Ensure this import is correct
 import 'package:shuffle_native/providers/auth_provider.dart';
 import 'package:shuffle_native/rented_page.dart';
@@ -60,6 +61,7 @@ class _MyAppState extends State<MyApp> {
           '/signup': (context) => SignUpPage(),
           '/welcome': (context) => WelcomePage(),
           '/homepage': (context) => const Homepage(),
+          '/notifications': (context) => NotificationPage(userId: '1'), // Add the notification route
         },
       );
     }

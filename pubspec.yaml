@@ -43,6 +43,7 @@ dependencies:
   location: ^8.0.0
   geocoding: ^3.0.0
   geolocator: ^14.0.0
+  web_socket_channel: ^3.0.3
 
 dev_dependencies:
   flutter_test:

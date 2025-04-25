@@ -141,7 +141,7 @@ class ApiService {
         'end_date': endDate.toIso8601String(), // Convert to ISO 8601 string
       },
     );
-    return response.statusCode == 200;
+    return response.statusCode == 201;
   }
 
   Future<bool> listNewItem({

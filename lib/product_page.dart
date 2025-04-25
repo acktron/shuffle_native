@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shuffle_native/constants.dart';
 import 'package:shuffle_native/models/item.dart';
 import 'package:shuffle_native/services/api_service.dart';
 
@@ -49,6 +50,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.4,
               child: ProductImageCarousel(
+                imageUrls: "$baseUrl${widget.item.image}",
                 pageController: _pageController,
                 currentPage: _currentPage,
                 onPageChanged: (index) {
@@ -267,6 +269,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           endDate!,
                         );
                         if (success) {
+                          print('Booked item with ID: ${widget.item.id} from $startDate to $endDate');
                           Navigator.pop(context);
                         }
                       } else {
@@ -309,12 +312,14 @@ class ProductImageCarousel extends StatelessWidget {
   final PageController pageController;
   final int currentPage;
   final ValueChanged<int> onPageChanged;
+  final String imageUrls;
 
   const ProductImageCarousel({
     Key? key,
     required this.pageController,
     required this.currentPage,
     required this.onPageChanged,
+    required this.imageUrls
   }) : super(key: key);
 
   @override
@@ -325,23 +330,25 @@ class ProductImageCarousel extends StatelessWidget {
           controller: pageController,
           onPageChanged: onPageChanged,
           children: [
-            Image.asset('assesets/images/test_img.png', fit: BoxFit.contain),
-            Image.asset(
-              'assesets/images/SigninVector.png',
-              fit: BoxFit.contain,
+            Image.network(imageUrls,
+              fit: BoxFit.cover,
             ),
-            Image.asset(
-              'assesets/images/SignupVector.png',
-              fit: BoxFit.contain,
-            ),
+            // Image.asset(
+            //   'assesets/images/SigninVector.png',
+            //   fit: BoxFit.contain,
+            // ),
+            // Image.asset(
+            //   'assesets/images/SignupVector.png',
+            //   fit: BoxFit.contain,
+            // ),
           ],
         ),
-        Positioned(
-          bottom: 10,
-          left: 0,
-          right: 0,
-          child: DotIndicator(currentPage: currentPage, totalDots: 3),
-        ),
+        // Positioned(
+        //   bottom: 10,
+        //   left: 0,
+        //   right: 0,
+        //   child: DotIndicator(currentPage: currentPage, totalDots: 3),
+        // ),
       ],
     );
   }
