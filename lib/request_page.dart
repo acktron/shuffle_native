@@ -1,27 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:shuffle_native/models/booking.dart';
+import 'package:shuffle_native/services/api_service.dart';
 
-void main() {
-  runApp(const ShuffleApp());
-}
-
-class ShuffleApp extends StatelessWidget {
-  const ShuffleApp({Key? key}) : super(key: key);
+class RentRequestsPage extends StatefulWidget {
+  const RentRequestsPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Shuffle',
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-        scaffoldBackgroundColor: Colors.grey[100],
-      ),
-      home: const RentRequestsPage(),
-    );
-  }
+  State<RentRequestsPage> createState() => _RentRequestsPageState();
 }
 
-class RentRequestsPage extends StatelessWidget {
-  const RentRequestsPage({Key? key}) : super(key: key);
+class _RentRequestsPageState extends State<RentRequestsPage> {
+  final ApiService _apiService = ApiService(); // Initialize ApiService
+  List<Booking> _rentRequests = []; // List to hold rent requests
+
+  @override
+  void initState() {
+    fetchRentRequests();
+    super.initState();
+  }
+
+  void fetchRentRequests() async {
+    try {
+      // Fetch rent requests from the API
+      final response = await _apiService.getItemPendingBookings();
+      setState(() {
+        _rentRequests = response; // Update the state with fetched data
+      });
+      print('Rent requests fetched successfully: $_rentRequests');
+    } catch (e) {
+      // Handle error
+      print('Error fetching rent requests: $e');
+    }
+  }
+  
 
   @override
   Widget build(BuildContext context) {

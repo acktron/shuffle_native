@@ -10,4 +10,11 @@ class Location {
       'coordinates': coordinates,
     };
   }
+
+  factory Location.fromJson(Map<String, dynamic> json) {
+    return Location(
+      json['type'],
+      List<double?>.from(json['coordinates']),
+    );
+  }
 }
