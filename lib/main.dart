@@ -5,6 +5,7 @@ import 'package:shuffle_native/HomePage.dart';
 import 'package:shuffle_native/SignInPage.dart';
 import 'package:shuffle_native/SignUpPage.dart';
 import 'package:shuffle_native/change_password.dart';
+import 'package:shuffle_native/my_rentals_page.dart';
 import 'package:shuffle_native/pages/notification_page.dart';
 import 'package:shuffle_native/product_page.dart'; // Ensure this import is correct
 import 'package:shuffle_native/providers/auth_provider.dart';
@@ -136,6 +137,7 @@ class _MyAppState extends State<MyApp> {
         '/uploadpage': (context) => const UploadItemPage(),
         '/change-password': (context) => const ChangePasswordPage(),
         '/requestpage': (context) => RentRequestsPage(),
+        '/myrentalspage': (context) => MyRentalsPage(),
         // '/homepage': (context) => const Homepage(),
 
       },

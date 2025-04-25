@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shuffle_native/request_page.dart';
+import 'package:shuffle_native/my_rentals_page.dart'; // Ensure this path is correct
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -72,7 +73,22 @@ class ProfilePage extends StatelessWidget {
                 const SizedBox(height: 30),
 
                 // Your profile options
-                _buildProfileOption(context, Icons.image, "My Rentals"),
+                GestureDetector(
+                  onTap: () {
+                    print("Tapped My Rentals");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const MyRentalsPage()),
+                    );
+                  },
+                  child: _buildProfileOption(
+                    context,
+                    Icons.image,
+                    "My Rentals",
+                    routeTo: "/myrentalspage",
+                  ),
+                ),
+
                 GestureDetector(
                   child: _buildProfileOption(
                     context,
