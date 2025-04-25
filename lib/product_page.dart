@@ -278,6 +278,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               });
                               if (success) {
                                 print('Booked item with ID: ${widget.item.id} from $startDate to $endDate');
+                                // show snackbar
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Item booked successfully!'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
                                 Navigator.pop(context);
                               }
                             } else {

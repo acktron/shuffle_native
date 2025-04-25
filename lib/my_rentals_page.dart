@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shuffle_native/constants.dart';
+import 'package:shuffle_native/models/booking.dart';
+import 'package:shuffle_native/models/item.dart';
+import 'package:shuffle_native/services/api_service.dart';
 
 class RentalItem {
   final String title;
@@ -21,7 +25,8 @@ class RentalItem {
 }
 
 class MyRentalsPage extends StatefulWidget {
-  const MyRentalsPage({super.key});
+  final ApiService _apiService = ApiService(); // Initialize ApiService
+  MyRentalsPage({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -31,57 +36,27 @@ class MyRentalsPage extends StatefulWidget {
 class _MyRentalsPageState extends State<MyRentalsPage> {
   String selectedStatus = "Active";
 
-  final List<RentalItem> allItems = [
-    RentalItem(
-      title: "Casio FX-991MS",
-      description: "Scientific Calculator",
-      pricePerDay: 10,
-      imagePath: "assesets/images/test_img.png",
-      status: "Active",
-      daysRented: 3,
-      returnDate: "March 10",
-    ),
-    RentalItem(
-      title: "Casio FX-991MS",
-      description: "Scientific Calculator",
-      pricePerDay: 10,
-      imagePath: "assesets/images/test_img.png",
-      status: "Pending",
-      daysRented: 3,
-      returnDate: "March 11",
-    ),
-    RentalItem(
-      title: "Casio FX-991MS",
-      description: "Scientific Calculator",
-      pricePerDay: 10,
-      imagePath: "assesets/images/test_img.png",
-      status: "Completed",
-      daysRented: 5,
-      returnDate: "March 01",
-    ),
-    RentalItem(
-      title: "Casio FX-991MS",
-      description: "Scientific Calculator",
-      pricePerDay: 10,
-      imagePath: "assesets/images/test_img.png",
-      status: "Approved",
-      daysRented: 5,
-      returnDate: "March 01",
-    ),
-    RentalItem(
-      title: "Casio FX-991MS",
-      description: "Scientific Calculator",
-      pricePerDay: 10,
-      imagePath: "assesets/images/test_img.png",
-      status: "Rejected",
-      daysRented: 5,
-      returnDate: "March 01",
-    ),
-  ];
+  List<Booking> allItems = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    widget._apiService.getUserBookings().then((value) {
+      setState(() {
+        allItems = value;
+        isLoading = false;
+      });
+    }).catchError((error) {
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<RentalItem> filteredItems =
+    List<Booking> filteredItems =
         allItems.where((item) => item.status == selectedStatus).toList();
 
     return Scaffold(
@@ -104,46 +79,67 @@ class _MyRentalsPageState extends State<MyRentalsPage> {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Row(
-              children: ["Active", "Pending", "Approved", "Rejected", "Completed"]
-                  .map(
-                    (status) => Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: selectedStatus == status
-                              ? Colors.teal.shade100
-                              : Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+              children:
+                  ["ACTIVE", "PENDING", "APPROVED", "REJECTED", "COMPLETED"]
+                      .map(
+                        (status) => Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              backgroundColor:
+                                  selectedStatus == status
+                                      ? Colors.teal.shade100
+                                      : Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              side: BorderSide(color: Colors.teal),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                selectedStatus = status;
+                              });
+                            },
+                            child: Text(
+                              status,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color:
+                                    selectedStatus == status
+                                        ? Colors.teal[900]
+                                        : Colors.teal,
+                              ),
+                            ),
                           ),
-                          side: BorderSide(color: Colors.teal),
                         ),
-                        onPressed: () {
-                          setState(() {
-                            selectedStatus = status;
-                          });
-                        },
-                        child: Text(
-                          status,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: selectedStatus == status ? Colors.teal[900] : Colors.teal,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
+                      )
+                      .toList(),
             ),
           ),
           const SizedBox(height: 12),
           Expanded(
-            child: ListView.builder(
-              itemCount: filteredItems.length,
-              itemBuilder: (context, index) {
-                return RentalItemCard(item: filteredItems[index]);
-              },
-            ),
+            child: isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
+                    ),
+                  )
+                : filteredItems.isEmpty
+                    ? Center(
+                        child: Text(
+                          "No rentals available for the selected status.",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: filteredItems.length,
+                        itemBuilder: (context, index) {
+                          return RentalItemCard(booking: filteredItems[index]);
+                        },
+                      ),
           ),
         ],
       ),
@@ -152,9 +148,9 @@ class _MyRentalsPageState extends State<MyRentalsPage> {
 }
 
 class RentalItemCard extends StatelessWidget {
-  final RentalItem item;
+  final Booking booking;
 
-  const RentalItemCard({super.key, required this.item});
+  const RentalItemCard({super.key, required this.booking});
 
   @override
   Widget build(BuildContext context) {
@@ -166,21 +162,29 @@ class RentalItemCard extends StatelessWidget {
         padding: const EdgeInsets.all(12.0),
         child: Row(
           children: [
-            Image.asset(item.imagePath, height: 80, width: 60, fit: BoxFit.cover),
+            Image.network(
+              "${baseUrl}${booking.item.image}",
+              height: 80,
+              width: 60,
+              fit: BoxFit.cover,
+            ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item.title,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    booking.item.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                  Text(item.description),
+                  Text(booking.item.description),
                   const SizedBox(height: 4),
                   Text.rich(
                     TextSpan(
-                      text: "Rs ${item.pricePerDay}",
+                      text: "Rs ${booking.item.pricePerDay}",
                       style: const TextStyle(fontWeight: FontWeight.bold),
                       children: const [
                         TextSpan(
@@ -190,19 +194,20 @@ class RentalItemCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Text("Rented for ${item.daysRented} days"),
-                  Text("Return by ${item.returnDate}"),
+                  Text("Rented for ${booking.item.pricePerDay} days"),
+                  // Text("Return by ${item.}"),
                 ],
               ),
             ),
             const SizedBox(width: 8),
             Chip(
-              label: Text("${item.status} !"),
-              backgroundColor: item.status == "Rejected"
-                  ? Colors.red.shade100
-                  : Colors.green.shade100,
+              label: Text("${booking.status} !"),
+              backgroundColor:
+                  booking.status == "Rejected"
+                      ? Colors.red.shade100
+                      : Colors.green.shade100,
               labelStyle: TextStyle(
-                color: item.status == "Rejected" ? Colors.red : Colors.teal,
+                color: booking.status == "Rejected" ? Colors.red : Colors.teal,
                 fontWeight: FontWeight.w600,
               ),
             ),
