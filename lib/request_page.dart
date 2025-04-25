@@ -18,11 +18,11 @@ class _RentRequestsPageState extends State<RentRequestsPage> {
 
   @override
   void initState() {
-    fetchRentRequests();
     super.initState();
+    fetchRentRequests();
   }
 
-  void fetchRentRequests() async {
+  Future<void> fetchRentRequests() async {
     try {
       // Fetch rent requests from the API
       final response = await _apiService.getItemPendingBookings();
@@ -36,6 +36,12 @@ class _RentRequestsPageState extends State<RentRequestsPage> {
         _isLoading = false; // Set loading to false even on error
       });
       print('Error fetching rent requests: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error fetching rent requests: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -48,7 +54,7 @@ class _RentRequestsPageState extends State<RentRequestsPage> {
         title: Row(
           children: [
             Image.asset(
-              'assesets/images/MainLogo.png', // Fixed path for app bar logo
+              'assesets/images/MainLogo.png', // Corrected path for app bar logo
               height: 30,
             ),
             const SizedBox(width: 8),
@@ -62,61 +68,65 @@ class _RentRequestsPageState extends State<RentRequestsPage> {
           ],
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'Rent Requests',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+      body: RefreshIndicator(
+        onRefresh: fetchRentRequests, // Pull-to-refresh functionality
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: const Text(
+                'Rent Requests',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child:
-                _isLoading
-                    ? const Center(
-                      child: CircularProgressIndicator(),
-                    ) // Show loader while loading
-                    : _rentRequests.isEmpty
-                    ? const Center(
-                      child: Text(
-                        'No rent requests available.',
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
+            Expanded(
+              child:
+                  _isLoading
+                      ? const Center(
+                        child: CircularProgressIndicator(),
+                      ) // Show loader while loading
+                      : _rentRequests.isEmpty
+                      ? const Center(
+                        child: Text(
+                          'No rent requests available.',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      ) // Show placeholder if no bookings
+                      : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: _rentRequests.length,
+                        itemBuilder: (context, index) {
+                          final request = _rentRequests[index];
+                          return RentRequestCard(
+                            booking: request,
+                            id: request.id,
+                            productName: request.item.name,
+                            price: request.total_price,
+                            requester: "${request.renter}",
+                            rentalDuration:
+                                request.end_date
+                                    .difference(request.start_date)
+                                    .inDays,
+                            returnDate:
+                                request.end_date.toString().split(' ')[0],
+                            imagePath: request.item.image,
+                            onRequestUpdated: () {
+                              // Remove this request from the list
+                              setState(() {
+                                _rentRequests.removeAt(index);
+                              });
+                            },
+                          );
+                        },
                       ),
-                    ) // Show placeholder if no bookings
-                    : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: _rentRequests.length,
-                      itemBuilder: (context, index) {
-                        final request = _rentRequests[index];
-                        return RentRequestCard(
-                          booking: request,
-                          id: request.id,
-                          productName: request.item.name,
-                          price: request.total_price,
-                          requester: "${request.renter}",
-                          rentalDuration:
-                              request.end_date
-                                  .difference(request.start_date)
-                                  .inDays,
-                          returnDate: request.end_date.toString().split(' ')[0],
-                          imagePath: request.item.image,
-                          onRequestUpdated: () {
-                            // Remove this request from the list
-                            setState(() {
-                              _rentRequests.removeAt(index);
-                            });
-                          }
-                        );
-                      },
-                    ),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -132,7 +142,6 @@ class RentRequestCard extends StatefulWidget {
   final String imagePath;
   final Booking booking;
   final VoidCallback onRequestUpdated; // Callback to notify parent
-
 
   const RentRequestCard({
     super.key,
@@ -153,6 +162,7 @@ class RentRequestCard extends StatefulWidget {
 
 class _RentRequestCardState extends State<RentRequestCard> {
   final ApiService _apiService = ApiService(); // Initialize ApiService
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -160,8 +170,10 @@ class _RentRequestCardState extends State<RentRequestCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => RentRequestDetailsPage(booking: widget.booking),
-          ));
+            builder:
+                (context) => RentRequestDetailsPage(booking: widget.booking),
+          ),
+        );
         print('Rent request tapped');
       },
       child: Container(
@@ -235,10 +247,13 @@ class _RentRequestCardState extends State<RentRequestCard> {
                   GestureDetector(
                     onTap: () async {
                       print('Reject button tapped');
-                      final success = await _apiService.rejectBooking(widget.id);
+                      final success = await _apiService.rejectBooking(
+                        widget.id,
+                      );
 
                       if (success) {
-                        widget.onRequestUpdated(); // Notify parent to update list
+                        widget
+                            .onRequestUpdated(); // Notify parent to update list
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Booking rejected successfully!'),
@@ -262,10 +277,13 @@ class _RentRequestCardState extends State<RentRequestCard> {
                   GestureDetector(
                     onTap: () async {
                       print('Approve button tapped');
-                      final success = await _apiService.acceptBooking(widget.id);
+                      final success = await _apiService.acceptBooking(
+                        widget.id,
+                      );
 
                       if (success) {
-                        widget.onRequestUpdated(); // Notify parent to update list
+                        widget
+                            .onRequestUpdated(); // Notify parent to update list
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Booking approved successfully!'),
