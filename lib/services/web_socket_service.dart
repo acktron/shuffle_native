@@ -5,7 +5,7 @@ import 'dart:convert';
 
 class WebSocketService {
   final WebSocketChannel channel;
-  static late final ValueNotifier<int> notificationCount = ValueNotifier<int>(0); // ValueNotifier for notification count
+  static final ValueNotifier<int> notificationCount = ValueNotifier<int>(0); // ValueNotifier for notification count
 
   WebSocketService(String userId)
       : channel = WebSocketChannel.connect(

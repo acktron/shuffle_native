@@ -4,7 +4,7 @@ import 'package:shuffle_native/models/booking.dart';
 import 'package:shuffle_native/services/api_service.dart';
 
 class RentRequestsPage extends StatefulWidget {
-  const RentRequestsPage({Key? key}) : super(key: key);
+  const RentRequestsPage({super.key});
 
   @override
   State<RentRequestsPage> createState() => _RentRequestsPageState();
@@ -122,7 +122,7 @@ class RentRequestCard extends StatelessWidget {
   final String imagePath;
 
   const RentRequestCard({
-    Key? key,
+    super.key,
     required this.productName,
     required this.price,
     required this.requester,
@@ -130,6 +130,7 @@ class RentRequestCard extends StatelessWidget {
     required this.returnDate,
     required this.imagePath,
   }) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {

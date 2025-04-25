@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shuffle_native/request_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
