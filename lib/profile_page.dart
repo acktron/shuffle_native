@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shuffle_native/my_rentals_page.dart';
 import 'package:shuffle_native/request_page.dart';
 import 'package:shuffle_native/services/api_service.dart';
 
