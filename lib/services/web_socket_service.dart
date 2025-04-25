@@ -5,11 +5,23 @@ import 'dart:convert';
 
 class WebSocketService {
   final WebSocketChannel channel;
+  static late final ValueNotifier<int> notificationCount = ValueNotifier<int>(0); // ValueNotifier for notification count
 
   WebSocketService(String userId)
       : channel = WebSocketChannel.connect(
-          Uri.parse('ws://$baseUrl/ws/notifications/$userId/'),
-        );
+          Uri.parse('ws://$HOSTNAME/ws/notifications/$userId/'),
+        ) {
+    print('WebSocketService: Connecting to WebSocket for user $userId');
+    // _listenToNotifications();
+  }
+
+  // // Listen to WebSocket messages and update notification count
+  // void _listenToNotifications() {
+  //   channel.stream.listen((message) {
+  //     print('WebSocketService: Received message - $message');
+  //     notificationCount.value++; // Increment notification count
+  //   });
+  // }
 
   // Listen to WebSocket messages
   Stream<Map<String, dynamic>> get notifications => channel.stream.map((message) {
@@ -18,6 +30,7 @@ class WebSocketService {
 
   // Close the WebSocket connection
   void dispose() {
+    print('WebSocketService: Closing WebSocket connection');
     channel.sink.close();
   }
 }
