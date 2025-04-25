@@ -18,6 +18,7 @@ import 'package:shuffle_native/services/api_client.dart';
 import 'package:shuffle_native/services/web_socket_service.dart';
 import 'package:shuffle_native/uploadpage.dart';
 import 'package:shuffle_native/contact_us_page.dart';
+import 'package:shuffle_native/my_address_page.dart';
 // Ensure this import is correct
 
 
@@ -202,7 +203,7 @@ class _MyAppState extends State<MyApp> {
         '/otppage': (context) => const OtpPage(),
         '/newpass': (context) => const NewPass(),
         '/contactus' : (context) =>  ContactUsPage(),
-
+        '/myaddress' : (context) =>  MyAddressPage(),
       },
     );
   }

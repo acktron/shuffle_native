@@ -21,11 +21,11 @@ class ChangePasswordPage extends StatelessWidget {
         title: Row(
           children: [
             Image.asset(
-              'assesets/images/MainLogo.png', // Change to your logo asset path
+              'assesets/images/MainLogo.png', // Make sure the asset path is correct
               height: 30,
             ),
             const SizedBox(width: 8),
-            Text(
+            const Text(
               'Shuffle',
               style: TextStyle(
                 color: Colors.black,
@@ -35,13 +35,13 @@ class ChangePasswordPage extends StatelessWidget {
           ],
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView( // 🔥 makes screen scrollable when keyboard opens
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text(
+            const Text(
               "Change Password",
               style: TextStyle(
                 fontSize: 24,
@@ -50,13 +50,21 @@ class ChangePasswordPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 36),
-            TextField(
-              decoration: InputDecoration(
-                hintText: "Enter Email",
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: Colors.black12),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8), // 🔥 adds spacing
+              child: TextField(
+                decoration: InputDecoration(
+                  labelText: "Email Address", // 🔥 changed to floating label
+                  labelStyle: const TextStyle(color: Colors.grey),
+                  floatingLabelStyle: const TextStyle(color: Colors.deepPurple),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.deepPurple, width: 2),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
               ),
             ),
@@ -80,7 +88,7 @@ class ChangePasswordPage extends StatelessWidget {
                   style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
