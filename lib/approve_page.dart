@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:shuffle_native/constants.dart';
+import 'package:shuffle_native/models/booking.dart';
+import 'package:shuffle_native/services/api_service.dart';
 
-class RentRequestDetailsPage extends StatelessWidget {
-  const RentRequestDetailsPage({super.key});
+class RentRequestDetailsPage extends StatefulWidget {
+  final Booking booking;
+  const RentRequestDetailsPage({super.key, required this.booking});
+
+  @override
+  State<RentRequestDetailsPage> createState() => _RentRequestDetailsPageState();
+}
+
+class _RentRequestDetailsPageState extends State<RentRequestDetailsPage> {
+  final ApiService _apiService = ApiService(); // Initialize ApiService
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +53,8 @@ class RentRequestDetailsPage extends StatelessWidget {
 
   Widget _buildProductImage() {
     return Center(
-      child: Image.asset(
-        'assesets/images/test_img.png', // Replace with your actual image path
+      child: Image.network(
+        "${baseUrl}${widget.booking.item.image}", // Replace with your actual image path
         height: 180,
         width: 180,
       ),
@@ -52,10 +63,10 @@ class RentRequestDetailsPage extends StatelessWidget {
 
   Widget _buildProductDetails() {
     return Column(
-      children: const [
+      children: [
         Center(
           child: Text(
-            'Casio FX-991ES\nScientific Calculator',
+            "${widget.booking.item.name}",
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
@@ -63,7 +74,7 @@ class RentRequestDetailsPage extends StatelessWidget {
         SizedBox(height: 10),
         Center(
           child: Text(
-            'Rs 30/-',
+            'Rs ${widget.booking.total_price}/-',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
@@ -78,14 +89,21 @@ class RentRequestDetailsPage extends StatelessWidget {
   Widget _buildRequestInfo() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        RequestInfoItem(label: 'Rent Request by:', value: 'Devansh Singh'),
-        RequestInfoItem(label: 'From:', value: '25-04-2025'),
-        RequestInfoItem(label: 'To:', value: '29-04-2025'),
-        RequestInfoItem(label: 'Total Days:', value: '5 days'),
+      children: [
+        RequestInfoItem(
+          label: 'Rent Request by:',
+          value: '${widget.booking.renter}',
+        ),
+        RequestInfoItem(label: 'From:', value: '${widget.booking.start_date}'),
+        RequestInfoItem(label: 'To:', value: '${widget.booking.end_date}'),
+        RequestInfoItem(
+          label: 'Total Days:',
+          value:
+              '${widget.booking.end_date.difference(widget.booking.start_date).inDays + 1}',
+        ),
         RequestInfoItem(
           label: 'Status:',
-          value: 'PENDING',
+          value: '${widget.booking.status}',
           valueStyle: TextStyle(
             fontWeight: FontWeight.w600,
             color: Colors.orange,
@@ -118,12 +136,25 @@ class RentRequestDetailsPage extends StatelessWidget {
   Widget _buildDeclineButton(BuildContext context) {
     return OutlinedButton(
       onPressed:
-          () => _showDialog(
+      // () => _showDialog(
+      //   context,
+      //   icon: Icons.cancel,
+      //   color: Colors.red,
+      //   message: 'Declined!',
+      // ),
+      () async {
+        final success = await _apiService.rejectBooking(widget.booking.id);
+        if (success) {
+          // Handle error
+          _showDialog(
             context,
             icon: Icons.cancel,
             color: Colors.red,
             message: 'Declined!',
-          ),
+          );
+          return;
+        }
+      },
       style: OutlinedButton.styleFrom(
         foregroundColor: Colors.red,
         side: const BorderSide(color: Colors.red),
@@ -137,12 +168,30 @@ class RentRequestDetailsPage extends StatelessWidget {
   Widget _buildAcceptButton(BuildContext context) {
     return ElevatedButton(
       onPressed:
-          () => _showDialog(
+      // () => _showDialog(
+      //   context,
+      //   icon: Icons.check_circle,
+      //   color: Colors.green,
+      //   message: 'Approved!',
+      // ),
+      () async {
+        final success = await _apiService.acceptBooking(widget.booking.id);
+        if (success) {
+          _showDialog(
             context,
             icon: Icons.check_circle,
             color: Colors.green,
             message: 'Approved!',
-          ),
+          );
+          return;
+        }
+        // _showDialog(
+        //   context,
+        //   icon: Icons.check_circle,
+        //   color: Colors.green,
+        //   message: 'Approved!',
+        // );
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
@@ -165,7 +214,7 @@ class RentRequestDetailsPage extends StatelessWidget {
       builder: (BuildContext context) {
         Future.delayed(const Duration(seconds: 2), () {
           Navigator.of(context).pop(); // Close the dialog
-          Navigator.of(context).pop(); // Return to the previous page
+          Navigator.pushNamed(context, "/requestpage"); // Return to the previous page
         });
 
         return Center(

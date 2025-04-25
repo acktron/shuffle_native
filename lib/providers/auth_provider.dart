@@ -5,6 +5,8 @@ import '../services/auth_service.dart';
 class AuthProvider with ChangeNotifier {
   bool _isLoggedIn = false;
   bool get isLoggedIn => _isLoggedIn;
+  int _userId = 0;
+  int get userId => _userId;
 
   Future<void> checkLoginStatus() async {
     final token = await TokenStorage().getAccessToken();
@@ -14,11 +16,12 @@ class AuthProvider with ChangeNotifier {
 
   Future<bool> login(String email, String password) async {
     final success = await AuthService().login(email, password);
-    if (success) {
+    if (success > 0) {
+      _userId = success;
       _isLoggedIn = true;
       notifyListeners();
     }
-    return success;
+    return success > 0;
   }
 
   Future<bool> register(String name, String email, String password) async {
