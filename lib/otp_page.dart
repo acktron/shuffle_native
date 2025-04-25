@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ChangePasswordPage extends StatelessWidget {
-  const ChangePasswordPage({super.key});
+class OtpPage extends StatelessWidget {
+  const OtpPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +52,11 @@ class ChangePasswordPage extends StatelessWidget {
             const SizedBox(height: 36),
             TextField(
               decoration: InputDecoration(
-                hintText: "Enter Email",
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                hintText: "Enter OTP",
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 18,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: const BorderSide(color: Colors.black12),
@@ -72,15 +75,14 @@ class ChangePasswordPage extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/otppage');
-                  // Send OTP action
+                  Navigator.pushNamed(context, '/newpass');
                 },
                 child: const Text(
-                  'Send OTP',
+                  'Submit',
                   style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

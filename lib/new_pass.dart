@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ChangePasswordPage extends StatelessWidget {
-  const ChangePasswordPage({super.key});
+class NewPass extends StatelessWidget {
+  const NewPass({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -50,13 +50,35 @@ class ChangePasswordPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 36),
-            TextField(
-              decoration: InputDecoration(
-                hintText: "Enter Email",
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: Colors.black12),
+            Container(
+              margin: const EdgeInsets.only(bottom: 16), // Add external margin
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: "New Password",
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 18,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: Colors.black12),
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.only(bottom: 16), // Add external margin
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: "Re-enter Password",
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 18,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: Colors.black12),
+                  ),
                 ),
               ),
             ),
@@ -72,15 +94,15 @@ class ChangePasswordPage extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/otppage');
+                  // Navigator.pushNamed(context, '/otppage');
                   // Send OTP action
                 },
                 child: const Text(
-                  'Send OTP',
+                  'Submit',
                   style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

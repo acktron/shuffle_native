@@ -6,6 +6,8 @@ import 'package:shuffle_native/SignUpPage.dart';
 import 'package:shuffle_native/approve_page.dart';
 import 'package:shuffle_native/change_password.dart';
 import 'package:shuffle_native/my_rentals_page.dart';
+import 'package:shuffle_native/new_pass.dart';
+import 'package:shuffle_native/otp_page.dart';
 import 'package:shuffle_native/pages/notification_page.dart';
 // Ensure this import is correct
 import 'package:shuffle_native/providers/auth_provider.dart';
@@ -196,6 +198,8 @@ class _MyAppState extends State<MyApp> {
         // '/homepage': (context) => const Homepage(),
         '/homepage': (context) => const Homepage(),
         '/approvepage': (context) => const RentRequestDetailsPage(),
+        '/otppage': (context) => const OtpPage(),
+        '/newpass': (context) => const NewPass(),
 
       },
     );

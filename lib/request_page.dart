@@ -140,6 +140,7 @@ class RentRequestCard extends StatelessWidget {
         print('Rent request tapped');
       },
       child: Container(
+        margin: const EdgeInsets.only(bottom: 10), // Add external margin
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
