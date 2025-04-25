@@ -10,7 +10,7 @@ import 'package:shuffle_native/services/api_client.dart';
 import 'package:shuffle_native/uploadpage.dart';
 import 'package:shuffle_native/forgot_password.dart';
 import 'package:shuffle_native/profile_page.dart'; // Ensure this import is correct
-
+import 'package:shuffle_native/notification_page.dart'; // Updated import
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,57 +38,128 @@ class _MyAppState extends State<MyApp> {
     const Homepage(),
     const RentedItemsPage(),
     const UploadItemPage(),
-    const ProfilePage(), // Ensure this page is correctly referenced
+    const NotificationPage(),
+    const ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
+    // if (index == 4) {
+    //   // Index for "Upload Item"
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder:
+    //           (context) =>
+    //               const ProfilePage(), // Ensure UploadItemPage is correctly imported
+    //     ),
+    //   ).then((_) {
+    //     // Reset the selected index to avoid issues when returning
+    //     setState(() {
+    //       _selectedIndex = _selectedIndex; // Keep the current index
+    //     });
+    //   });
+    //   return;
+    // }
+    // else {
+    //   setState(() {
+    //     _selectedIndex = index;
+    //   });
+    // }
+    if (index == 2) {
+      // Index for "Upload Item"
+      Navigator.pushNamed(context, '/uploadpage');
+      return;
+    }
+
     setState(() {
       _selectedIndex = index;
     });
+
+    // if (index == 5) {
+    //   // Index for "Upload Item"
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder:
+    //           (context) =>
+    //               const ProfilePage(), // Ensure UploadItemPage is correctly imported
+    //     ),
+    //   ).then((_) {
+    //     // Reset the selected index to avoid issues when returning
+    //     setState(() {
+    //       _selectedIndex = _selectedIndex; // Keep the current index
+    //     });
+    //   });
+    // } else {
+    //   setState(() {
+    //     _selectedIndex = index;
+    //   });
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
-    if (!authProvider.isLoggedIn) {
-      return MaterialApp(
-        title: 'Shuffle',
-        debugShowCheckedModeBanner: false,
-        home: const WelcomePage(),
-        routes: {
-          '/signin': (context) =>  SignInPage(),
-          '/signup': (context) => SignUpPage(),
-          '/welcome': (context) => WelcomePage(),
-        },
-      );
-    }
-
     return MaterialApp(
       title: 'Shuffle',
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: IndexedStack(index: _selectedIndex, children: _pages),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: const Color(0xFF087272),
-          unselectedItemColor: Colors.grey,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.inventory_2),
-              label: 'Rented',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.add_box),
-              label: 'Upload Item',
-            ),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-          ],
-        ),
-      ),
+      home:
+          authProvider.isLoggedIn
+              ? Builder(
+                builder:
+                    (context) => Scaffold(
+                      body: IndexedStack(
+                        index: _selectedIndex,
+                        children: _pages,
+                      ),
+                      bottomNavigationBar: BottomNavigationBar(
+                        currentIndex: _selectedIndex,
+                        onTap: (index) {
+                          if (index == 2) {
+                            // Navigate to the upload page
+                            Navigator.pushNamed(context, '/uploadpage');
+                            return;
+                          }
+                          setState(() {
+                            _selectedIndex = index;
+                          });
+                        },
+                        type: BottomNavigationBarType.fixed,
+                        selectedItemColor: const Color(0xFF087272),
+                        unselectedItemColor: Colors.grey,
+                        items: const [
+                          BottomNavigationBarItem(
+                            icon: Icon(Icons.home),
+                            label: 'Home',
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Icon(Icons.inventory_2),
+                            label: 'Rented',
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Icon(Icons.add_box),
+                            label: 'Upload Item',
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Icon(Icons.notifications),
+                            label: 'Notifications',
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Icon(Icons.person),
+                            label: 'Profile',
+                          ),
+                        ],
+                      ),
+                    ),
+              )
+              : const WelcomePage(),
+      routes: {
+        '/signin': (context) => SignInPage(),
+        '/signup': (context) => SignUpPage(),
+        '/welcome': (context) => WelcomePage(),
+        '/uploadpage': (context) => const UploadItemPage(),
+      },
     );
   }
 }
