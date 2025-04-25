@@ -1,15 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:shuffle_native/my_rentals_page.dart';
 import 'package:shuffle_native/request_page.dart';
-import 'package:shuffle_native/my_rentals_page.dart'; // Ensure this path is correct
+import 'package:shuffle_native/services/api_service.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  String _name = "..."; // Provide a default value
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print("Profile Page");
+    _apiService.getName().then((value) {
+      setState(() {
+        _name = value;
+        print("Name: $_name");
+      });
+    });
+  }
   Future<void> _refreshProfile() async {
     // Add your refresh logic here, e.g., fetch updated profile data
     await Future.delayed(const Duration(seconds: 1)); // Simulate a delay
   }
-
+  final ApiService _apiService = ApiService(); // Initialize ApiService
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,9 +72,9 @@ class ProfilePage extends StatelessWidget {
                   child: Icon(Icons.person, size: 50, color: Colors.white),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  "Rehman Bhaijan",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                Text(
+                  _name, // Safely use _name
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
                 GestureDetector(
