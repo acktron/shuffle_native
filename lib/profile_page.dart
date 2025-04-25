@@ -122,6 +122,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   context,
                   Icons.location_on_outlined,
                   "My Address",
+                  routeTo: "/myaddress",
                 ),
                 _buildProfileOption(
                   context,
