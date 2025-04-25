@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:shuffle_native/HomePage.dart';
 import 'package:shuffle_native/SignInPage.dart';
@@ -7,10 +8,11 @@ import 'package:shuffle_native/change_password.dart';
 import 'package:shuffle_native/product_page.dart'; // Ensure this import is correct
 import 'package:shuffle_native/providers/auth_provider.dart';
 import 'package:shuffle_native/rented_page.dart';
+import 'package:shuffle_native/profile_page.dart';
+import 'package:shuffle_native/request_page.dart';
 import 'package:shuffle_native/services/api_client.dart';
 import 'package:shuffle_native/uploadpage.dart';
-import 'package:shuffle_native/forgot_password.dart';
-import 'package:shuffle_native/profile_page.dart'; // Ensure this import is correct
+import 'package:shuffle_native/forgot_password.dart'; // Ensure this import is correct
 import 'package:shuffle_native/notification_page.dart'; // Updated import
 
 void main() async {
@@ -161,6 +163,7 @@ class _MyAppState extends State<MyApp> {
         '/welcome': (context) => WelcomePage(),
         '/uploadpage': (context) => const UploadItemPage(),
         '/change-password': (context) => const ChangePasswordPage(),
+        '/requestpage': (context) => RentRequestsPage(),
 
       },
     );

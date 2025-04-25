@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shuffle_native/request_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -17,12 +18,16 @@ class ProfilePage extends StatelessWidget {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.list), label: "Rented"),
           BottomNavigationBarItem(icon: Icon(Icons.add), label: "Upload"),
-          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: "Notifications"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications),
+            label: "Notifications",
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView( // 👈 Wrap the whole page in this
+        child: SingleChildScrollView(
+          // 👈 Wrap the whole page in this
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -31,7 +36,13 @@ class ProfilePage extends StatelessWidget {
                   children: [
                     Image.asset("assesets/images/MainLogo.png", height: 30),
                     const SizedBox(width: 10),
-                    const Text("Shuffle", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const Text(
+                      "Shuffle",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -41,7 +52,10 @@ class ProfilePage extends StatelessWidget {
                   child: Icon(Icons.person, size: 50, color: Colors.white),
                 ),
                 const SizedBox(height: 12),
-                const Text("Rehman Bhaijan", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const Text(
+                  "Rehman Bhaijan",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 4),
                 GestureDetector(
                   onTap: () {
@@ -49,16 +63,38 @@ class ProfilePage extends StatelessWidget {
                   },
                   child: const Text(
                     "Edit Profile",
-                    style: TextStyle(color: Colors.deepPurple, decoration: TextDecoration.underline),
+                    style: TextStyle(
+                      color: Colors.deepPurple,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 30),
 
                 // Your profile options
                 _buildProfileOption(context, Icons.image, "My Rentals"),
-                _buildProfileOption(context, Icons.check_circle_outline, "Rent Request"),
-                _buildProfileOption(context, Icons.location_on_outlined, "My Address"),
-                _buildProfileOption(context, Icons.lock_outline, "Change Password", routeTo: "/change-password"),
+                GestureDetector(
+                  child: _buildProfileOption(
+                    context,
+                    Icons.check_circle_outline,
+                    "Rent Request",
+                    routeTo: "/requestpage",
+                  ),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/requestpage');
+                  },
+                ),
+                _buildProfileOption(
+                  context,
+                  Icons.location_on_outlined,
+                  "My Address",
+                ),
+                _buildProfileOption(
+                  context,
+                  Icons.lock_outline,
+                  "Change Password",
+                  routeTo: "/change-password",
+                ),
                 _buildProfileOption(context, Icons.support_agent, "Contact Us"),
                 const SizedBox(height: 20),
               ],
@@ -69,7 +105,12 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileOption(BuildContext context, IconData icon, String title, {String? routeTo}) {
+  Widget _buildProfileOption(
+    BuildContext context,
+    IconData icon,
+    String title, {
+    String? routeTo,
+  }) {
     return GestureDetector(
       onTap: () {
         if (routeTo != null) {
