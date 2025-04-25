@@ -41,71 +41,67 @@ class RentalItem {
   });
 }
 
-class RentedItemsPage extends StatelessWidget {
+class RentedItemsPage extends StatefulWidget {
   const RentedItemsPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    // Sample data for rented items
-    final List<RentalItem> rentedItems = [
-      RentalItem(
-        name: 'Casio FX-991MS',
-        category: 'Scientific Calculator',
-        pricePerDay: 10.0,
-        rentedDays: 3,
-        returnDate: 'March 10',
-        imageUrl: 'assets/images/calculator.png',
-      ),
-      RentalItem(
-        name: 'Casio FX-991MS',
-        category: 'Scientific Calculator',
-        pricePerDay: 10.0,
-        rentedDays: 3,
-        returnDate: 'March 10',
-        imageUrl: 'assets/images/calculator.png',
-      ),
-      RentalItem(
-        name: 'Casio FX-991MS',
-        category: 'Scientific Calculator',
-        pricePerDay: 10.0,
-        rentedDays: 3,
-        returnDate: 'March 10',
-        imageUrl: 'assets/images/calculator.png',
-      ),
-      RentalItem(
-        name: 'Casio FX-991MS',
-        category: 'Scientific Calculator',
-        pricePerDay: 10.0,
-        rentedDays: 3,
-        returnDate: 'March 10',
-        imageUrl: 'assets/images/calculator.png',
-      ),
-      RentalItem(
-        name: 'Casio FX-991MS',
-        category: 'Scientific Calculator',
-        pricePerDay: 10.0,
-        rentedDays: 3,
-        returnDate: 'March 10',
-        imageUrl: 'assets/images/calculator.png',
-      ),
-    ];
+  _RentedItemsPageState createState() => _RentedItemsPageState();
+}
 
+class _RentedItemsPageState extends State<RentedItemsPage> {
+  List<RentalItem> rentedItems = [
+    RentalItem(
+      name: 'Casio FX-991MS',
+      category: 'Scientific Calculator',
+      pricePerDay: 10.0,
+      rentedDays: 3,
+      returnDate: 'March 10',
+      imageUrl: 'assets/images/calculator.png',
+    ),
+    RentalItem(
+      name: 'Casio FX-991MS',
+      category: 'Scientific Calculator',
+      pricePerDay: 10.0,
+      rentedDays: 3,
+      returnDate: 'March 10',
+      imageUrl: 'assets/images/calculator.png',
+    ),
+    RentalItem(
+      name: 'Casio FX-991MS',
+      category: 'Scientific Calculator',
+      pricePerDay: 10.0,
+      rentedDays: 3,
+      returnDate: 'March 10',
+      imageUrl: 'assets/images/calculator.png',
+    ),
+    // Add more items as needed
+  ];
+
+  Future<void> _refreshItems() async {
+    // Simulate a network call or data refresh
+    await Future.delayed(const Duration(seconds: 2));
+    setState(() {
+      rentedItems = List.from(rentedItems); // Replace with updated data
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         title: Row(
-          children: const [
-            Text(
-              'X',
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-              ),
+          children: [
+            Image.asset(
+              'assesets/images/MainLogo.png', // Replace with the path to your image
+              height: 32.0, // Adjust the height as needed
             ),
-            Text(
+            const SizedBox(
+              width: 8.0,
+            ), // Add spacing between the image and text
+            const Text(
               'Shuffle',
               style: TextStyle(
                 color: Colors.black,
@@ -131,16 +127,19 @@ class RentedItemsPage extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
+            child: RefreshIndicator(
+              onRefresh: _refreshItems,
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                itemCount: rentedItems.length,
+                itemBuilder: (context, index) {
+                  final item = rentedItems[index];
+                  return RentedItemCard(item: item);
+                },
               ),
-              itemCount: rentedItems.length,
-              itemBuilder: (context, index) {
-                final item = rentedItems[index];
-                return RentedItemCard(item: item);
-              },
             ),
           ),
         ],
@@ -173,7 +172,17 @@ class RentedItemCard extends StatelessWidget {
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8.0),
               ),
-              child: Image.asset(item.imageUrl, fit: BoxFit.contain),
+              child: Image.asset(
+                item.imageUrl,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Icon(
+                    Icons.broken_image,
+                    color: Colors.grey,
+                    size: 40,
+                  ); // Fallback icon for missing images
+                },
+              ),
             ),
             const SizedBox(width: 16.0),
 

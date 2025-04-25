@@ -46,8 +46,8 @@ class _HomepageState extends State<Homepage> {
       try {
         // Fetch the address using geocoding
         final placemarks = await placemarkFromCoordinates(
-          latitude!,
-          longitude!,
+          locationData.latitude!,
+          locationData.longitude!,
         );
         final Placemark place = placemarks.first;
 
@@ -57,19 +57,18 @@ class _HomepageState extends State<Homepage> {
         });
 
         // Fetch items based on location
-        final location = loc.Location('Point', [longitude, latitude]);
-        print('Location: $location');
+        final location = loc.Location('Point', [
+          locationData.longitude!,
+          locationData.latitude!,
+        ]);
         final items = await _apiService.getItems(
           location,
           10000,
         ); // Radius = 10 km
-        print('Items: $items');
         setState(() {
           _items = items; // Update the items list
         });
-        print(items);
       } catch (e) {
-        print('Error fetching items: $e');
         setState(() {
           _currentAddress = 'Unable to fetch address';
         });
@@ -89,163 +88,174 @@ class _HomepageState extends State<Homepage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // Top App Bar with Shuffle logo and Logout button
-            SliverToBoxAdapter(
-              child: Container(
-                height: 56,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                    bottom: BorderSide(color: Color(0xFFEEEEEE), width: 1),
+        child: RefreshIndicator(
+          onRefresh: _fetchLocationAndAddress, // Pull-to-refresh logic
+          child: CustomScrollView(
+            slivers: [
+              // Top App Bar with Shuffle logo and Logout button
+              SliverToBoxAdapter(
+                child: Container(
+                  height: 56,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                      bottom: BorderSide(color: Color(0xFFEEEEEE), width: 1),
+                    ),
                   ),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Shuffle logo row with icon and text
-                    Row(
-                      children: [
-                        Container(
-                          height: 32,
-                          width: 32,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Center(
-                            child: Image.asset(
-                              'assesets/images/MainLogo.png',
-                              height: 30,
-                              width: 30,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Icon(
-                                  Icons.shuffle,
-                                  color: Color(0xFF21C7A7),
-                                  size: 20,
-                                );
-                              },
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Shuffle logo row with icon and text
+                      Row(
+                        children: [
+                          Container(
+                            height: 32,
+                            width: 32,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Center(
+                              child: Image.asset(
+                                'assesets/images/MainLogo.png',
+                                height: 30,
+                                width: 30,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(
+                                    Icons.shuffle,
+                                    color: Color(0xFF21C7A7),
+                                    size: 20,
+                                  );
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Shuffle',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Shuffle',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    // Logout button
-                    TextButton(
-                      onPressed: () async {
-                        final success =
-                            await Provider.of<AuthProvider>(
+                        ],
+                      ),
+                      const Spacer(),
+                      // Logout button
+                      TextButton(
+                        onPressed: () async {
+                          final success =
+                              await Provider.of<AuthProvider>(
+                                context,
+                                listen: false,
+                              ).logout();
+                          if (success) {
+                            Navigator.pushNamedAndRemoveUntil(
                               context,
-                              listen: false,
-                            ).logout();
-                        if (success) {
-                          Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            '/signin',
-                            (route) => false,
-                          );
-                        }
-                      },
-                      child: const Text(
-                        'Logout',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF21C7A7),
+                              '/signin',
+                              (route) => false,
+                            );
+                          }
+                        },
+                        child: const Text(
+                          'Logout',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF21C7A7),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Location bar
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              sliver: SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.location_on,
-                          color: Colors.grey[700],
-                          size: 18,
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            _currentAddress,
-                            style: TextStyle(
-                              color: Colors.grey[700],
-                              fontSize: 14,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Search bar
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              sliver: SliverToBoxAdapter(
-                child: TextField(
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-                    hintText: 'Search for calculator, tools etc',
-                    hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                    ],
                   ),
                 ),
               ),
-            ),
 
-            // Grid of cards
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverGrid(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  final item = _items[index];
-                  return RentCard(item: item, tealColor: tealColor);
-                }, childCount: _items.length),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 0.72,
+              // Location bar
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            color: Colors.grey[700],
+                            size: 18,
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              _currentAddress,
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontSize: 14,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            // Bottom padding
-            const SliverPadding(padding: EdgeInsets.only(bottom: 16)),
-          ],
+              // Search bar
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                sliver: SliverToBoxAdapter(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+                      hintText: 'Search for calculator, tools etc',
+                      hintStyle: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 14,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                    ),
+                  ),
+                ),
+              ),
+
+              // Grid of cards
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                sliver: SliverGrid(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final item = _items[index];
+                    return RentCard(item: item, tealColor: tealColor);
+                  }, childCount: _items.length),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 0.72,
+                  ),
+                ),
+              ),
+
+              // Bottom padding
+              const SliverPadding(padding: EdgeInsets.only(bottom: 16)),
+            ],
+          ),
         ),
       ),
-      // Removed the redundant bottom navigation bar
     );
   }
 }

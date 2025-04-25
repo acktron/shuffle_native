@@ -4,6 +4,11 @@ import 'package:shuffle_native/change_password.dart';
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
+  Future<void> _refreshProfile() async {
+    // Add your refresh logic here, e.g., fetch updated profile data
+    await Future.delayed(const Duration(seconds: 1)); // Simulate a delay
+  }
+
   @override
   Widget build(BuildContext context) {
     const tealColor = Color(0xFF00C6A2);
@@ -11,140 +16,153 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
       body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Image.asset(
-                    'assesets/images/MainLogo.png',
-                    height: 32,
+        child: RefreshIndicator(
+          onRefresh: _refreshProfile, // Pull-to-refresh logic
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      Image.asset('assesets/images/MainLogo.png', height: 32),
+                      const SizedBox(width: 8),
+                      const Text(
+                        "Shuffle",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    "Shuffle",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Profile Avatar & Name
-            const SizedBox(height: 16),
-            const CircleAvatar(
-              radius: 48,
-              backgroundColor: tealColor,
-              child: Icon(Icons.person, size: 48, color: Colors.white),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              "Rehman Bhaijan",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            TextButton(
-              onPressed: () {},
-              child: const Text("Edit Profile", style: TextStyle(decoration: TextDecoration.underline)),
-            ),
-            const SizedBox(height: 20),
-
-            // List Tiles
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  _buildTile(
-                    Icons.image_outlined,
-                    "My Rentals",
-                    tealColor,
-                    () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => MyRentalsPage()),
-                      // );
-                    },
-                  ),
-                  _buildTile(
-                    Icons.check_circle_outline,
-                    "Rent Request",
-                    tealColor,
-                    () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => RentRequestPage()),
-                      // );
-                    },
-                  ),
-                  _buildTile(
-                    Icons.location_on_outlined,
-                    "My Address",
-                    tealColor,
-                    () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => MyAddressPage()),
-                      // );
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  _buildTile(
-                    Icons.lock_outline,
-                    "Change Password",
-                    tealColor,
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ChangePasswordPage()),
-                      );
-                    },
-                  ),
-                  _buildTile(
-                    Icons.support_agent,
-                    "Contact Us",
-                    tealColor,
-                    () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => ContactUsPage()),
-                      // );
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Logout Button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: ElevatedButton(
-                onPressed: () {
-                  // TODO: Handle logout
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
-                  elevation: 0,
-                  side: const BorderSide(color: Colors.black12),
-                  minimumSize: const Size.fromHeight(48),
                 ),
-                child: const Text("Logout"),
-              ),
+
+                // Profile Avatar & Name
+                const SizedBox(height: 16),
+                const CircleAvatar(
+                  radius: 48,
+                  backgroundColor: tealColor,
+                  child: Icon(Icons.person, size: 48, color: Colors.white),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  "Rehman Bhaijan",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                TextButton(
+                  onPressed: () {},
+                  child: const Text(
+                    "Edit Profile",
+                    style: TextStyle(decoration: TextDecoration.underline),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // List Tiles
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      _buildTile(
+                        Icons.image_outlined,
+                        "My Rentals",
+                        tealColor,
+                        () {
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => MyRentalsPage()),
+                          // );
+                        },
+                      ),
+                      _buildTile(
+                        Icons.check_circle_outline,
+                        "Rent Request",
+                        tealColor,
+                        () {
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => RentRequestPage()),
+                          // );
+                        },
+                      ),
+                      _buildTile(
+                        Icons.location_on_outlined,
+                        "My Address",
+                        tealColor,
+                        () {
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => MyAddressPage()),
+                          // );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      _buildTile(
+                        Icons.lock_outline,
+                        "Change Password",
+                        tealColor,
+                        () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChangePasswordPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      _buildTile(
+                        Icons.support_agent,
+                        "Contact Us",
+                        tealColor,
+                        () {
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => ContactUsPage()),
+                          // );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Logout Button
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // TODO: Handle logout
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                      elevation: 0,
+                      side: const BorderSide(color: Colors.black12),
+                      minimumSize: const Size.fromHeight(48),
+                    ),
+                    child: const Text("Logout"),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildTile(IconData icon, String title, Color color, VoidCallback onTap) {
+  Widget _buildTile(
+    IconData icon,
+    String title,
+    Color color,
+    VoidCallback onTap,
+  ) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
       elevation: 0,
