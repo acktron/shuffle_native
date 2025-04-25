@@ -5,6 +5,7 @@ import 'package:shuffle_native/HomePage.dart';
 import 'package:shuffle_native/SignInPage.dart';
 import 'package:shuffle_native/SignUpPage.dart';
 import 'package:shuffle_native/change_password.dart';
+import 'package:shuffle_native/pages/notification_page.dart';
 import 'package:shuffle_native/product_page.dart'; // Ensure this import is correct
 import 'package:shuffle_native/providers/auth_provider.dart';
 import 'package:shuffle_native/rented_page.dart';
@@ -14,7 +15,7 @@ import 'package:shuffle_native/services/api_client.dart';
 import 'package:shuffle_native/services/web_socket_service.dart';
 import 'package:shuffle_native/uploadpage.dart';
 import 'package:shuffle_native/forgot_password.dart'; // Ensure this import is correct
-import 'package:shuffle_native/notification_page.dart'; // Updated import
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +43,7 @@ class _MyAppState extends State<MyApp> {
     const Homepage(),
     const RentedItemsPage(),
     const UploadItemPage(),
-    const NotificationPage(),
+    NotificationPage(userId: "1",),
     const ProfilePage(),
   ];
 
@@ -190,6 +191,7 @@ class _MyAppState extends State<MyApp> {
         '/uploadpage': (context) => const UploadItemPage(),
         '/change-password': (context) => const ChangePasswordPage(),
         '/requestpage': (context) => RentRequestsPage(),
+        '/homepage': (context) => const Homepage(),
 
       },
     );

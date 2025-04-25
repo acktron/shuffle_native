@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:shuffle_native/models/booking.dart';
 import 'package:shuffle_native/models/item.dart';
 import 'package:shuffle_native/models/location.dart';
 import 'api_client.dart';
@@ -178,5 +179,30 @@ class ApiService {
           print('Error listing new item: $error');
           return false;
         });
+  }
+
+  Future<List<Booking>> getItemPendingBookings() async {
+    final response = await _dio.get('/api/rentals/booking/requests/');
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data;
+      print('Got Data from API');
+
+      // Map the API response to a list of Booking objects
+      return data.map((booking) {
+        return Booking(
+          id: booking['id'],
+          renter: booking['renter'],
+          item: booking['item'],
+          start_date: booking['start_date'],
+          end_date: booking['end_date'],
+          total_price: booking['total_price'],
+          status: booking['status'],
+          pickup_photo: booking['pickup_photo'] ?? '',
+          return_photo: booking['return_photo'] ?? '',
+        );
+      }).toList();
+    } else {
+      throw Exception('Failed to fetch pending bookings');
+    }
   }
 }
