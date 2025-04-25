@@ -4,8 +4,8 @@ class Booking {
   final int id;
   final int renter;
   final Item item;
-  final String start_date;
-  final String end_date;
+  final DateTime start_date;
+  final DateTime end_date;
   final String total_price;
   final String status;
   final String pickup_photo;
@@ -28,8 +28,8 @@ class Booking {
       id: json['id'],
       renter: json['renter'],
       item: Item.fromJson(json['item']),
-      start_date: json['start_date'],
-      end_date: json['end_date'],
+      start_date: DateTime.parse(json['start_date']), // Parse start_date
+      end_date: DateTime.parse(json['end_date']),     // Parse end_date
       total_price: json['total_price'],
       status: json['status'],
       pickup_photo: json['pickup_photo'] ?? '',

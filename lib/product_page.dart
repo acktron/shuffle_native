@@ -15,6 +15,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   int _currentPage = 0;
   final PageController _pageController = PageController();
   final ApiService _apiService = ApiService(); // Initialize ApiService
+  bool _isBooking = false; // State variable to track booking status
 
   @override
   Widget build(BuildContext context) {
@@ -229,18 +230,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               startDate == null
                                   ? null
                                   : () async {
-                                    final selectedDate = await showDatePicker(
-                                      context: context,
-                                      initialDate: endDate ?? startDate!,
-                                      firstDate: startDate!,
-                                      lastDate: DateTime(2100),
-                                    );
-                                    if (selectedDate != null) {
-                                      setState(() {
-                                        endDate = selectedDate;
-                                      });
-                                    }
-                                  },
+                                      final selectedDate = await showDatePicker(
+                                        context: context,
+                                        initialDate: endDate ?? startDate!,
+                                        firstDate: startDate!,
+                                        lastDate: DateTime(2100),
+                                      );
+                                      if (selectedDate != null) {
+                                        setState(() {
+                                          endDate = selectedDate;
+                                        });
+                                      }
+                                    },
                           icon: Icon(Icons.calendar_today, size: 18),
                           label: Text(
                             endDate == null
@@ -260,28 +261,35 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
                   // Confirm Button
                   ElevatedButton(
-                    onPressed: () async {
-                      if (startDate != null && endDate != null) {
-                        // Call the booking API
-                        final success = await _apiService.bookItem(
-                          widget.item.id,
-                          startDate!,
-                          endDate!,
-                        );
-                        if (success) {
-                          print('Booked item with ID: ${widget.item.id} from $startDate to $endDate');
-                          Navigator.pop(context);
-                        }
-                      } else {
-                        // Show Toast
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Please select both dates.'),
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      }
-                    },
+                    onPressed: _isBooking
+                        ? null
+                        : () async {
+                            if (startDate != null && endDate != null) {
+                              setState(() {
+                                _isBooking = true; // Start loading
+                              });
+                              final success = await _apiService.bookItem(
+                                widget.item.id,
+                                startDate!,
+                                endDate!,
+                              );
+                              setState(() {
+                                _isBooking = false; // Stop loading
+                              });
+                              if (success) {
+                                print('Booked item with ID: ${widget.item.id} from $startDate to $endDate');
+                                Navigator.pop(context);
+                              }
+                            } else {
+                              // Show Toast
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Please select both dates.'),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            }
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF087272),
                       minimumSize: const Size(double.infinity, 50),
@@ -289,14 +297,23 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
-                      'Book',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    child: _isBooking
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text(
+                            'Book',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                   ),
                 ],
               ),

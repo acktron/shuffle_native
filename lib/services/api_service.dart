@@ -38,7 +38,7 @@ class ApiService {
       // Map the API response to the Item class
       return Item(
         id: data['id'],
-        owner: data['owner'],
+        // owner: data['owner'],
         name: data['name'],
         description: data['description'],
         conditionNotes: data['condition_notes'],
@@ -55,8 +55,6 @@ class ApiService {
                 )
                 : null,
         owner_name: data['owner_name'],
-        createdAt: DateTime.parse(data['created_at']),
-        updatedAt: DateTime.parse(data['updated_at']),
       );
     } else {
       throw Exception('Failed to fetch item with ID: $id');
@@ -86,7 +84,7 @@ class ApiService {
 
         return Item(
           id: item['id'] ?? 0,
-          owner: item['owner'] ?? '',
+          // owner: item['owner'] ?? '',
           name: item['name'] ?? '',
           description: item['description'] ?? '',
           conditionNotes: item['condition_notes'],
@@ -103,10 +101,6 @@ class ApiService {
                   ])
                   : null,
           owner_name: item['owner_name'] ?? '',
-          createdAt:
-              DateTime.tryParse(item['created_at'] ?? '') ?? DateTime.now(),
-          updatedAt:
-              DateTime.tryParse(item['updated_at'] ?? '') ?? DateTime.now(),
         );
       }).toList();
     } else {
@@ -185,7 +179,8 @@ class ApiService {
     final response = await _dio.get('/api/rentals/booking/requests/');
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data;
-      print('Got Data from API');
+      print('Got booking requests from API: $data');
+      // print('Got booking requests from API');
 
       // Map the API response to a list of Booking objects
       return data.map((booking) {
