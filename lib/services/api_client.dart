@@ -7,7 +7,7 @@ class ApiClient {
   static final Dio _tokenDio = Dio(BaseOptions(baseUrl: baseUrl)); // for token refresh
 
   static bool _isRefreshing = false;
-  static List<void Function(String)> _queuedRequests = [];
+  static final List<void Function(String)> _queuedRequests = [];
 
   static Future<void> init() async {
     _dio.options.validateStatus = (status) => true;

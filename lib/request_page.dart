@@ -3,7 +3,7 @@ import 'package:shuffle_native/models/booking.dart';
 import 'package:shuffle_native/services/api_service.dart';
 
 class RentRequestsPage extends StatefulWidget {
-  const RentRequestsPage({Key? key}) : super(key: key);
+  const RentRequestsPage({super.key});
 
   @override
   State<RentRequestsPage> createState() => _RentRequestsPageState();
@@ -144,7 +144,7 @@ class RentRequestCard extends StatelessWidget {
   final bool isPricePerDay;
 
   const RentRequestCard({
-    Key? key,
+    super.key,
     required this.productName,
     required this.productCategory,
     required this.price,
@@ -152,7 +152,7 @@ class RentRequestCard extends StatelessWidget {
     required this.rentalDuration,
     required this.returnDate,
     required this.isPricePerDay,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

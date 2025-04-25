@@ -7,7 +7,7 @@ import 'package:shuffle_native/services/web_socket_service.dart';
 class NotificationPage extends StatefulWidget {
   final String userId;
 
-  NotificationPage({required this.userId});
+  const NotificationPage({super.key, required this.userId});
 
   @override
   _NotificationPageState createState() => _NotificationPageState();

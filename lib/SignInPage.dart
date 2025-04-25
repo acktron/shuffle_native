@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shuffle_native/HomePage.dart';
 import 'package:shuffle_native/forgot_password.dart';
 import 'package:shuffle_native/main.dart';
 import 'package:shuffle_native/providers/auth_provider.dart';
-import 'package:shuffle_native/rented_page.dart';
 
 void main() {
   runApp(const ShuffleApp());
