@@ -172,7 +172,7 @@ class RentRequestCard extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       productName,
@@ -204,11 +204,11 @@ class RentRequestCard extends StatelessWidget {
                       'Rented for $rentalDuration days',
                       style: TextStyle(color: Colors.grey[700], fontSize: 13),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Return by $returnDate',
-                      style: TextStyle(color: Colors.grey[700], fontSize: 13),
-                    ),
+                    // const SizedBox(height: 2),
+                    // Text(
+                    //   'Return by $returnDate',
+                    //   style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                    // ),
                   ],
                 ),
               ),

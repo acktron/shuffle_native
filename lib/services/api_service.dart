@@ -190,4 +190,14 @@ class ApiService {
       throw Exception('Failed to fetch pending bookings');
     }
   }
+
+  Future<String> getName() async {
+    final response = await _dio.get('/api/users/get_user_name/');
+    if (response.statusCode == 200) {
+      final data = response.data;
+      return data['name'] ?? '';
+    } else {
+      throw Exception('Failed to fetch user name');
+    }
+  }
 }

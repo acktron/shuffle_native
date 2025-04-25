@@ -135,6 +135,15 @@ class RentCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
 
+          Text(
+            "Owner: ${item.owner_name}",
+            maxLines: 2,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 12,
+            ),
+          ),
+
           // Location and Distance
           _buildDistanceSection(),
           const SizedBox(height: 8),
