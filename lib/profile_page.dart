@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
+  Future<void> _refreshProfile() async {
+    // Add your refresh logic here, e.g., fetch updated profile data
+    await Future.delayed(const Duration(seconds: 1)); // Simulate a delay
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
