@@ -35,7 +35,7 @@ class _RentedItemsPageState extends State<RentedItemsPage> {
       pricePerDay: 10.0,
       rentedDays: 3,
       returnDate: 'March 10',
-      imageUrl: 'assets/images/calculator.png',
+      imageUrl: 'assesets/images/test_img.png',
     ),
     RentalItem(
       name: 'Casio FX-991MS',
@@ -43,7 +43,7 @@ class _RentedItemsPageState extends State<RentedItemsPage> {
       pricePerDay: 10.0,
       rentedDays: 3,
       returnDate: 'March 10',
-      imageUrl: 'assets/images/calculator.png',
+      imageUrl: 'assesets/images/test_img.png',
     ),
     RentalItem(
       name: 'Casio FX-991MS',
@@ -51,7 +51,7 @@ class _RentedItemsPageState extends State<RentedItemsPage> {
       pricePerDay: 10.0,
       rentedDays: 3,
       returnDate: 'March 10',
-      imageUrl: 'assets/images/calculator.png',
+      imageUrl: 'assesets/images/test_img.png',
     ),
     // Add more items as needed
   ];

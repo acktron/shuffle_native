@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shuffle_native/constants.dart';
 import 'package:shuffle_native/models/booking.dart';
 import 'package:shuffle_native/services/api_service.dart';
 
@@ -12,6 +13,7 @@ class RentRequestsPage extends StatefulWidget {
 class _RentRequestsPageState extends State<RentRequestsPage> {
   final ApiService _apiService = ApiService(); // Initialize ApiService
   List<Booking> _rentRequests = []; // List to hold rent requests
+  bool _isLoading = true; // State variable to track loading status
 
   @override
   void initState() {
@@ -25,14 +27,16 @@ class _RentRequestsPageState extends State<RentRequestsPage> {
       final response = await _apiService.getItemPendingBookings();
       setState(() {
         _rentRequests = response; // Update the state with fetched data
+        _isLoading = false; // Set loading to false
       });
       print('Rent requests fetched successfully: $_rentRequests');
     } catch (e) {
-      // Handle error
+      setState(() {
+        _isLoading = false; // Set loading to false even on error
+      });
       print('Error fetching rent requests: $e');
     }
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -58,76 +62,47 @@ class _RentRequestsPageState extends State<RentRequestsPage> {
         ),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            alignment: Alignment.centerLeft,
-            color: Colors.white,
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back_ios, color: Colors.teal),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                const Text(
-                  'Rent Requests',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              'Rent Requests',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                RentRequestCard(
-                  productName: 'Casio FX-991MS',
-                  productCategory: 'Scientific Calculator',
-                  price: 'Rs 30',
-                  requester: 'Devansh',
-                  rentalDuration: 5,
-                  returnDate: 'April 29',
-                  isPricePerDay: false,
-                ),
-                const SizedBox(height: 12),
-                RentRequestCard(
-                  productName: 'Casio FX-991MS',
-                  productCategory: 'Scientific Calculator',
-                  price: 'Rs 10',
-                  requester: 'Devansh',
-                  rentalDuration: 3,
-                  returnDate: 'March 10',
-                  isPricePerDay: true,
-                ),
-                const SizedBox(height: 12),
-                RentRequestCard(
-                  productName: 'Casio FX-991MS',
-                  productCategory: 'Scientific Calculator',
-                  price: 'Rs 10',
-                  requester: 'Devansh',
-                  rentalDuration: 3,
-                  returnDate: 'March 10',
-                  isPricePerDay: true,
-                ),
-                const SizedBox(height: 12),
-                RentRequestCard(
-                  productName: 'Casio FX-991MS',
-                  productCategory: 'Scientific Calculator',
-                  price: 'Rs 10',
-                  requester: 'Devansh',
-                  rentalDuration: 3,
-                  returnDate: 'March 10',
-                  isPricePerDay: true,
-                ),
-                const SizedBox(height: 80), // Space for bottom navigation
-              ],
-            ),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator()) // Show loader while loading
+                : _rentRequests.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No rent requests available.',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ) // Show placeholder if no bookings
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: _rentRequests.length,
+                        itemBuilder: (context, index) {
+                          final request = _rentRequests[index];
+                          return RentRequestCard(
+                            productName: request.item.name,
+                            price: request.total_price,
+                            requester: "Devansh",
+                            rentalDuration: request.end_date.difference(request.start_date).inDays,
+                            returnDate: request.end_date.toString().split(' ')[0],
+                            imagePath: request.item.image,
+                          );
+                        },
+                      ),
           ),
         ],
       ),
@@ -137,22 +112,20 @@ class _RentRequestsPageState extends State<RentRequestsPage> {
 
 class RentRequestCard extends StatelessWidget {
   final String productName;
-  final String productCategory;
   final String price;
   final String requester;
   final int rentalDuration;
   final String returnDate;
-  final bool isPricePerDay;
+  final String imagePath;
 
   const RentRequestCard({
     Key? key,
     required this.productName,
-    required this.productCategory,
     required this.price,
     required this.requester,
     required this.rentalDuration,
     required this.returnDate,
-    required this.isPricePerDay,
+    required this.imagePath,
   }) : super(key: key);
 
   @override
@@ -173,12 +146,20 @@ class RentRequestCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(
-              'assesets/images/test_img.png', // Fixed path for RentRequestCard image
-              height: 100,
-              width: 60,
+            Image.network(
+              "$baseUrl$imagePath",
+              width: 80,
+              height: 80,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(
+                  Icons.broken_image,
+                  color: Colors.grey,
+                  size: 40,
+                ); // Fallback icon for missing images
+              },
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -193,13 +174,9 @@ class RentRequestCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    productCategory,
-                    style: TextStyle(color: Colors.grey[700], fontSize: 14),
-                  ),
                   const SizedBox(height: 4),
                   Text(
-                    isPricePerDay ? '$price/day' : price,
+                    '$price/day',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -215,11 +192,11 @@ class RentRequestCard extends StatelessWidget {
                     'Rented for $rentalDuration days',
                     style: TextStyle(color: Colors.grey[700], fontSize: 13),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Return by $returnDate',
-                    style: TextStyle(color: Colors.grey[700], fontSize: 13),
-                  ),
+                  // const SizedBox(height: 2),
+                  // Text(
+                  //   'Return by $returnDate',
+                  //   style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                  // ),
                 ],
               ),
             ),
