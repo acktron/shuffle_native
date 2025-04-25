@@ -189,17 +189,7 @@ class ApiService {
 
       // Map the API response to a list of Booking objects
       return data.map((booking) {
-        return Booking(
-          id: booking['id'],
-          renter: booking['renter'],
-          item: booking['item'],
-          start_date: booking['start_date'],
-          end_date: booking['end_date'],
-          total_price: booking['total_price'],
-          status: booking['status'],
-          pickup_photo: booking['pickup_photo'] ?? '',
-          return_photo: booking['return_photo'] ?? '',
-        );
+        return Booking.fromJson(booking);
       }).toList();
     } else {
       throw Exception('Failed to fetch pending bookings');
