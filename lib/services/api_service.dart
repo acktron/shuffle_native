@@ -191,6 +191,16 @@ class ApiService {
     }
   }
 
+  Future<bool> acceptBooking(int id) async {
+    final response = await _dio.post('/api/rentals/booking/update-status/$id/');
+    return response.statusCode == 200;
+  }
+
+  Future<bool> rejectBooking(int id) async {
+    final response = await _dio.post('/api/rentals/booking/reject/$id/');
+    return response.statusCode == 200;
+  }
+
   Future<String> getName() async {
     final response = await _dio.get('/api/users/get_user_name/');
     if (response.statusCode == 200) {

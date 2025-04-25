@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
     const Homepage(),
     const RentedItemsPage(),
     const UploadItemPage(),
-    NotificationPage(userId: "1",),
+    NotificationPage(),
     const ProfilePage(),
   ];
 
@@ -195,7 +195,7 @@ class _MyAppState extends State<MyApp> {
         '/myrentalspage': (context) => MyRentalsPage(),
         // '/homepage': (context) => const Homepage(),
         '/homepage': (context) => const Homepage(),
-        '/approvepage': (context) => const RentRequestDetailsPage(),
+        // '/approvepage': (context) => const RentRequestDetailsPage(),
 
       },
     );

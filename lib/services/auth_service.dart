@@ -6,7 +6,7 @@ import 'token_storage.dart';
 class AuthService {
   // final String baseUrl = ''; // replace with your server URL
 
-  Future<bool> login(String email, String password) async {
+  Future<int> login(String email, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/users/login/'), // adjust this path as needed
       headers: {'Content-Type': 'application/json'},
@@ -20,10 +20,10 @@ class AuthService {
 
       if (access != null && refresh != null) {
         await TokenStorage().saveTokens(access, refresh);
-        return true;
+        return data['user_id']; // Assuming user_id is returned in the response
       }
     }
-    return false; 
+    return 0; 
   }
 
   Future<bool> register(String name, String email, String password) async {

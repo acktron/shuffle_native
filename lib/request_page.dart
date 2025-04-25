@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shuffle_native/approve_page.dart';
 import 'package:shuffle_native/constants.dart';
 import 'package:shuffle_native/models/booking.dart';
 import 'package:shuffle_native/services/api_service.dart';
@@ -94,6 +95,8 @@ class _RentRequestsPageState extends State<RentRequestsPage> {
                       itemBuilder: (context, index) {
                         final request = _rentRequests[index];
                         return RentRequestCard(
+                          booking: request,
+                          id: request.id,
                           productName: request.item.name,
                           price: request.total_price,
                           requester: "${request.renter}",
@@ -103,6 +106,12 @@ class _RentRequestsPageState extends State<RentRequestsPage> {
                                   .inDays,
                           returnDate: request.end_date.toString().split(' ')[0],
                           imagePath: request.item.image,
+                          onRequestUpdated: () {
+                            // Remove this request from the list
+                            setState(() {
+                              _rentRequests.removeAt(index);
+                            });
+                          }
                         );
                       },
                     ),
@@ -113,13 +122,17 @@ class _RentRequestsPageState extends State<RentRequestsPage> {
   }
 }
 
-class RentRequestCard extends StatelessWidget {
+class RentRequestCard extends StatefulWidget {
+  final int id;
   final String productName;
   final String price;
   final String requester;
   final int rentalDuration;
   final String returnDate;
   final String imagePath;
+  final Booking booking;
+  final VoidCallback onRequestUpdated; // Callback to notify parent
+
 
   const RentRequestCard({
     super.key,
@@ -129,14 +142,26 @@ class RentRequestCard extends StatelessWidget {
     required this.rentalDuration,
     required this.returnDate,
     required this.imagePath,
+    required this.id,
+    required this.onRequestUpdated, // Pass callback from parent
+    required this.booking,
   });
 
+  @override
+  State<RentRequestCard> createState() => _RentRequestCardState();
+}
 
+class _RentRequestCardState extends State<RentRequestCard> {
+  final ApiService _apiService = ApiService(); // Initialize ApiService
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/approvepage');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RentRequestDetailsPage(booking: widget.booking),
+          ));
         print('Rent request tapped');
       },
       child: Container(
@@ -158,7 +183,7 @@ class RentRequestCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image.network(
-                "$baseUrl$imagePath",
+                "$baseUrl${widget.imagePath}",
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
@@ -168,7 +193,7 @@ class RentRequestCard extends StatelessWidget {
                     color: Colors.grey,
                     size: 40,
                   ); // Fallback icon for missing images
-                }
+                },
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -176,20 +201,15 @@ class RentRequestCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      productName,
+                      widget.productName,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
                     const SizedBox(height: 4),
-                    // Text(
-                    //   productCategory,
-                    //   style: TextStyle(color: Colors.grey[700], fontSize: 14),
-                    // ),
-                    // const SizedBox(height: 4),
                     Text(
-                      '$price/day',
+                      '${widget.price}/day',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -197,35 +217,72 @@ class RentRequestCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Request by : $requester',
+                      'Request by : ${widget.requester}',
                       style: TextStyle(color: Colors.grey[700], fontSize: 13),
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Rented for $rentalDuration days',
+                      'Rented for ${widget.rentalDuration} days',
                       style: TextStyle(color: Colors.grey[700], fontSize: 13),
                     ),
-                    // const SizedBox(height: 2),
-                    // Text(
-                    //   'Return by $returnDate',
-                    //   style: TextStyle(color: Colors.grey[700], fontSize: 13),
-                    // ),
                   ],
                 ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.red[50],
-                    radius: 18,
-                    child: Icon(Icons.close, color: Colors.red, size: 20),
+                  GestureDetector(
+                    onTap: () async {
+                      print('Reject button tapped');
+                      final success = await _apiService.rejectBooking(widget.id);
+
+                      if (success) {
+                        widget.onRequestUpdated(); // Notify parent to update list
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Booking rejected successfully!'),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Failed to reject booking.'),
+                          ),
+                        );
+                      }
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: Colors.red[50],
+                      radius: 18,
+                      child: Icon(Icons.close, color: Colors.red, size: 20),
+                    ),
                   ),
                   const SizedBox(width: 12),
-                  CircleAvatar(
-                    backgroundColor: Colors.green[50],
-                    radius: 18,
-                    child: Icon(Icons.check, color: Colors.green, size: 20),
+                  GestureDetector(
+                    onTap: () async {
+                      print('Approve button tapped');
+                      final success = await _apiService.acceptBooking(widget.id);
+
+                      if (success) {
+                        widget.onRequestUpdated(); // Notify parent to update list
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Booking approved successfully!'),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Failed to approve booking.'),
+                          ),
+                        );
+                      }
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: Colors.green[50],
+                      radius: 18,
+                      child: Icon(Icons.check, color: Colors.green, size: 20),
+                    ),
                   ),
                 ],
               ),
