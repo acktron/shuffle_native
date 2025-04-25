@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shuffle_native/HomePage.dart';
 import 'package:shuffle_native/forgot_password.dart';
+import 'package:shuffle_native/main.dart';
 import 'package:shuffle_native/providers/auth_provider.dart';
+import 'package:shuffle_native/rented_page.dart';
 
 void main() {
   runApp(const ShuffleApp());
@@ -105,7 +107,7 @@ class SignInPage extends StatelessWidget {
                       // Navigate to the homepage if login is successful
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => Homepage()),
+                        MaterialPageRoute(builder: (context) => MyApp()),
                       );
                     } else {
                       // Show error message

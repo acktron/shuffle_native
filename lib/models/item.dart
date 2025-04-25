@@ -32,15 +32,23 @@ class Item {
     required this.updatedAt,
     required this.owner_name,
   });
+
+  factory Item.fromJson(Map<String, dynamic> json) {
+    return Item(
+      id: json['id'],
+      owner: json['owner'],
+      name: json['name'],
+      description: json['description'],
+      conditionNotes: json['conditionNotes'],
+      category: json['category'],
+      pricePerDay: json['pricePerDay'],
+      depositAmount: json['depositAmount'],
+      image: json['image'],
+      isAvailable: json['isAvailable'],
+      location: json['location'] != null ? Location.fromJson(json['location']) : null,
+      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt: DateTime.parse(json['updatedAt']),
+      owner_name: json['owner_name'],
+    );
+  }
 }
-
-// class RentItem {
-//   final String price, title, location, imageAsset;
-
-//   const RentItem({
-//     required this.price,
-//     required this.title,
-//     required this.location,
-//     required this.imageAsset,
-//   });
-// }
