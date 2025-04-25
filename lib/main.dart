@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shuffle_native/HomePage.dart';
 import 'package:shuffle_native/SignInPage.dart';
 import 'package:shuffle_native/SignUpPage.dart';
+import 'package:shuffle_native/approve_page.dart';
 import 'package:shuffle_native/change_password.dart';
 import 'package:shuffle_native/pages/notification_page.dart';
 import 'package:shuffle_native/product_page.dart'; // Ensure this import is correct
@@ -46,6 +47,61 @@ class _MyAppState extends State<MyApp> {
     NotificationPage(userId: "1",),
     const ProfilePage(),
   ];
+
+  void _onItemTapped(int index) {
+    // if (index == 4) {
+    //   // Index for "Upload Item"
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder:
+    //           (context) =>
+    //               const ProfilePage(), // Ensure UploadItemPage is correctly imported
+    //     ),
+    //   ).then((_) {
+    //     // Reset the selected index to avoid issues when returning
+    //     setState(() {
+    //       _selectedIndex = _selectedIndex; // Keep the current index
+    //     });
+    //   });
+    //   return;
+    // }
+    // else {
+    //   setState(() {
+    //     _selectedIndex = index;
+    //   });
+    // }
+    if (index == 2) {
+      // Index for "Upload Item"
+      Navigator.pushNamed(context, '/uploadpage');
+      return;
+    }
+
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    // if (index == 5) {
+    //   // Index for "Upload Item"
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder:
+    //           (context) =>
+    //               const ProfilePage(), // Ensure UploadItemPage is correctly imported
+    //     ),
+    //   ).then((_) {
+    //     // Reset the selected index to avoid issues when returning
+    //     setState(() {
+    //       _selectedIndex = _selectedIndex; // Keep the current index
+    //     });
+    //   });
+    // } else {
+    //   setState(() {
+    //     _selectedIndex = index;
+    //   });
+    // }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +192,8 @@ class _MyAppState extends State<MyApp> {
         '/uploadpage': (context) => const UploadItemPage(),
         '/change-password': (context) => const ChangePasswordPage(),
         '/requestpage': (context) => RentRequestsPage(),
-        // '/homepage': (context) => const Homepage(),
+        '/homepage': (context) => const Homepage(),
+        '/approvepage': (context) => const RentRequestDetailsPage(),
 
       },
     );
