@@ -8,7 +8,7 @@ class RentCard extends StatelessWidget {
   final Item item;
   final Color tealColor;
 
-  const RentCard({required this.item, required this.tealColor});
+  const RentCard({super.key, required this.item, required this.tealColor});
 
   // Calculate distance between user and item location
   Future<double> _calculateDistance(Position userPosition) async {
@@ -207,12 +207,12 @@ class NavBarItem extends StatelessWidget {
   final VoidCallback? onTap; // Added onTap as a nullable parameter
 
   const NavBarItem({
-    Key? key,
+    super.key,
     required this.icon,
     required this.label,
     this.isSelected = false,
     this.onTap, // Initialize onTap
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

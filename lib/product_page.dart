@@ -5,7 +5,7 @@ import 'package:shuffle_native/services/api_service.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final Item item;
-  const ProductDetailPage({Key? key, required this.item}) : super(key: key);
+  const ProductDetailPage({super.key, required this.item});
 
   @override
   _ProductDetailPageState createState() => _ProductDetailPageState();
@@ -212,7 +212,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           label: Text(
                             startDate == null
                                 ? 'Start Date'
-                                : '${startDate!.toLocal().toString().split(' ')[0]}',
+                                : startDate!.toLocal().toString().split(' ')[0],
                             overflow: TextOverflow.ellipsis,
                           ),
                           style: OutlinedButton.styleFrom(
@@ -246,7 +246,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           label: Text(
                             endDate == null
                                 ? 'End Date'
-                                : '${endDate!.toLocal().toString().split(' ')[0]}',
+                                : endDate!.toLocal().toString().split(' ')[0],
                             overflow: TextOverflow.ellipsis,
                           ),
                           style: OutlinedButton.styleFrom(
@@ -332,12 +332,12 @@ class ProductImageCarousel extends StatelessWidget {
   final String imageUrls;
 
   const ProductImageCarousel({
-    Key? key,
+    super.key,
     required this.pageController,
     required this.currentPage,
     required this.onPageChanged,
     required this.imageUrls
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -376,10 +376,10 @@ class DotIndicator extends StatelessWidget {
   final int totalDots;
 
   const DotIndicator({
-    Key? key,
+    super.key,
     required this.currentPage,
     required this.totalDots,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -407,11 +407,11 @@ class NavBarItem extends StatelessWidget {
   final bool isSelected;
 
   const NavBarItem({
-    Key? key,
+    super.key,
     required this.icon,
     required this.label,
     this.isSelected = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

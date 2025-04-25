@@ -267,12 +267,12 @@ class NavBarItem extends StatefulWidget {
   final VoidCallback? onTap;
 
   const NavBarItem({
-    Key? key,
+    super.key,
     required this.icon,
     required this.label,
     this.isSelected = false,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   _NavBarItemState createState() => _NavBarItemState();

@@ -1,213 +1,205 @@
 import 'package:flutter/material.dart';
 
 class RentRequestDetailsPage extends StatelessWidget {
-  const RentRequestDetailsPage({Key? key}) : super(key: key);
+  const RentRequestDetailsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.teal),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text(
-          'Rent Requests',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
-        ),
-      ),
+      appBar: _buildAppBar(context),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Image.asset(
-                'assesets/images/test_img.png', // Replace with your actual image path
-                height: 180,
-                width: 180,
-              ),
-            ),
+            _buildProductImage(),
             const SizedBox(height: 20),
-            const Center(
-              child: Text(
-                'Casio FX-991ES\nScientific Calculator',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Center(
-              child: Text(
-                'Rs 30/-',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black87,
-                ),
-              ),
-            ),
+            _buildProductDetails(),
             const SizedBox(height: 30),
-            const RequestInfoItem(
-              label: 'Rent Request by:',
-              value: 'Devansh Singh',
-            ),
-            const RequestInfoItem(label: 'From:', value: '25-04-2025'),
-            const RequestInfoItem(label: 'To:', value: '29-04-2025'),
-            const RequestInfoItem(label: 'Total Days:', value: '5 days'),
-            const RequestInfoItem(
-              label: 'Status:',
-              value: 'PENDING',
-              valueStyle: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Colors.orange,
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Recievers Address:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 5),
-            const Text(
-              'Paramount,Near ABES Engg. College, Crossing Republik, Ghaziabad,454126',
-              style: TextStyle(fontSize: 14, color: Colors.black87),
-            ),
+            _buildRequestInfo(),
             const Spacer(),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (BuildContext context) {
-                          Future.delayed(const Duration(seconds: 2), () {
-                            Navigator.of(
-                              context,
-                            ).pop(); // Close the dialog after 2 seconds
-                          });
+            _buildActionButtons(context),
+          ],
+        ),
+      ),
+    );
+  }
 
-                          return Center(
-                            child: Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 10,
-                                    spreadRadius: 5,
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: const [
-                                  Icon(
-                                    Icons.cancel,
-                                    color: Colors.red,
-                                    size: 60,
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    'Declined!',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text('Decline'),
-                  ),
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.teal),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+      title: const Text(
+        'Rent Requests',
+        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+      ),
+    );
+  }
+
+  Widget _buildProductImage() {
+    return Center(
+      child: Image.asset(
+        'assesets/images/test_img.png', // Replace with your actual image path
+        height: 180,
+        width: 180,
+      ),
+    );
+  }
+
+  Widget _buildProductDetails() {
+    return Column(
+      children: const [
+        Center(
+          child: Text(
+            'Casio FX-991ES\nScientific Calculator',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+        ),
+        SizedBox(height: 10),
+        Center(
+          child: Text(
+            'Rs 30/-',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRequestInfo() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: const [
+        RequestInfoItem(label: 'Rent Request by:', value: 'Devansh Singh'),
+        RequestInfoItem(label: 'From:', value: '25-04-2025'),
+        RequestInfoItem(label: 'To:', value: '29-04-2025'),
+        RequestInfoItem(label: 'Total Days:', value: '5 days'),
+        RequestInfoItem(
+          label: 'Status:',
+          value: 'PENDING',
+          valueStyle: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.orange,
+          ),
+        ),
+        SizedBox(height: 20),
+        Text(
+          'Recievers Address:',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        SizedBox(height: 5),
+        Text(
+          'Paramount,Near ABES Engg. College, Crossing Republik, Ghaziabad,454126',
+          style: TextStyle(fontSize: 14, color: Colors.black87),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(child: _buildDeclineButton(context)),
+        const SizedBox(width: 16),
+        Expanded(child: _buildAcceptButton(context)),
+      ],
+    );
+  }
+
+  Widget _buildDeclineButton(BuildContext context) {
+    return OutlinedButton(
+      onPressed:
+          () => _showDialog(
+            context,
+            icon: Icons.cancel,
+            color: Colors.red,
+            message: 'Declined!',
+          ),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: Colors.red,
+        side: const BorderSide(color: Colors.red),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      child: const Text('Decline'),
+    );
+  }
+
+  Widget _buildAcceptButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed:
+          () => _showDialog(
+            context,
+            icon: Icons.check_circle,
+            color: Colors.green,
+            message: 'Approved!',
+          ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.green,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      child: const Text('Accept'),
+    );
+  }
+
+  void _showDialog(
+    BuildContext context, {
+    required IconData icon,
+    required Color color,
+    required String message,
+  }) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.of(context).pop(); // Close the dialog
+          Navigator.of(context).pop(); // Return to the previous page
+        });
+
+        return Center(
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  spreadRadius: 5,
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (BuildContext context) {
-                          Future.delayed(const Duration(seconds: 2), () {
-                            Navigator.of(
-                              context,
-                            ).pop(); // Close the dialog after 2 seconds
-                          });
-
-                          return Center(
-                            child: Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 10,
-                                    spreadRadius: 5,
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: const [
-                                  Icon(
-                                    Icons.check_circle,
-                                    color: Colors.green,
-                                    size: 60,
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    'Approved!',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text('Accept'),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, color: color, size: 60),
+                const SizedBox(height: 10),
+                Text(
+                  message,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
                   ),
                 ),
               ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -219,11 +211,11 @@ class RequestInfoItem extends StatelessWidget {
   final TextStyle? valueStyle;
 
   const RequestInfoItem({
-    Key? key,
+    super.key,
     required this.label,
     required this.value,
     this.valueStyle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -21,7 +21,7 @@ class RentalItem {
 }
 
 class RentedItemsPage extends StatefulWidget {
-  const RentedItemsPage({Key? key}) : super(key: key);
+  const RentedItemsPage({super.key});
 
   @override
   _RentedItemsPageState createState() => _RentedItemsPageState();
@@ -130,7 +130,7 @@ class _RentedItemsPageState extends State<RentedItemsPage> {
 class RentedItemCard extends StatelessWidget {
   final RentalItem item;
 
-  const RentedItemCard({Key? key, required this.item}) : super(key: key);
+  const RentedItemCard({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -241,11 +241,11 @@ class NavBarItem extends StatelessWidget {
   final bool isSelected;
 
   const NavBarItem({
-    Key? key,
+    super.key,
     required this.icon,
     required this.label,
     this.isSelected = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -10,7 +10,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
 }
 
 class UploadItemPage extends StatefulWidget {
-  const UploadItemPage({Key? key}) : super(key: key);
+  const UploadItemPage({super.key});
 
   @override
   State<UploadItemPage> createState() => _UploadItemPageState();
@@ -335,8 +335,8 @@ class _UploadItemPageState extends State<UploadItemPage> {
                                     image: _imageFile,
                                     conditionNotes: _noteController.text,
                                     location: Location("Point", [
-                                      locationData?.longitude,
-                                      locationData?.latitude,
+                                      locationData.longitude,
+                                      locationData.latitude,
                                     ]),
                                   );
 
@@ -469,11 +469,11 @@ class NavBarItem extends StatelessWidget {
   final bool isSelected;
 
   const NavBarItem({
-    Key? key,
+    super.key,
     required this.icon,
     required this.label,
     this.isSelected = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
