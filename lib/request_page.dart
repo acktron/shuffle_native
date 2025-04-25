@@ -96,7 +96,7 @@ class _RentRequestsPageState extends State<RentRequestsPage> {
                         return RentRequestCard(
                           productName: request.item.name,
                           price: request.total_price,
-                          requester: "Devansh",
+                          requester: "${request.renter}",
                           rentalDuration:
                               request.end_date
                                   .difference(request.start_date)
