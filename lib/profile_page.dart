@@ -94,7 +94,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 // Your profile options
                 GestureDetector(
                   onTap: () {
-                    print("Tapped My Rentals");
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const MyRentalsPage()),
@@ -123,6 +122,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   context,
                   Icons.location_on_outlined,
                   "My Address",
+                  routeTo: "/myaddress",
                 ),
                 _buildProfileOption(
                   context,
@@ -130,7 +130,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   "Change Password",
                   routeTo: "/change-password",
                 ),
-                _buildProfileOption(context, Icons.support_agent, "Contact Us"),
+                _buildProfileOption(
+                  context,
+                  Icons.support_agent, 
+                  "Contact Us",
+                  routeTo: "/contactus",),
                 const SizedBox(height: 20),
               ],
             ),
