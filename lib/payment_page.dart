@@ -163,8 +163,8 @@ class CheckoutPage extends StatelessWidget {
                           ),
                           child: Center(
                             child: Image.asset(
-                              'assets/razorpay_logo.png',
-                              height: 30,
+                              'assesets/images/razorpay.png',
+                              height: 45,
                               // If you don't have the asset, use a placeholder
                               errorBuilder:
                                   (context, error, stackTrace) => const Text(
