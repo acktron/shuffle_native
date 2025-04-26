@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shuffle_native/constants.dart';
 import 'package:shuffle_native/models/booking.dart';
 import 'package:shuffle_native/models/item.dart';
+import 'package:shuffle_native/payment_page.dart';
 import 'package:shuffle_native/services/api_service.dart';
 
 class RentalItem {
@@ -154,64 +155,72 @@ class RentalItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          children: [
-            Image.network(
-              "${baseUrl}${booking.item.image}",
-              height: 80,
-              width: 60,
-              fit: BoxFit.cover,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    booking.item.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text(booking.item.description),
-                  const SizedBox(height: 4),
-                  Text.rich(
-                    TextSpan(
-                      text: "Rs ${booking.item.pricePerDay}",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                      children: const [
-                        TextSpan(
-                          text: "/day",
-                          style: TextStyle(fontWeight: FontWeight.normal),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Text("Rented for ${booking.item.pricePerDay} days"),
-                  // Text("Return by ${item.}"),
-                ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CheckoutPage(bookingId: booking.id),
+          ),
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 2,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            children: [
+              Image.network(
+                "${baseUrl}${booking.item.image}",
+                height: 80,
+                width: 60,
+                fit: BoxFit.cover,
               ),
-            ),
-            const SizedBox(width: 8),
-            Chip(
-              label: Text("${booking.status} !"),
-              backgroundColor:
-                  booking.status == "Rejected"
-                      ? Colors.red.shade100
-                      : Colors.green.shade100,
-              labelStyle: TextStyle(
-                color: booking.status == "Rejected" ? Colors.red : Colors.teal,
-                fontWeight: FontWeight.w600,
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      booking.item.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(booking.item.description),
+                    const SizedBox(height: 4),
+                    Text.rich(
+                      TextSpan(
+                        text: "Rs ${booking.item.pricePerDay}",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        children: const [
+                          TextSpan(
+                            text: "/day",
+                            style: TextStyle(fontWeight: FontWeight.normal),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Text("Rented for ${booking.item.pricePerDay} days"),
+                  ],
+                ),
               ),
-            ),
-          ],
+              const SizedBox(width: 8),
+              Chip(
+                label: Text("${booking.status} !"),
+                backgroundColor: booking.status == "Rejected"
+                    ? Colors.red.shade100
+                    : Colors.green.shade100,
+                labelStyle: TextStyle(
+                  color: booking.status == "Rejected" ? Colors.red : Colors.teal,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
