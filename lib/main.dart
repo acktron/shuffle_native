@@ -48,7 +48,9 @@ class _MyAppState extends State<MyApp> {
     const Homepage(),
     const RentedItemsPage(),
     const UploadItemPage(),
-    NotificationPage(),
+    NotificationPage(
+      
+    ),
     const ProfilePage(),
   ];
 

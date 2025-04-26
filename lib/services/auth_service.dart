@@ -45,4 +45,20 @@ class AuthService {
     }
     return false;
   }
+
+  Future<int> getUserId() async {
+    final accessToken = await TokenStorage().getAccessToken();
+    if (accessToken != null) {
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/users/get_user_id/'), // adjust this path as needed
+        headers: {'Authorization': 'Bearer $accessToken'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['user_id']; // Assuming user_id is returned in the response
+      }
+    }
+    return 0; 
+  }
 }

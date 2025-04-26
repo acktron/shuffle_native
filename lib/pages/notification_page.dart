@@ -1,14 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:shuffle_native/providers/auth_provider.dart';
+import 'package:shuffle_native/payment_page.dart';
+import 'package:shuffle_native/services/auth_service.dart';
 import 'package:shuffle_native/services/web_socket_service.dart';
-// import 'package:snicko/services/web_socket_service.dart';
 
 class NotificationPage extends StatefulWidget {
-  // final String userId;
-
   const NotificationPage({super.key});
 
   @override
@@ -18,45 +13,76 @@ class NotificationPage extends StatefulWidget {
 class _NotificationPageState extends State<NotificationPage> {
   late WebSocketService _webSocketService;
   late Stream<Map<String, dynamic>> _notificationsStream;
-  late StreamSubscription<Map<String, dynamic>> _subscription;
-  Map<String, dynamic>? _latestNotification;
-  late AuthProvider authProvider;
-  
+  bool _isLoading = true;
+  final List<Map<String, dynamic>> _notifications = []; // Added list to store notifications
 
   @override
   void initState() {
     super.initState();
-    authProvider = Provider.of<AuthProvider>(context, listen: false);
+    _initializeWebSocket();
+  }
 
-    _webSocketService = WebSocketService(authProvider.userId.toString());
+  Future<void> _initializeWebSocket() async {
+    final userId = (await AuthService().getUserId()).toString();
+    _webSocketService = WebSocketService(userId);
     _notificationsStream = _webSocketService.notifications;
 
-    // Listen to the notifications stream and update the notification count and UI
-    _subscription = _notificationsStream.listen((notification) {
-      print('Notification received: $notification');
+    _notificationsStream.listen((notification) {
       setState(() {
-        _latestNotification = notification;
-        WebSocketService.notificationCount.value++;
+        _notifications.add(notification); // Push new notifications into the list
       });
+    });
+
+    setState(() {
+      _isLoading = false;
     });
   }
 
   @override
   void dispose() {
-    _subscription.cancel();
     _webSocketService.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: Text('Notifications')),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(title: Text('Notifications')),
-      body: _latestNotification == null
+      body: _notifications.isEmpty
           ? Center(child: Text('No notifications yet.'))
-          : ListTile(
-              title: Text(_latestNotification!['title']),
-              subtitle: Text(_latestNotification!['body']),
+          : ListView.builder(
+              itemCount: _notifications.length,
+              itemBuilder: (context, index) {
+                final notification = _notifications[index];
+                final title = notification['title'];
+                final body = notification['body'];
+                final redirectTo = notification['redirectTo'];
+
+                return ListTile(
+                  title: Text(title),
+                  subtitle: Text(body),
+                  onTap: () {
+                    if (redirectTo == "requestpage") {
+                      Navigator.pushNamed(context, '/$redirectTo');
+                    } else if (redirectTo == "paymentpage") {
+                      Navigator.push(context, 
+                        MaterialPageRoute(
+                          builder: (context) => CheckoutPage(
+                            bookingId: notification['booking_id'],
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                );
+              },
             ),
     );
   }
