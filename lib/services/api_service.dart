@@ -225,4 +225,14 @@ class ApiService {
       throw Exception('Failed to fetch user bookings');
     }
   }
+
+  Future<Booking> getBookingById(int id) async {
+    final response = await _dio.get('/api/rentals/bookings/$id/');
+    if (response.statusCode == 200) {
+      final data = response.data;
+      return Booking.fromJson(data);
+    } else {
+      throw Exception('Failed to fetch booking with ID: $id');
+    }
+  }
 }
