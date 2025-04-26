@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shuffle_native/payment_page.dart';
+import 'package:shuffle_native/pages/rental/payment.dart';
 import 'package:shuffle_native/services/auth_service.dart';
 import 'package:shuffle_native/services/web_socket_service.dart';
 

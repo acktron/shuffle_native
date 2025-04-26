@@ -9,27 +9,6 @@ import 'api_client.dart';
 class ApiService {
   final Dio _dio = ApiClient.instance;
 
-  // Future<Response> listNewItem({
-  //   required String name,
-  //   required String description,
-  //   String? condition_notes,
-  //   required int price_per_day,
-  //   required int deposit_amount,
-  //   required Location location,
-  // }) async {
-  //   return await _dio.post(
-  //     '/api/rentals/items/',
-  //     data: {
-  //       'name': name,
-  //       'description': description,
-  //       'condition_notes': condition_notes,
-  //       'price_per_day': price_per_day,
-  //       'deposit_amount': deposit_amount,
-  //       'location': location,
-  //     },
-  //   );
-  // }
-
   Future<Item> getItemById(String id) async {
     final response = await _dio.get('/api/rentals/items/$id');
     if (response.statusCode == 200) {

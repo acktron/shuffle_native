@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shuffle_native/my_rentals_page.dart';
-import 'package:shuffle_native/request_page.dart';
+import 'package:shuffle_native/pages/rental/my_rentals.dart';
+import 'package:shuffle_native/pages/rental/request_page.dart';
 import 'package:shuffle_native/services/api_service.dart';
+import 'package:shuffle_native/widget/buttons/danger_button.dart';
+import 'package:shuffle_native/widget/logos/app_logo.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -14,7 +16,6 @@ class _ProfilePageState extends State<ProfilePage> {
   String _name = "..."; // Provide a default value
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     print("Profile Page");
     _apiService.getName().then((value) {
@@ -24,27 +25,10 @@ class _ProfilePageState extends State<ProfilePage> {
       });
     });
   }
-  Future<void> _refreshProfile() async {
-    // Add your refresh logic here, e.g., fetch updated profile data
-    await Future.delayed(const Duration(seconds: 1)); // Simulate a delay
-  }
   final ApiService _apiService = ApiService(); // Initialize ApiService
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 4,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: "Rented"),
-          BottomNavigationBarItem(icon: Icon(Icons.add), label: "Upload"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: "Notifications",
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-        ],
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           // 👈 Wrap the whole page in this
@@ -54,7 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 Row(
                   children: [
-                    Image.asset("assesets/images/MainLogo.png", height: 30),
+                    AppLogo(height: 30),
                     const SizedBox(width: 10),
                     const Text(
                       "Shuffle",
@@ -136,6 +120,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   "Contact Us",
                   routeTo: "/contactus",),
                 const SizedBox(height: 20),
+                DangerButton(label: "Logout", onPressed: () {
+                  // Logout logic
+                  Navigator.pushNamed(context, '/welcome');
+                }),
               ],
             ),
           ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shuffle_native/constants.dart';
+import 'package:shuffle_native/utils/constants.dart';
 import 'package:shuffle_native/models/booking.dart';
 import 'package:shuffle_native/models/item.dart';
-import 'package:shuffle_native/payment_page.dart';
+import 'package:shuffle_native/pages/rental/payment.dart';
 import 'package:shuffle_native/services/api_service.dart';
 
 class RentalItem {

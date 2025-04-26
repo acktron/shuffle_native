@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:shuffle_native/constants.dart';
+import 'package:shuffle_native/utils/constants.dart';
 import 'package:shuffle_native/models/item.dart';
-import 'package:shuffle_native/product_page.dart'; // Import the shared RentItem class
+import 'package:shuffle_native/pages/rental/product_page.dart'; // Import the shared RentItem class
 
 class RentCard extends StatelessWidget {
   final Item item;

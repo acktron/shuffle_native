@@ -142,30 +142,6 @@ class _HomepageState extends State<Homepage> {
                         ],
                       ),
                       const Spacer(),
-                      // Logout button
-                      TextButton(
-                        onPressed: () async {
-                          final success =
-                              await Provider.of<AuthProvider>(
-                                context,
-                                listen: false,
-                              ).logout();
-                          if (success) {
-                            Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              '/signin',
-                              (route) => false,
-                            );
-                          }
-                        },
-                        child: const Text(
-                          'Logout',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFF21C7A7),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),

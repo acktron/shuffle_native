@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shuffle_native/approve_page.dart';
-import 'package:shuffle_native/constants.dart';
+import 'package:shuffle_native/pages/rental/approve_page.dart';
+import 'package:shuffle_native/utils/constants.dart';
 import 'package:shuffle_native/models/booking.dart';
 import 'package:shuffle_native/services/api_service.dart';
 
