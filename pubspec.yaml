@@ -46,6 +46,9 @@ dependencies:
   geolocator: ^14.0.0
   web_socket_channel: ^3.0.3
   flutter_launcher_icons: ^0.14.3
+  loading_indicator: ^3.1.1
+  logger: ^2.5.0
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:

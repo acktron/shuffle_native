@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shuffle_native/constants.dart';
+import 'package:shuffle_native/utils/constants.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'dart:convert';
 

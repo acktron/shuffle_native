@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:shuffle_native/constants.dart';
+import 'package:shuffle_native/utils/constants.dart';
 import 'package:shuffle_native/models/item.dart';
-import 'package:shuffle_native/product_page.dart'; // Import the shared RentItem class
+import 'package:shuffle_native/pages/rental/product_page.dart'; // Import the shared RentItem class
 
 class RentCard extends StatelessWidget {
   final Item item;
@@ -23,48 +23,37 @@ class RentCard extends StatelessWidget {
     return 0.0;
   }
 
-  // Build the image section of the card
   Widget _buildImageSection() {
     return Expanded(
       flex: 5,
-      child: Stack(
-        children: [
-          Image.network(
-            "$baseUrl${item.image}",
-            fit: BoxFit.contain,
-            width: double.infinity,
-            errorBuilder: (context, error, stackTrace) {
-              return const Center(
-                child: Icon(
-                  Icons.broken_image,
-                  size: 50,
-                  color: Colors.grey,
-                ),
-              );
-            },
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return const Center(child: CircularProgressIndicator());
-            },
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
+      child: AspectRatio(
+        aspectRatio: 1 / 1, // Enforce 1:1 aspect ratio
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Hero(
+            tag: 'image-hero-${item.id}', // Unique tag for hero animation
             child: Container(
-              color: const Color(0xFF087272),
-              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-              child: Text(
-                '${item.pricePerDay} / day',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
+              color: Colors.grey.shade200, // Fallback color
+              child: Image.network(
+                "$baseUrl${item.image}",
+                fit: BoxFit.cover, // Ensure it covers the aspect ratio
+                errorBuilder: (context, error, stackTrace) {
+                  return const Center(
+                    child: Icon(
+                      Icons.broken_image,
+                      size: 50,
+                      color: Colors.grey,
+                    ),
+                  );
+                },
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return const Center(child: CircularProgressIndicator());
+                },
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -115,22 +104,30 @@ class RentCard extends StatelessWidget {
   }
 
   // Build the info section of the card
-  Widget _buildInfoSection(BuildContext context) { // Accept context as a parameter
+  Widget _buildInfoSection(BuildContext context) {
+    // Accept context as a parameter
     return Container(
-      color: const Color(0xFF087272),
+      // color: const Color(0xFF087272),
       padding: const EdgeInsets.all(8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title
           Text(
             item.name,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              color: Colors.white,
+              color: Colors.black,
+              // fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            '₹${item.pricePerDay} / day',
+            style: const TextStyle(
+              color: Colors.black,
               fontWeight: FontWeight.bold,
-              fontSize: 14,
+              fontSize: 18,
             ),
           ),
           const SizedBox(height: 4),
@@ -138,45 +135,43 @@ class RentCard extends StatelessWidget {
           Text(
             "Owner: ${item.owner_name}",
             maxLines: 2,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 12,
-            ),
+            style: const TextStyle(color: Colors.black, fontSize: 12),
           ),
 
           // Location and Distance
-          _buildDistanceSection(),
-          const SizedBox(height: 8),
+          // _buildDistanceSection(),
+          // const SizedBox(height: 8),
 
           // Rent button
-          SizedBox(
-            width: double.infinity,
-            height: 30,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: tealColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
-                ),
-              ),
-              onPressed: () {
-                Navigator.push(context, 
-                  MaterialPageRoute(
-                    builder: (context) => ProductDetailPage(item: item),
-                  ),
-                );
-              },
-              child: const Text(
-                'Rent Now',
-                style: TextStyle(
-                  color: Color(0xFF087272),
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
+          // SizedBox(
+          //   width: double.infinity,
+          //   height: 30,
+          //   child: ElevatedButton(
+          //     style: ElevatedButton.styleFrom(
+          //       backgroundColor: Colors.white,
+          //       foregroundColor: tealColor,
+          //       shape: RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.circular(6),
+          //       ),
+          //     ),
+          //     onPressed: () {
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) => ProductDetailPage(item: item),
+          //         ),
+          //       );j
+          //     },
+          //     child: const Text(
+          //       'Rent Now',
+          //       style: TextStyle(
+          //         color: Color(0xFF087272),
+          //         fontSize: 14,
+          //         fontWeight: FontWeight.bold,
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -184,52 +179,27 @@ class RentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      elevation: 2,
-      borderRadius: BorderRadius.circular(12),
-      color: Colors.white,
-      clipBehavior: Clip.hardEdge,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildImageSection(),
-          _buildInfoSection(context), // Pass context here
-        ],
-      ),
-    );
-  }
-}
-
-class NavBarItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isSelected;
-  final VoidCallback? onTap; // Added onTap as a nullable parameter
-
-  const NavBarItem({
-    super.key,
-    required this.icon,
-    required this.label,
-    this.isSelected = false,
-    this.onTap, // Initialize onTap
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap, // Use onTap here
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: isSelected ? const Color(0xFF26C6DA) : Colors.grey),
-          Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? const Color(0xFF26C6DA) : Colors.grey,
-              fontSize: 12,
-            ),
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetailPage(item: item),
           ),
-        ],
+        );
+      },
+      child: Material(
+        elevation: 2,
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        clipBehavior: Clip.hardEdge,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildImageSection(),
+            _buildInfoSection(context), // Pass context here
+          ],
+        ),
       ),
     );
   }

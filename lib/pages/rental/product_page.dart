@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:shuffle_native/constants.dart';
+import 'package:shuffle_native/pages/rental/my_rentals.dart';
+import 'package:shuffle_native/utils/constants.dart';
 import 'package:shuffle_native/models/item.dart';
 import 'package:shuffle_native/services/api_service.dart';
+import 'package:shuffle_native/widget/buttons/secondary_button.dart';
+import 'package:shuffle_native/widget/logos/app_logo.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final Item item;
@@ -12,8 +15,6 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
-  int _currentPage = 0;
-  final PageController _pageController = PageController();
   final ApiService _apiService = ApiService(); // Initialize ApiService
   bool _isBooking = false; // State variable to track booking status
 
@@ -31,7 +32,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ),
         title: Row(
           children: [
-            Image.asset('assesets/images/MainLogo.png', height: 25),
+            AppLogo(height: 25),
             Text(
               'Shuffle',
               style: TextStyle(
@@ -50,15 +51,26 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             // Product Image Carousel
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.4,
-              child: ProductImageCarousel(
-                imageUrls: "$baseUrl${widget.item.image}",
-                pageController: _pageController,
-                currentPage: _currentPage,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentPage = index;
-                  });
-                },
+              child: Hero(
+                tag:
+                    'image-hero-${widget.item.id}', // Use the same tag as in RentCard
+                child: Image.network(
+                  "$baseUrl${widget.item.image}",
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(
+                      child: Icon(
+                        Icons.broken_image,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
+                    );
+                  },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const Center(child: CircularProgressIndicator());
+                  },
+                ),
               ),
             ),
 
@@ -104,25 +116,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   const SizedBox(height: 16),
 
                   // Rent Now button
-                  ElevatedButton(
+                  SecondaryButton(
+                    text: "Rent Now",
                     onPressed: () {
                       _showBottomModalSheet(context);
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF087272),
-                      minimumSize: Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      'Rent Now',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                   ),
                   const SizedBox(height: 16),
 
@@ -230,18 +228,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               startDate == null
                                   ? null
                                   : () async {
-                                      final selectedDate = await showDatePicker(
-                                        context: context,
-                                        initialDate: endDate ?? startDate!,
-                                        firstDate: startDate!,
-                                        lastDate: DateTime(2100),
-                                      );
-                                      if (selectedDate != null) {
-                                        setState(() {
-                                          endDate = selectedDate;
-                                        });
-                                      }
-                                    },
+                                    final selectedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: endDate ?? startDate!,
+                                      firstDate: startDate!,
+                                      lastDate: DateTime(2100),
+                                    );
+                                    if (selectedDate != null) {
+                                      setState(() {
+                                        endDate = selectedDate;
+                                      });
+                                    }
+                                  },
                           icon: Icon(Icons.calendar_today, size: 18),
                           label: Text(
                             endDate == null
@@ -261,42 +259,46 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
                   // Confirm Button
                   ElevatedButton(
-                    onPressed: _isBooking
-                        ? null
-                        : () async {
-                            if (startDate != null && endDate != null) {
-                              setState(() {
-                                _isBooking = true; // Start loading
-                              });
-                              final success = await _apiService.bookItem(
-                                widget.item.id,
-                                startDate!,
-                                endDate!,
-                              );
-                              setState(() {
-                                _isBooking = false; // Stop loading
-                              });
-                              if (success) {
-                                print('Booked item with ID: ${widget.item.id} from $startDate to $endDate');
-                                // show snackbar
+                    onPressed:
+                        _isBooking
+                            ? null
+                            : () async {
+                              if (startDate != null && endDate != null) {
+                                setState(() {
+                                  _isBooking = true; // Start loading
+                                });
+                                final success = await _apiService.bookItem(
+                                  widget.item.id,
+                                  startDate!,
+                                  endDate!,
+                                );
+                                setState(() {
+                                  _isBooking = false; // Stop loading
+                                });
+                                if (success) {
+                                  print(
+                                    'Booked item with ID: ${widget.item.id} from $startDate to $endDate',
+                                  );
+
+                                  Navigator.pop(context);
+                                  Navigator.push(context, 
+                                    MaterialPageRoute(
+                                      builder: (context) => MyRentalsPage(
+                                        selectedStatus: 'PENDING',
+                                      )
+                                    ),
+                                  );
+                                }
+                              } else {
+                                // Show Toast
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text('Item booked successfully!'),
+                                    content: Text('Please select both dates.'),
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
-                                Navigator.pop(context);
                               }
-                            } else {
-                              // Show Toast
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Please select both dates.'),
-                                  duration: Duration(seconds: 2),
-                                ),
-                              );
-                            }
-                          },
+                            },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF087272),
                       minimumSize: const Size(double.infinity, 50),
@@ -304,23 +306,24 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: _isBooking
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
+                    child:
+                        _isBooking
+                            ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                            : const Text(
+                              'Book',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          )
-                        : const Text(
-                            'Book',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
                   ),
                 ],
               ),
@@ -328,112 +331,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           },
         );
       },
-    );
-  }
-}
-
-class ProductImageCarousel extends StatelessWidget {
-  final PageController pageController;
-  final int currentPage;
-  final ValueChanged<int> onPageChanged;
-  final String imageUrls;
-
-  const ProductImageCarousel({
-    super.key,
-    required this.pageController,
-    required this.currentPage,
-    required this.onPageChanged,
-    required this.imageUrls
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        PageView(
-          controller: pageController,
-          onPageChanged: onPageChanged,
-          children: [
-            Image.network(imageUrls,
-              fit: BoxFit.cover,
-            ),
-            // Image.asset(
-            //   'assesets/images/SigninVector.png',
-            //   fit: BoxFit.contain,
-            // ),
-            // Image.asset(
-            //   'assesets/images/SignupVector.png',
-            //   fit: BoxFit.contain,
-            // ),
-          ],
-        ),
-        // Positioned(
-        //   bottom: 10,
-        //   left: 0,
-        //   right: 0,
-        //   child: DotIndicator(currentPage: currentPage, totalDots: 3),
-        // ),
-      ],
-    );
-  }
-}
-
-class DotIndicator extends StatelessWidget {
-  final int currentPage;
-  final int totalDots;
-
-  const DotIndicator({
-    super.key,
-    required this.currentPage,
-    required this.totalDots,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(totalDots, (index) {
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          width: currentPage == index ? 12 : 8,
-          height: currentPage == index ? 12 : 8,
-          decoration: BoxDecoration(
-            color: currentPage == index ? const Color(0xFF26C6DA) : Colors.grey,
-            shape: BoxShape.circle,
-          ),
-        );
-      }),
-    );
-  }
-}
-
-class NavBarItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isSelected;
-
-  const NavBarItem({
-    super.key,
-    required this.icon,
-    required this.label,
-    this.isSelected = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, color: isSelected ? Color(0xFF26C6DA) : Colors.grey),
-        Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Color(0xFF26C6DA) : Colors.grey,
-            fontSize: 12,
-          ),
-        ),
-      ],
     );
   }
 }

@@ -1,10 +1,16 @@
 import 'package:dio/dio.dart';
-import 'package:shuffle_native/constants.dart';
+import 'package:logger/logger.dart'; // Add logger package
+import 'package:shuffle_native/utils/constants.dart';
 import 'token_storage.dart';
 
 class ApiClient {
-  static final Dio _dio = Dio(BaseOptions(baseUrl: baseUrl));
-  static final Dio _tokenDio = Dio(BaseOptions(baseUrl: baseUrl)); // for token refresh
+  static final Dio _dio = Dio(BaseOptions(
+    baseUrl: baseUrl,
+    connectTimeout: Duration(seconds: 5), // 5 seconds timeout for connection
+    receiveTimeout: Duration(seconds: 5), // 5 seconds timeout for receiving data
+  ));
+
+  static final Logger _logger = Logger(); // Initialize logger
 
   static bool _isRefreshing = false;
   static final List<void Function(String)> _queuedRequests = [];
@@ -57,7 +63,6 @@ class ApiClient {
               await TokenStorage().clearTokens();
             }
           }
-
           handler.next(error);
         },
       ),
@@ -67,12 +72,12 @@ class ApiClient {
   static Future<String?> _refreshAccessToken() async {
     final refreshToken = await TokenStorage().getRefreshToken();
     if (refreshToken == null) {
-      print('No refresh token available');
+      _logger.w('No refresh token available');
       return null;
     }
 
     try {
-      final response = await _tokenDio.post(
+      final response = await _dio.post(
         '/api/token/refresh/',
         data: {'refresh': refreshToken},
         options: Options(headers: {'Content-Type': 'application/json'}),
@@ -82,10 +87,10 @@ class ApiClient {
       final newRefresh = response.data['refresh'];
 
       await TokenStorage().saveTokens(newAccess, newRefresh);
-      print('Token refreshed');
+      _logger.i('Token refreshed successfully');
       return newAccess;
     } catch (e) {
-      print('Token refresh failed: $e');
+      _logger.e('Token refresh failed', error: e);
       await TokenStorage().clearTokens();
       return null;
     }

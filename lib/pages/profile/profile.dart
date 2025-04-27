@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:shuffle_native/my_rentals_page.dart';
-import 'package:shuffle_native/request_page.dart';
+import 'package:shuffle_native/pages/auth/change_password.dart';
+import 'package:shuffle_native/pages/contact_us.dart';
+import 'package:shuffle_native/pages/profile/my_address.dart';
+import 'package:shuffle_native/pages/rental/my_rentals.dart';
+import 'package:shuffle_native/pages/rental/rest_request.dart';
 import 'package:shuffle_native/services/api_service.dart';
+import 'package:shuffle_native/widget/buttons/danger_button.dart';
+import 'package:shuffle_native/widget/logos/app_logo.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -14,7 +19,6 @@ class _ProfilePageState extends State<ProfilePage> {
   String _name = "..."; // Provide a default value
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     print("Profile Page");
     _apiService.getName().then((value) {
@@ -24,27 +28,10 @@ class _ProfilePageState extends State<ProfilePage> {
       });
     });
   }
-  Future<void> _refreshProfile() async {
-    // Add your refresh logic here, e.g., fetch updated profile data
-    await Future.delayed(const Duration(seconds: 1)); // Simulate a delay
-  }
   final ApiService _apiService = ApiService(); // Initialize ApiService
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 4,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: "Rented"),
-          BottomNavigationBarItem(icon: Icon(Icons.add), label: "Upload"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: "Notifications",
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-        ],
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           // 👈 Wrap the whole page in this
@@ -54,7 +41,7 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 Row(
                   children: [
-                    Image.asset("assesets/images/MainLogo.png", height: 30),
+                    AppLogo(height: 30),
                     const SizedBox(width: 10),
                     const Text(
                       "Shuffle",
@@ -92,50 +79,45 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 30),
 
                 // Your profile options
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MyRentalsPage()),
-                    );
-                  },
-                  child: _buildProfileOption(
-                    context,
-                    Icons.image,
-                    "My Rentals",
-                    routeTo: "/myrentalspage",
-                  ),
+                _buildProfileOption(
+                  context,
+                  Icons.image,
+                  "My Rentals",
+                  destinationPage: MyRentalsPage(),
                 ),
-
-                GestureDetector(
-                  child: _buildProfileOption(
-                    context,
-                    Icons.check_circle_outline,
-                    "Rent Request",
-                    routeTo: "/requestpage",
-                  ),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/requestpage');
-                  },
+                _buildProfileOption(
+                  context,
+                  Icons.check_circle_outline,
+                  "Rent Request",
+                  destinationPage: const RentRequestsPage(),
                 ),
                 _buildProfileOption(
                   context,
                   Icons.location_on_outlined,
                   "My Address",
-                  routeTo: "/myaddress",
+                  destinationPage: const MyAddress(),
+                  onPressed: () {}, // No action needed since destinationPage is provided
                 ),
                 _buildProfileOption(
                   context,
                   Icons.lock_outline,
                   "Change Password",
-                  routeTo: "/change-password",
+                  destinationPage: const ChangePasswordPage(),
+                  // onPressed: () {
+                  //   Navigator.pushNamed(context, '/change-password');
+                  // },
                 ),
                 _buildProfileOption(
                   context,
-                  Icons.support_agent, 
+                  Icons.support_agent,
                   "Contact Us",
-                  routeTo: "/contactus",),
+                  destinationPage: const ContactUsPage(),
+                ),
                 const SizedBox(height: 20),
+                DangerButton(label: "Logout", onPressed: () {
+                  // Logout logic
+                  Navigator.pushNamed(context, '/welcome');
+                }),
               ],
             ),
           ),
@@ -148,12 +130,33 @@ class _ProfilePageState extends State<ProfilePage> {
     BuildContext context,
     IconData icon,
     String title, {
-    String? routeTo,
+    VoidCallback? onPressed,
+    Widget? destinationPage, // Optional parameter for navigation
   }) {
     return GestureDetector(
       onTap: () {
-        if (routeTo != null) {
-          Navigator.pushNamed(context, routeTo);
+        if (destinationPage != null) {
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => destinationPage,
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0); // Slide in from the right
+                const end = Offset.zero; // End at the current position
+                const curve = Curves.easeInOut;
+
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                var offsetAnimation = animation.drive(tween);
+
+                return SlideTransition(
+                  position: offsetAnimation,
+                  child: child,
+                );
+              },
+            ),
+          );
+        } else {
+          onPressed!();
         }
       },
       child: Container(
