@@ -61,7 +61,9 @@ class _MyAddressState extends State<MyAddress> {
       ),
       body: Column(
         children: [
-          Expanded(child: isLoading ? _buildLoadingState() : _buildLoadedState()),
+          Expanded(
+            child: isLoading ? _buildLoadingState() : _buildLoadedState(),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
             child: SizedBox(
@@ -105,12 +107,7 @@ class _MyAddressState extends State<MyAddress> {
         itemCount: addresses.length, // Remove +1 for the button
         itemBuilder: (context, index) {
           final address = addresses[index];
-          // return MyAddressCard(
-          //   street: ,
-          //   city: address['city']!,
-          //   state: address['state']!,
-          //   pincode: address['pincode']!,
-          // );
+          return MyAddressCard(address: address);
         },
       ),
     );

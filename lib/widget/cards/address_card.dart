@@ -67,7 +67,7 @@ class MyAddressCard extends StatelessWidget {
                     style: const TextStyle(fontSize: 16),
                   ),
                   Text(
-                    'Created At: ${address.createdAt.toLocal()}',
+                    'Created At: ${address.createdAt!.toLocal()}',
                     style: const TextStyle(fontSize: 16),
                   ),
                 ],
