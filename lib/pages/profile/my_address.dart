@@ -1,13 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:shuffle_native/models/address.dart';
+import 'package:shuffle_native/widget/cards/address_card.dart';
+import 'package:shuffle_native/services/api_service.dart';
+import 'package:shuffle_native/widget/shimmers/address_card_shirmmer.dart';
+import 'package:shuffle_native/pages/profile/add_address.dart';
 
-class MyAddressPage extends StatelessWidget {
-  const MyAddressPage({super.key});
+class MyAddress extends StatefulWidget {
+  const MyAddress({super.key});
+
+  @override
+  State<MyAddress> createState() => _MyAddressState();
+}
+
+class _MyAddressState extends State<MyAddress> {
+  final ApiService _apiService = ApiService();
+  List<Address> addresses = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAddresses();
+  }
+
+  Future<void> _fetchAddresses() async {
+    try {
+      final fetchedAddresses =
+          await _apiService
+              .getAddresses(); // Assume this returns a list of address maps
+      setState(() {
+        addresses = fetchedAddresses;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      // Handle error (e.g., show a snackbar)
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true, // ✅ fix yellow overflow
-      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.teal),
@@ -15,47 +50,25 @@ class MyAddressPage extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Row(
-          children: [
-            Image.asset('assesets/images/MainLogo.png', height: 28),
-            const SizedBox(width: 8),
-            const Text(
-              'Shuffle',
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
-          ],
+        title: const Text(
+          'My Address',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
         ),
       ),
-      body: SingleChildScrollView( // ✅ Wrap body in scroll view
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            const Text(
-              'My Address', // ✅ Only text, no arrow
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 30),
-            const CustomTextField(labelText: 'Street Address'),
-            const CustomTextField(labelText: 'City'),
-            const CustomTextField(labelText: 'State'),
-            const CustomTextField(labelText: 'Pincode'),
-            const SizedBox(height: 30),
-            SizedBox(
+      body: Column(
+        children: [
+          Expanded(child: isLoading ? _buildLoadingState() : _buildLoadedState()),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            child: SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {
-                  // TODO: Save address logic
-                },
+                onPressed: _onAddAddressPressed,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal,
                   shape: RoundedRectangleBorder(
@@ -63,7 +76,7 @@ class MyAddressPage extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  'Save',
+                  'Add Address',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -72,39 +85,41 @@ class MyAddressPage extends StatelessWidget {
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
-}
 
-class CustomTextField extends StatelessWidget {
-  final String labelText;
-  const CustomTextField({super.key, required this.labelText});
+  Widget _buildLoadingState() {
+    return ListView.builder(
+      itemCount: 3, // Display 3 shimmer cards as placeholders
+      itemBuilder: (context, index) => AddressCardShirmmer(),
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8), // 🔥 Adds space between fields
-      child: TextField(
-        decoration: InputDecoration(
-          labelText: labelText,
-          labelStyle: const TextStyle(color: Colors.grey),
-          floatingLabelStyle: const TextStyle(color: Colors.deepPurple),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.deepPurple, width: 2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
+  Widget _buildLoadedState() {
+    return RefreshIndicator(
+      onRefresh: _fetchAddresses,
+      child: ListView.builder(
+        itemCount: addresses.length, // Remove +1 for the button
+        itemBuilder: (context, index) {
+          final address = addresses[index];
+          // return MyAddressCard(
+          //   street: ,
+          //   city: address['city']!,
+          //   state: address['state']!,
+          //   pincode: address['pincode']!,
+          // );
+        },
       ),
     );
   }
+
+  void _onAddAddressPressed() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AddAddress()),
+    );
+  }
 }
-
-
-

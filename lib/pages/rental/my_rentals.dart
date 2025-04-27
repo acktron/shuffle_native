@@ -1,33 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:shuffle_native/utils/constants.dart';
 import 'package:shuffle_native/models/booking.dart';
-import 'package:shuffle_native/models/item.dart';
 import 'package:shuffle_native/pages/rental/payment.dart';
 import 'package:shuffle_native/services/api_service.dart';
 
-class RentalItem {
-  final String title;
-  final String description;
-  final int pricePerDay;
-  final String imagePath;
-  final String status;
-  final int daysRented;
-  final String returnDate;
-
-  RentalItem({
-    required this.title,
-    required this.description,
-    required this.pricePerDay,
-    required this.imagePath,
-    required this.status,
-    required this.daysRented,
-    required this.returnDate,
-  });
-}
-
 class MyRentalsPage extends StatefulWidget {
   final ApiService _apiService = ApiService(); // Initialize ApiService
-  MyRentalsPage({super.key});
+  final String selectedStatus; // Added selectedStatus parameter
+
+  MyRentalsPage({super.key, this.selectedStatus = "Active"}); // Default to "Active"
 
   @override
   // ignore: library_private_types_in_public_api
@@ -35,14 +16,14 @@ class MyRentalsPage extends StatefulWidget {
 }
 
 class _MyRentalsPageState extends State<MyRentalsPage> {
-  String selectedStatus = "Active";
-
+  late String selectedStatus; // Changed to late to initialize in initState
   List<Booking> allItems = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    selectedStatus = widget.selectedStatus; // Initialize selectedStatus
     widget._apiService.getUserBookings().then((value) {
       setState(() {
         allItems = value;

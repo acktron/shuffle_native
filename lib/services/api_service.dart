@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:shuffle_native/models/address.dart';
 import 'package:shuffle_native/models/booking.dart';
 import 'package:shuffle_native/models/item.dart';
 import 'package:shuffle_native/models/location.dart';
@@ -8,6 +9,93 @@ import 'api_client.dart';
 
 class ApiService {
   final Dio _dio = ApiClient.instance;
+
+  Future<List<Address>> getAddresses() async {
+    final response = await _dio.get('/api/users/address/');
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data;
+      print('Got addresses from API: ${data.length}');
+
+      // Map the API response to a list of Address objects
+      return data.map((address) {
+        return Address.fromJson(address);
+      }).toList();
+    } else {
+      throw Exception('Failed to fetch addresses');
+    }
+  }
+
+  Future<bool> addAddress(Address address) async {
+    final response = await _dio.post('/api/users/address/', data: address.toJson());
+    return response.statusCode == 201;
+  }
+
+  // Future<List<Map<String, String>>> getAddresses() async {
+  //   // Mock implementation for demonstration
+  //   await Future.delayed(const Duration(seconds: 2)); // Simulate network delay
+  //   return [
+  //     {
+  //       'street': '123 Main St',
+  //       'city': 'Springfield',
+  //       'state': 'IL',
+  //       'pincode': '62704',
+  //     },
+  //     {
+  //       'street': '456 Elm St',
+  //       'city': 'Shelbyville',
+  //       'state': 'IL',
+  //       'pincode': '62565',
+  //     },
+  //     {
+  //       'street': '456 Elm St',
+  //       'city': 'Shelbyville',
+  //       'state': 'IL',
+  //       'pincode': '62565',
+  //     },
+  //     {
+  //       'street': '456 Elm St',
+  //       'city': 'Shelbyville',
+  //       'state': 'IL',
+  //       'pincode': '62565',
+  //     },
+  //     {
+  //       'street': '456 Elm St',
+  //       'city': 'Shelbyville',
+  //       'state': 'IL',
+  //       'pincode': '62565',
+  //     },
+  //     {
+  //       'street': '456 Elm St',
+  //       'city': 'Shelbyville',
+  //       'state': 'IL',
+  //       'pincode': '62565',
+  //     },
+  //     {
+  //       'street': '456 Elm St',
+  //       'city': 'Shelbyville',
+  //       'state': 'IL',
+  //       'pincode': '62565',
+  //     },
+  //     {
+  //       'street': '456 Elm St',
+  //       'city': 'Shelbyville',
+  //       'state': 'IL',
+  //       'pincode': '62565',
+  //     },
+  //     {
+  //       'street': '456 Elm St',
+  //       'city': 'Shelbyville',
+  //       'state': 'IL',
+  //       'pincode': '62565',
+  //     },
+  //     {
+  //       'street': '456 Elm St',
+  //       'city': 'Shelbyville',
+  //       'state': 'IL',
+  //       'pincode': '62565',
+  //     },
+  //   ];
+  // }
 
   Future<Item> getItemById(String id) async {
     final response = await _dio.get('/api/rentals/items/$id');
@@ -170,13 +258,11 @@ class ApiService {
     }
   }
 
-  Future<bool> acceptBooking(int id) async {
-    final response = await _dio.post('/api/rentals/booking/update-status/$id/');
-    return response.statusCode == 200;
-  }
-
-  Future<bool> rejectBooking(int id) async {
-    final response = await _dio.post('/api/rentals/booking/reject/$id/');
+  Future<bool> manageBooking(int id, String status) async {
+    final response = await _dio.post(
+      '/api/rentals/booking/update-status/$id/',
+      data: {'status': status},
+    );
     return response.statusCode == 200;
   }
 
@@ -213,5 +299,16 @@ class ApiService {
     } else {
       throw Exception('Failed to fetch booking with ID: $id');
     }
+  }
+
+  Future<Map<String, String>> getAddress() async {
+    // Replace with actual API call logic
+    await Future.delayed(const Duration(seconds: 2)); // Simulate network delay
+    return {
+      'street': '123 Main St',
+      'city': 'Springfield',
+      'state': 'IL',
+      'pincode': '62704',
+    };
   }
 }

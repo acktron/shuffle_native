@@ -143,7 +143,7 @@ class _RentRequestDetailsPageState extends State<RentRequestDetailsPage> {
       //   message: 'Declined!',
       // ),
       () async {
-        final success = await _apiService.rejectBooking(widget.booking.id);
+        final success = await _apiService.manageBooking(widget.booking.id, "REJECTED");
         if (success) {
           // Handle error
           _showDialog(
@@ -175,7 +175,7 @@ class _RentRequestDetailsPageState extends State<RentRequestDetailsPage> {
       //   message: 'Approved!',
       // ),
       () async {
-        final success = await _apiService.acceptBooking(widget.booking.id);
+        final success = await _apiService.manageBooking(widget.booking.id, "APPROVED");
         if (success) {
           _showDialog(
             context,
@@ -214,7 +214,7 @@ class _RentRequestDetailsPageState extends State<RentRequestDetailsPage> {
       builder: (BuildContext context) {
         Future.delayed(const Duration(seconds: 2), () {
           Navigator.of(context).pop(); // Close the dialog
-          Navigator.pushNamed(context, "/requestpage"); // Return to the previous page
+          Navigator.pushReplacementNamed(context, "/requestpage"); // Return to the previous page
         });
 
         return Center(

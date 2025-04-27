@@ -12,11 +12,11 @@ import 'package:shuffle_native/pages/welcome.dart';
 import 'package:shuffle_native/providers/auth_provider.dart';
 import 'package:shuffle_native/pages/rental/rented_page.dart';
 import 'package:shuffle_native/pages/profile/profile.dart';
-import 'package:shuffle_native/pages/rental/request_page.dart';
+import 'package:shuffle_native/pages/rental/rest_request.dart';
 import 'package:shuffle_native/services/web_socket_service.dart';
 import 'package:shuffle_native/pages/rental/upload_item.dart';
 import 'package:shuffle_native/pages/contact_us.dart';
-import 'package:shuffle_native/pages/profile/my_address.dart';
+import 'package:shuffle_native/pages/profile/add_address.dart';
 import 'package:provider/provider.dart';
 
 class App extends StatefulWidget {
@@ -68,7 +68,25 @@ class _AppState extends State<App> {
                   onTap: (index) {
                     if (index == 2) {
                       // Navigate to the upload page
-                      Navigator.pushNamed(context, '/uploadpage');
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder: (context, animation, secondaryAnimation) => const UploadItemPage(),
+                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                            const begin = Offset(0.0, 1.0); // Start from bottom
+                            const end = Offset.zero; // End at original position
+                            const curve = Curves.easeInOut;
+
+                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                            var offsetAnimation = animation.drive(tween);
+
+                            return SlideTransition(
+                              position: offsetAnimation,
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
                       return;
                     }
                     setState(() {
@@ -143,7 +161,7 @@ class _AppState extends State<App> {
         '/otppage': (context) => const OtpPage(),
         '/newpass': (context) => const NewPass(),
         '/contactus': (context) => ContactUsPage(),
-        '/myaddress': (context) => MyAddressPage(),
+        '/myaddress': (context) => AddAddress(),
       },
     );
   }
