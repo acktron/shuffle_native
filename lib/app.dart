@@ -18,6 +18,7 @@ import 'package:shuffle_native/pages/rental/upload_item.dart';
 import 'package:shuffle_native/pages/contact_us.dart';
 import 'package:shuffle_native/pages/profile/add_pickup_spot.dart';
 import 'package:provider/provider.dart';
+// import 'package:shuffle_native/widget/cards/address_card.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -34,7 +35,8 @@ class _AppState extends State<App> {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent, // Transparent status bar
-        statusBarIconBrightness: Brightness.dark, // Dark icons for light background
+        statusBarIconBrightness:
+            Brightness.dark, // Dark icons for light background
       ),
     );
   }
@@ -43,7 +45,7 @@ class _AppState extends State<App> {
 
   final List<Widget> _pages = [
     const Homepage(),
-    const RentedItemsPage(),
+    MyRentalsPage(),
     const UploadItemPage(),
     NotificationPage(),
     const ProfilePage(),
@@ -56,99 +58,118 @@ class _AppState extends State<App> {
     return MaterialApp(
       title: 'Shuffle',
       debugShowCheckedModeBanner: false,
-      home: authProvider.isLoggedIn 
-          ? Builder(
-              builder: (context) => Scaffold(
-                body: IndexedStack(
-                  index: _selectedIndex,
-                  children: _pages,
-                ),
-                bottomNavigationBar: BottomNavigationBar(
-                  currentIndex: _selectedIndex,
-                  onTap: (index) {
-                    if (index == 2) {
-                      // Navigate to the upload page
-                      Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          pageBuilder: (context, animation, secondaryAnimation) => const UploadItemPage(),
-                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                            const begin = Offset(0.0, 1.0); // Start from bottom
-                            const end = Offset.zero; // End at original position
-                            const curve = Curves.easeInOut;
-
-                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                            var offsetAnimation = animation.drive(tween);
-
-                            return SlideTransition(
-                              position: offsetAnimation,
-                              child: child,
-                            );
-                          },
-                        ),
-                      );
-                      return;
-                    }
-                    setState(() {
-                      _selectedIndex = index;
-                      if (index == 3) {
-                        WebSocketService.notificationCount.value = 0; // Reset count on Notifications tab
-                      }
-                    });
-                  },
-                  type: BottomNavigationBarType.fixed,
-                  selectedItemColor: const Color(0xFF087272),
-                  unselectedItemColor: Colors.grey,
-                  items: [
-                    const BottomNavigationBarItem(
-                      icon: Icon(Icons.home),
-                      label: 'Home',
-                    ),
-                    const BottomNavigationBarItem(
-                      icon: Icon(Icons.inventory_2),
-                      label: 'Rented',
-                    ),
-                    const BottomNavigationBarItem(
-                      icon: Icon(Icons.add_box),
-                      label: 'Upload Item',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: ValueListenableBuilder<int>(
-                        valueListenable: WebSocketService.notificationCount,
-                        builder: (context, count, child) {
-                          return Stack(
-                            children: [
-                              const Icon(Icons.notifications),
-                              if (count > 0)
-                                Positioned(
-                                  right: 0,
-                                  child: CircleAvatar(
-                                    radius: 8,
-                                    backgroundColor: Colors.red,
-                                    child: Text(
-                                      '$count',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          );
-                        },
+      home:
+          authProvider.isLoggedIn
+              ? Builder(
+                builder:
+                    (context) => Scaffold(
+                      body: IndexedStack(
+                        index: _selectedIndex,
+                        children: _pages,
                       ),
-                      label: 'Notifications',
+                      bottomNavigationBar: BottomNavigationBar(
+                        currentIndex: _selectedIndex,
+                        onTap: (index) {
+                          if (index == 2) {
+                            // Navigate to the upload page
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        UploadItemPage(),
+                                transitionsBuilder: (
+                                  context,
+                                  animation,
+                                  secondaryAnimation,
+                                  child,
+                                ) {
+                                  const begin = Offset(
+                                    0.0,
+                                    1.0,
+                                  ); // Start from bottom
+                                  const end =
+                                      Offset.zero; // End at original position
+                                  const curve = Curves.easeInOut;
+
+                                  var tween = Tween(
+                                    begin: begin,
+                                    end: end,
+                                  ).chain(CurveTween(curve: curve));
+                                  var offsetAnimation = animation.drive(tween);
+
+                                  return SlideTransition(
+                                    position: offsetAnimation,
+                                    child: child,
+                                  );
+                                },
+                              ),
+                            );
+                            return;
+                          }
+                  
+                          setState(() {
+                            _selectedIndex = index;
+                            if (index == 3) {
+                              WebSocketService.notificationCount.value =
+                                  0; // Reset count on Notifications tab
+                            }
+                          });
+                        },
+                        type: BottomNavigationBarType.fixed,
+                        selectedItemColor: const Color(0xFF087272),
+                        unselectedItemColor: Colors.grey,
+                        items: [
+                          const BottomNavigationBarItem(
+                            icon: Icon(Icons.home),
+                            label: 'Home',
+                          ),
+                          const BottomNavigationBarItem(
+                            icon: Icon(Icons.inventory_2),
+                            label: 'Rentals',
+                          ),
+                          const BottomNavigationBarItem(
+                            icon: Icon(Icons.add_box),
+                            label: 'Upload Item',
+                          ),
+                          BottomNavigationBarItem(
+                            icon: ValueListenableBuilder<int>(
+                              valueListenable:
+                                  WebSocketService.notificationCount,
+                              builder: (context, count, child) {
+                                return Stack(
+                                  children: [
+                                    const Icon(Icons.notifications),
+                                    if (count > 0)
+                                      Positioned(
+                                        right: 0,
+                                        child: CircleAvatar(
+                                          radius: 8,
+                                          backgroundColor: Colors.red,
+                                          child: Text(
+                                            '$count',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                );
+                              },
+                            ),
+                            label: 'Notifications',
+                          ),
+                          const BottomNavigationBarItem(
+                            icon: Icon(Icons.person),
+                            label: 'Profile',
+                          ),
+                        ],
+                      ),
                     ),
-                    const BottomNavigationBarItem(
-                      icon: Icon(Icons.person),
-                      label: 'Profile',
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : const WelcomePage(),
+              )
+              : const WelcomePage(),
       routes: {
         '/signin': (context) => SignInPage(),
         '/signup': (context) => SignUpPage(),

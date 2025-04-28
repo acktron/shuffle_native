@@ -54,7 +54,7 @@ class _RentRequestDetailsPageState extends State<RentRequestDetailsPage> {
   Widget _buildProductImage() {
     return Center(
       child: Image.network(
-        "${baseUrl}${widget.booking.item.image}", // Replace with your actual image path
+        "$baseUrl${widget.booking.item.image}", // Replace with your actual image path
         height: 180,
         width: 180,
       ),
@@ -66,7 +66,7 @@ class _RentRequestDetailsPageState extends State<RentRequestDetailsPage> {
       children: [
         Center(
           child: Text(
-            "${widget.booking.item.name}",
+            widget.booking.item.name,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
@@ -103,7 +103,7 @@ class _RentRequestDetailsPageState extends State<RentRequestDetailsPage> {
         ),
         RequestInfoItem(
           label: 'Status:',
-          value: '${widget.booking.status}',
+          value: widget.booking.status,
           valueStyle: TextStyle(
             fontWeight: FontWeight.w600,
             color: Colors.orange,

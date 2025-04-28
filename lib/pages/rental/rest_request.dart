@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:shuffle_native/pages/rental/approve_page.dart';
-import 'package:shuffle_native/utils/constants.dart';
 import 'package:shuffle_native/models/booking.dart';
 import 'package:shuffle_native/services/api_service.dart';
 import 'package:shuffle_native/widget/cards/rent_request_card.dart';
