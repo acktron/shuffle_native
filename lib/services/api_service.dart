@@ -25,6 +25,20 @@ class ApiService {
     }
   }
 
+  Future<bool> updateAddress(Address address) async {
+    print('Updating address: ${address.id}');
+    final response = await _dio.put(
+      '/api/users/address/${address.id}/',
+      data: address.toJson(),
+    );
+    return response.statusCode == 200;
+  }
+
+  Future<bool> deleteAddress(int id) async {
+    final response = await _dio.delete('/api/users/address/$id/');
+    return response.statusCode == 204;
+  }
+
   Future<bool> addAddress(Address address) async {
     final response = await _dio.post('/api/users/address/', data: address.toJson());
     return response.statusCode == 201;

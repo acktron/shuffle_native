@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shuffle_native/pages/map.dart';
 import 'package:shuffle_native/providers/auth_provider.dart';
 import 'package:shuffle_native/widget/indicators/pacman_loading_indicator.dart';
 import 'package:shuffle_native/widget/logos/app_logo.dart';
@@ -196,6 +197,15 @@ class _HomepageState extends State<Homepage> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(
+            builder: (context) => const MapPage(),
+          ));
+        },
+        backgroundColor: tealColor,
+        child: const Icon(Icons.map_outlined),
       ),
     );
   }

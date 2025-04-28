@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shuffle_native/pages/auth/change_password.dart';
 import 'package:shuffle_native/pages/contact_us.dart';
-import 'package:shuffle_native/pages/profile/my_address.dart';
+import 'package:shuffle_native/pages/profile/pickup_spots.dart';
 import 'package:shuffle_native/pages/rental/my_rentals.dart';
 import 'package:shuffle_native/pages/rental/rest_request.dart';
 import 'package:shuffle_native/services/api_service.dart';
@@ -95,7 +95,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   context,
                   Icons.location_on_outlined,
                   "My Address",
-                  destinationPage: const MyAddress(),
+                  destinationPage: const MyPickupSpots(),
                   onPressed: () {}, // No action needed since destinationPage is provided
                 ),
                 _buildProfileOption(
