@@ -3,6 +3,7 @@ import 'package:shuffle_native/pages/auth/change_password.dart';
 import 'package:shuffle_native/pages/contact_us.dart';
 import 'package:shuffle_native/pages/profile/my_address.dart';
 import 'package:shuffle_native/pages/rental/my_rentals.dart';
+import 'package:shuffle_native/pages/rental/rented_page.dart';
 import 'package:shuffle_native/pages/rental/rest_request.dart';
 import 'package:shuffle_native/services/api_service.dart';
 import 'package:shuffle_native/widget/buttons/danger_button.dart';
@@ -83,7 +84,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   context,
                   Icons.image,
                   "My Rentals",
-                  destinationPage: MyRentalsPage(),
+                  destinationPage: RentedItemsPage(),
                 ),
                 _buildProfileOption(
                   context,

@@ -4,7 +4,7 @@ import 'package:shuffle_native/services/api_service.dart';
 
 class CheckoutPage extends StatefulWidget {
   final int bookingId;
-  const CheckoutPage({Key? key, required this.bookingId}) : super(key: key);
+  const CheckoutPage({super.key, required this.bookingId});
 
   @override
   State<CheckoutPage> createState() => _CheckoutPageState();

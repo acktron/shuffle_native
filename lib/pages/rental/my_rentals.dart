@@ -5,35 +5,42 @@ import 'package:shuffle_native/pages/rental/payment.dart';
 import 'package:shuffle_native/services/api_service.dart';
 
 class MyRentalsPage extends StatefulWidget {
-  final ApiService _apiService = ApiService(); // Initialize ApiService
-  final String selectedStatus; // Added selectedStatus parameter
+  final ApiService _apiService = ApiService();
+  final String selectedStatus;
+  final bool showAppBar;
 
-  MyRentalsPage({super.key, this.selectedStatus = "Active"}); // Default to "Active"
+  MyRentalsPage({
+    super.key,
+    this.selectedStatus = "Active",
+    this.showAppBar = true,
+  });
 
   @override
-  // ignore: library_private_types_in_public_api
   _MyRentalsPageState createState() => _MyRentalsPageState();
 }
 
 class _MyRentalsPageState extends State<MyRentalsPage> {
-  late String selectedStatus; // Changed to late to initialize in initState
+  late String selectedStatus;
   List<Booking> allItems = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    selectedStatus = widget.selectedStatus; // Initialize selectedStatus
-    widget._apiService.getUserBookings().then((value) {
-      setState(() {
-        allItems = value;
-        isLoading = false;
-      });
-    }).catchError((error) {
-      setState(() {
-        isLoading = false;
-      });
-    });
+    selectedStatus = widget.selectedStatus;
+    widget._apiService
+        .getUserBookings()
+        .then((value) {
+          setState(() {
+            allItems = value;
+            isLoading = false;
+          });
+        })
+        .catchError((error) {
+          setState(() {
+            isLoading = false;
+          });
+        });
   }
 
   @override
@@ -41,91 +48,97 @@ class _MyRentalsPageState extends State<MyRentalsPage> {
     List<Booking> filteredItems =
         allItems.where((item) => item.status == selectedStatus).toList();
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.teal),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          "Rented Items",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          const SizedBox(height: 8),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Row(
-              children:
-                  ["ACTIVE", "PENDING", "APPROVED", "REJECTED", "COMPLETED"]
-                      .map(
-                        (status) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              backgroundColor:
-                                  selectedStatus == status
-                                      ? Colors.teal.shade100
-                                      : Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              side: BorderSide(color: Colors.teal),
+    Widget mainContent = Column(
+      children: [
+        const SizedBox(height: 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            children:
+                ["ACTIVE", "PENDING", "APPROVED", "REJECTED", "COMPLETED"]
+                    .map(
+                      (status) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor:
+                                selectedStatus == status
+                                    ? Colors.teal.shade100
+                                    : Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            onPressed: () {
-                              setState(() {
-                                selectedStatus = status;
-                              });
-                            },
-                            child: Text(
-                              status,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color:
-                                    selectedStatus == status
-                                        ? Colors.teal[900]
-                                        : Colors.teal,
-                              ),
+                            side: BorderSide(color: Colors.teal),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              selectedStatus = status;
+                            });
+                          },
+                          child: Text(
+                            status,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color:
+                                  selectedStatus == status
+                                      ? Colors.teal[900]
+                                      : Colors.teal,
                             ),
                           ),
                         ),
-                      )
-                      .toList(),
-            ),
+                      ),
+                    )
+                    .toList(),
           ),
-          const SizedBox(height: 12),
-          Expanded(
-            child: isLoading
-                ? Center(
+        ),
+        const SizedBox(height: 12),
+        Expanded(
+          child:
+              isLoading
+                  ? Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
                     ),
                   )
-                : filteredItems.isEmpty
-                    ? Center(
-                        child: Text(
-                          "No rentals available for the selected status.",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      )
-                    : ListView.builder(
-                        itemCount: filteredItems.length,
-                        itemBuilder: (context, index) {
-                          return RentalItemCard(booking: filteredItems[index]);
-                        },
+                  : filteredItems.isEmpty
+                  ? Center(
+                    child: Text(
+                      "No rentals available for the selected status.",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey.shade600,
                       ),
-          ),
-        ],
-      ),
+                    ),
+                  )
+                  : ListView.builder(
+                    itemCount: filteredItems.length,
+                    itemBuilder: (context, index) {
+                      return RentalItemCard(booking: filteredItems[index]);
+                    },
+                  ),
+        ),
+      ],
     );
+
+    return widget.showAppBar
+        ? Scaffold(
+          
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.teal),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: const Text(
+              "Rented Items",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: Colors.white,
+            elevation: 0,
+          ),
+          body: mainContent,
+        )
+        : mainContent;
   }
 }
 
@@ -154,7 +167,7 @@ class RentalItemCard extends StatelessWidget {
           child: Row(
             children: [
               Image.network(
-                "${baseUrl}${booking.item.image}",
+                "$baseUrl${booking.item.image}",
                 height: 80,
                 width: 60,
                 fit: BoxFit.cover,
@@ -192,11 +205,13 @@ class RentalItemCard extends StatelessWidget {
               const SizedBox(width: 8),
               Chip(
                 label: Text("${booking.status} !"),
-                backgroundColor: booking.status == "Rejected"
-                    ? Colors.red.shade100
-                    : Colors.green.shade100,
+                backgroundColor:
+                    booking.status == "Rejected"
+                        ? Colors.red.shade100
+                        : Colors.green.shade100,
                 labelStyle: TextStyle(
-                  color: booking.status == "Rejected" ? Colors.red : Colors.teal,
+                  color:
+                      booking.status == "Rejected" ? Colors.red : Colors.teal,
                   fontWeight: FontWeight.w600,
                 ),
               ),
