@@ -1,4 +1,5 @@
 class Address {
+  int? id;
   int? user;
   String fullName;
   String phoneNumber;
@@ -11,6 +12,7 @@ class Address {
   DateTime? createdAt;
 
   Address({
+    this.id,
     this.user,
     required this.fullName,
     required this.phoneNumber,
@@ -25,6 +27,7 @@ class Address {
 
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
+      id: json['id'],
       user: json['user'],
       fullName: json['full_name'],
       phoneNumber: json['phone_number'],
@@ -40,7 +43,6 @@ class Address {
 
   Map<String, dynamic> toJson() {
     return {
-      // 'user': user,
       'full_name': fullName,
       'phone_number': phoneNumber,
       'street_address': streetAddress,
@@ -49,7 +51,6 @@ class Address {
       'postal_code': postalCode,
       'country': country,
       'is_default': isDefault,
-      // 'created_at': createdAt!.toIso8601String(),
     };
   }
 }

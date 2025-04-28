@@ -16,9 +16,9 @@ import 'package:shuffle_native/pages/rental/rest_request.dart';
 import 'package:shuffle_native/services/web_socket_service.dart';
 import 'package:shuffle_native/pages/rental/upload_item.dart';
 import 'package:shuffle_native/pages/contact_us.dart';
-import 'package:shuffle_native/pages/profile/add_address.dart';
+import 'package:shuffle_native/pages/profile/add_pickup_spot.dart';
 import 'package:provider/provider.dart';
-import 'package:shuffle_native/widget/cards/address_card.dart';
+// import 'package:shuffle_native/widget/cards/address_card.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -182,7 +182,7 @@ class _AppState extends State<App> {
         '/otppage': (context) => const OtpPage(),
         '/newpass': (context) => const NewPass(),
         '/contactus': (context) => ContactUsPage(),
-        '/myaddress': (context) => AddAddress(),
+        '/myaddress': (context) => AddPickupSpot(),
       },
     );
   }
