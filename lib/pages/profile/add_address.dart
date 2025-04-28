@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shuffle_native/models/address.dart';
+import 'package:shuffle_native/pages/profile/my_address.dart';
+import 'package:shuffle_native/services/api_service.dart';
 import 'package:shuffle_native/widget/inputs/text_input.dart';
 import 'package:shuffle_native/widget/logos/app_logo.dart';
 
@@ -18,6 +21,7 @@ class _AddAddressState extends State<AddAddress> {
   final TextEditingController pincodeController = TextEditingController();
   final TextEditingController countryController = TextEditingController();
   bool isDefault = false;
+  final ApiService _apiService = ApiService();
 
   @override
   void dispose() {
@@ -34,7 +38,7 @@ class _AddAddressState extends State<AddAddress> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true, // ✅ fix yellow overflow
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
@@ -130,7 +134,7 @@ class _AddAddressState extends State<AddAddress> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async{
                   // TODO: Save address logic using controllers
                   print({
                     'full_name': fullNameController.text,
@@ -142,6 +146,34 @@ class _AddAddressState extends State<AddAddress> {
                     'country': countryController.text,
                     'is_default': isDefault,
                   });
+                  final success = await _apiService.addAddress(
+                    Address(
+                      fullName: fullNameController.text,
+                      phoneNumber: phoneNumberController.text,
+                      streetAddress: streetController.text,
+                      city: cityController.text,
+                      state: stateController.text,
+                      postalCode: pincodeController.text,
+                      country: countryController.text,
+                      isDefault: isDefault,
+                    )
+                  );
+
+                  if (success) {
+                    Navigator.push(context, 
+                      MaterialPageRoute(
+                        builder: (context) => const MyAddress(),
+                      ),
+                    );
+                  } else {
+                    // Handle error
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Failed to add address. Please try again.'),
+                      ),
+                    );
+                  }
+
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal,

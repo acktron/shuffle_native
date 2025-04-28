@@ -61,7 +61,9 @@ class _MyAddressState extends State<MyAddress> {
       ),
       body: Column(
         children: [
-          Expanded(child: isLoading ? _buildLoadingState() : _buildLoadedState()),
+          Expanded(
+            child: isLoading ? _buildLoadingState() : _buildLoadedState(),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
             child: SizedBox(
