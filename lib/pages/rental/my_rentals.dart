@@ -3,6 +3,7 @@ import 'package:shuffle_native/utils/constants.dart';
 import 'package:shuffle_native/models/booking.dart';
 import 'package:shuffle_native/pages/rental/payment.dart';
 import 'package:shuffle_native/services/api_service.dart';
+import 'package:shuffle_native/widget/shimmers/address_card_shirmmer.dart';
 
 class MyRentalsPage extends StatefulWidget {
   final ApiService _apiService = ApiService();
@@ -94,52 +95,53 @@ class _MyRentalsPageState extends State<MyRentalsPage> {
         ),
         const SizedBox(height: 12),
         Expanded(
-          child:
-              isLoading
+          child: isLoading
+              ? _buildLoadingState()
+              : filteredItems.isEmpty
                   ? Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
-                    ),
-                  )
-                  : filteredItems.isEmpty
-                  ? Center(
-                    child: Text(
-                      "No rentals available for the selected status.",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey.shade600,
+                      child: Text(
+                        "No rentals available for the selected status.",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
-                    ),
-                  )
+                    )
                   : ListView.builder(
-                    itemCount: filteredItems.length,
-                    itemBuilder: (context, index) {
-                      return RentalItemCard(booking: filteredItems[index]);
-                    },
-                  ),
+                      itemCount: filteredItems.length,
+                      itemBuilder: (context, index) {
+                        return RentalItemCard(booking: filteredItems[index]);
+                      },
+                    ),
         ),
       ],
     );
 
     return widget.showAppBar
         ? Scaffold(
-          
-          appBar: AppBar(
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.teal),
-              onPressed: () => Navigator.pop(context),
+            appBar: AppBar(
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.teal),
+                onPressed: () => Navigator.pop(context),
+              ),
+              title: const Text(
+                "Rented Items",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: Colors.white,
+              elevation: 0,
             ),
-            title: const Text(
-              "Rented Items",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            backgroundColor: Colors.white,
-            elevation: 0,
-          ),
-          body: mainContent,
-        )
+            body: mainContent,
+          )
         : mainContent;
   }
+}
+
+Widget _buildLoadingState() {
+  return ListView.builder(
+    itemCount: 3, // Display 3 shimmer cards as placeholders
+    itemBuilder: (context, index) => AddressCardShirmmer(), // No change needed
+  );
 }
 
 class RentalItemCard extends StatelessWidget {
