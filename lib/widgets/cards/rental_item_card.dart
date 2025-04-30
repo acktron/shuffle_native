@@ -66,13 +66,21 @@ class RentalItemCard extends StatelessWidget {
               const SizedBox(width: 8),
               Chip(
                 label: Text("${booking.status} !"),
-                backgroundColor:
-                    booking.status == "Rejected"
-                        ? Colors.red.shade100
-                        : Colors.green.shade100,
+                backgroundColor: {
+                  "ACTIVE": Colors.green.shade100,
+                  "PENDING": Colors.orange.shade100,
+                  "APPROVED": Colors.blue.shade100,
+                  "REJECTED": Colors.red.shade100,
+                  "COMPLETED": Colors.purple.shade100,
+                }[booking.status] ?? Colors.grey.shade100,
                 labelStyle: TextStyle(
-                  color:
-                      booking.status == "Rejected" ? Colors.red : Colors.teal,
+                  color: {
+                    "ACTIVE": Colors.green.shade800,
+                    "PENDING": Colors.orange.shade800,
+                    "APPROVED": Colors.blue.shade800,
+                    "REJECTED": Colors.red.shade800,
+                    "COMPLETED": Colors.purple.shade800,
+                  }[booking.status] ?? Colors.grey.shade800,
                   fontWeight: FontWeight.w600,
                 ),
               ),

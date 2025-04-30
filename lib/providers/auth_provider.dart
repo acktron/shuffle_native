@@ -24,6 +24,15 @@ class AuthProvider with ChangeNotifier {
     return success > 0;
   }
 
+  Future<bool> googleLogin(String idToken) async {
+    final success = await AuthService().googleLogin(idToken);
+    if (success) {
+      _isLoggedIn = true;
+      notifyListeners();
+    }
+    return success;
+  }
+
   Future<bool> register(String name, String email, String password) async {
     final success = await AuthService().register(name, email, password);
     if (success) {

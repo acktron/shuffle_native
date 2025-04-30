@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shuffle_native/models/booking.dart';
 import 'package:shuffle_native/services/api_service.dart';
 import 'package:shuffle_native/widgets/cards/rental_item_card.dart';
+import 'package:shimmer/shimmer.dart';
 
 class MyRentalsPage extends StatefulWidget {
   final ApiService _apiService = ApiService();
@@ -49,10 +50,6 @@ class _MyRentalsPageState extends State<MyRentalsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.teal),
-          onPressed: () => Navigator.pop(context),
-        ),
         title: const Text(
           "Rented Items",
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -126,18 +123,49 @@ class _MyRentalsPageState extends State<MyRentalsPage> {
                 }
               },
               child: isLoading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
+                  ? Shimmer.fromColors(
+                      baseColor: Colors.grey.shade300,
+                      highlightColor: Colors.grey.shade100,
+                      child: ListView.builder(
+                        itemCount: 6,
+                        itemBuilder: (context, index) => Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          child: Container(
+                            height: 150,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
                       ),
                     )
                   : filteredItems.isEmpty
-                      ? Center(
-                          child: Text(
-                            "No rentals available for the selected status.",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey.shade600,
+                      ? SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 100),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.hourglass_empty,
+                                    size: 80,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    "No rentals available for the selected status.",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         )

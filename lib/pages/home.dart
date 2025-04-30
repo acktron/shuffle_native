@@ -17,7 +17,6 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  String _currentLocation = 'Fetching location...';
   String _currentAddress = 'Fetching address...';
   List<Item> _items = []; // Update to make it dynamic
   final ApiService _apiService = ApiService(); // Initialize ApiService
@@ -42,11 +41,8 @@ class _HomepageState extends State<Homepage> {
       print(
         "Location data: ${locationData.latitude}, ${locationData.longitude}",
       );
-      final latitude = locationData.latitude;
-      final longitude = locationData.longitude;
 
       setState(() {
-        _currentLocation = 'Fetching address...';
       });
 
       try {
@@ -81,7 +77,6 @@ class _HomepageState extends State<Homepage> {
       }
     } else {
       setState(() {
-        _currentLocation = 'Unable to fetch location';
         _currentAddress = 'Unable to fetch address';
       });
     }

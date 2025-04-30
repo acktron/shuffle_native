@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:shuffle_native/app.dart';
-import 'package:shuffle_native/pages/auth/forgot_password.dart';
+// import 'package:shuffle_native/pages/auth/forgot_password.dart';
 import 'package:shuffle_native/providers/auth_provider.dart';
 import 'package:shuffle_native/widgets/buttons/primary_button.dart';
 import 'package:shuffle_native/widgets/dialogs/alert_dialog.dart';
 import 'package:shuffle_native/widgets/indicators/pacman_loading_indicator.dart';
-import 'package:shuffle_native/widgets/inputs/email_input.dart';
-import 'package:shuffle_native/widgets/inputs/password_input.dart';
+// import 'package:shuffle_native/widgets/inputs/email_input.dart';
+// import 'package:shuffle_native/widgets/inputs/password_input.dart';
 import 'package:shuffle_native/widgets/logos/app_logo.dart';
 
 class SignInPage extends StatefulWidget {
@@ -109,127 +109,129 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   const SizedBox(height: 32),
 
-                  EmailField(controller: emailController),
-                  const SizedBox(height: 16),
+                  // EmailField(controller: emailController),
+                  // const SizedBox(height: 16),
 
-                  PasswordField(controller: passwordController),
-                  const SizedBox(height: 8),
+                  // PasswordField(controller: passwordController),
+                  // const SizedBox(height: 8),
 
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const ForgotPasswordUI(),
-                          ),
-                        );
-                      },
-                      child: const Text(
-                        'Forgot password?',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  PrimaryButton(text: "Sign in", onPressed: _login),
+                  // Align(
+                  //   alignment: Alignment.centerRight,
+                  //   child: TextButton(
+                  //     onPressed: () {
+                  //       Navigator.push(
+                  //         context,
+                  //         MaterialPageRoute(
+                  //           builder: (_) => const ForgotPasswordUI(),
+                  //         ),
+                  //       );
+                  //     },
+                  //     child: const Text(
+                  //       'Forgot password?',
+                  //       style: TextStyle(color: Colors.grey),
+                  //     ),
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 16),
+                  // PrimaryButton(text: "Sign in", onPressed: _login),
                   PrimaryButton(
                     text: "Sign in with Google",
                     onPressed: () async {
-                      // Handle Google Sign-In
-                      // logout if already signed in
-                      // try {
-                      //   await _googleSignIn.signOut();
-                      // } catch (error) {
-                      //   // Handle error
-                      //   showDialog(
-                      //     context: context,
-                      //     builder:
-                      //         (context) => CustomAlertDialog(
-                      //           icon: Icons.error,
-                      //           iconColor: Colors.red,
-                      //           title: 'Google Sign-Out Failed',
-                      //           message: 'Please try again later.',
-                      //           buttonText: 'OK',
-                      //           onButtonPressed: () {
-                      //             Navigator.of(context).pop();
-                      //           },
-                      //         ),
-                      //   );
-                      // }
                       try {
-                        setState(() {
-                          isLoading = true;
-                        });
-
-                        _googleSignIn
-                            .signIn()
-                            .then((result) {
-                              result?.authentication
-                                  .then((googleKey) {
-                                    // Handle the Google Sign-In result
-                                    print('Google Sign-In successful');
-                                    print("Google User: ${result.displayName}");
-                                    print("Google ID Token: ${googleKey.idToken}");
-                                    print("Google Access Token: ${googleKey.accessToken}");
-
-                                  })
-                                  .catchError((err) {
-                                    print('inner error');
-                                  });
-                            })
-                            .catchError((err) {
-                              print('error occured $err');
-                            });
-
-                        // final GoogleSignInAccount? googleUser =
-                        //     await _googleSignIn.signIn();
-
-                        // if (googleUser == null) {
-                        //   // User canceled the sign-in
-                        //   setState(() {
-                        //     isLoading = false;
-                        //   });
-                        //   return;
-                        // }
-
-                        // print("Google User: ${googleUser}");
-
-                        // final GoogleSignInAuthentication? googleAuth =
-                        //     await googleUser?.authentication;
-
-                        // final idToken = googleAuth?.idToken;
-                        // if (idToken == null) {
-                        //   // Handle error
-                        //   // return;
-                        // }
-
-                        // print("Google ID Token: $idToken");
-
-                        setState(() {
-                          isLoading = false;
-                        });
+                        await _googleSignIn.signOut();
                       } catch (error) {
-                        print("Error signing in with Google: $error");
-                        // Handle error
-                        showDialog(
-                          context: context,
-                          builder:
-                              (context) => CustomAlertDialog(
-                                icon: Icons.error,
-                                iconColor: Colors.red,
-                                title: 'Google Sign-In Failed',
-                                message: 'Please try again later.',
-                                buttonText: 'OK',
-                                onButtonPressed: () {
+                        if (mounted && context.mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => CustomAlertDialog(
+                              icon: Icons.error,
+                              iconColor: Colors.red,
+                              title: 'Google Sign-Out Failed',
+                              message: 'Please try again later.',
+                              buttonText: 'OK',
+                              onButtonPressed: () {
+                                if (context.mounted) {
                                   Navigator.of(context).pop();
+                                }
+                              },
+                            ),
+                          );
+                        }
+                        return;
+                      }
+
+                      setState(() {
+                        isLoading = true;
+                      });
+
+                      try {
+                        final result = await _googleSignIn.signIn();
+                        if (result == null) {
+                          if (mounted) {
+                            setState(() {
+                              isLoading = false;
+                            });
+                          }
+                          return;
+                        }
+
+                        final googleKey = await result.authentication;
+
+                        final success = await Provider.of<AuthProvider>(
+                          context,
+                          listen: false,
+                        ).googleLogin(googleKey.idToken!);
+
+                        if (mounted && context.mounted) {
+                          setState(() {
+                            isLoading = false;
+                          });
+
+                          if (success) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => App()),
+                            );
+                          } else {
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => CustomAlertDialog(
+                                icon: Icons.error,
+                                iconColor: Colors.green,
+                                title: 'Login Failed',
+                                message: 'Invalid email or password.',
+                                buttonText: 'Try Again',
+                                onButtonPressed: () {
+                                  if (context.mounted) {
+                                    Navigator.of(context).pop();
+                                  }
                                 },
                               ),
-                        );
-                        setState(() {
-                          isLoading = false;
-                        });
+                            );
+                          }
+                        }
+                      } catch (error) {
+                        if (mounted && context.mounted) {
+                          setState(() {
+                            isLoading = false;
+                          });
+                          showDialog(
+                            context: context,
+                            builder: (context) => CustomAlertDialog(
+                              icon: Icons.error,
+                              iconColor: Colors.red,
+                              title: 'Google Sign-In Failed',
+                              message: 'Please try again later.',
+                              buttonText: 'OK',
+                              onButtonPressed: () {
+                                if (context.mounted) {
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                            ),
+                          );
+                        }
                       }
                     },
                   ),
