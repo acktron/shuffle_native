@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shuffle_native/providers/auth_provider.dart';
-import 'package:shuffle_native/widget/buttons/primary_button.dart';
-import 'package:shuffle_native/widget/indicators/pacman_loading_indicator.dart';
-import 'package:shuffle_native/widget/inputs/email_input.dart';
-import 'package:shuffle_native/widget/inputs/password_input.dart';
-import 'package:shuffle_native/widget/inputs/text_input.dart';
-import 'package:shuffle_native/widget/dialogs/alert_dialog.dart';
-import 'package:shuffle_native/widget/logos/app_logo.dart';
+import 'package:shuffle_native/widgets/buttons/primary_button.dart';
+import 'package:shuffle_native/widgets/indicators/pacman_loading_indicator.dart';
+import 'package:shuffle_native/widgets/inputs/email_input.dart';
+import 'package:shuffle_native/widgets/inputs/password_input.dart';
+import 'package:shuffle_native/widgets/inputs/text_input.dart';
+import 'package:shuffle_native/widgets/dialogs/alert_dialog.dart';
+import 'package:shuffle_native/widgets/logos/app_logo.dart';
 
 class ShuffleApp extends StatelessWidget {
   const ShuffleApp({super.key});

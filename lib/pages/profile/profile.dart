@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shuffle_native/pages/auth/change_password.dart';
 import 'package:shuffle_native/pages/contact_us.dart';
 import 'package:shuffle_native/pages/profile/pickup_spots.dart';
-import 'package:shuffle_native/pages/rental/my_rentals.dart';
 import 'package:shuffle_native/pages/rental/rented_page.dart';
 import 'package:shuffle_native/pages/rental/rest_request.dart';
+import 'package:shuffle_native/providers/auth_provider.dart';
 import 'package:shuffle_native/services/api_service.dart';
-import 'package:shuffle_native/widget/buttons/danger_button.dart';
-import 'package:shuffle_native/widget/logos/app_logo.dart';
+import 'package:shuffle_native/widgets/buttons/danger_button.dart';
+import 'package:shuffle_native/widgets/logos/app_logo.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -29,6 +30,7 @@ class _ProfilePageState extends State<ProfilePage> {
       });
     });
   }
+
   final ApiService _apiService = ApiService(); // Initialize ApiService
   @override
   Widget build(BuildContext context) {
@@ -62,7 +64,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 12),
                 Text(
                   _name, // Safely use _name
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 GestureDetector(
@@ -97,7 +102,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   Icons.location_on_outlined,
                   "My Address",
                   destinationPage: const MyPickupSpots(),
-                  onPressed: () {}, // No action needed since destinationPage is provided
+                  onPressed:
+                      () {}, // No action needed since destinationPage is provided
                 ),
                 _buildProfileOption(
                   context,
@@ -115,10 +121,21 @@ class _ProfilePageState extends State<ProfilePage> {
                   destinationPage: const ContactUsPage(),
                 ),
                 const SizedBox(height: 20),
-                DangerButton(label: "Logout", onPressed: () {
-                  // Logout logic
-                  Navigator.pushNamed(context, '/welcome');
-                }),
+                DangerButton(
+                  label: "Logout",
+                  onPressed: () async {
+                    // Logout logic
+                    // Call the login method from AuthProvider
+                    final success =
+                        await Provider.of<AuthProvider>(
+                          context,
+                          listen: false,
+                        ).logout();
+                    if (success) {
+                      Navigator.pushNamed(context, '/welcome');
+                    }
+                  },
+                ),
               ],
             ),
           ),
@@ -140,19 +157,25 @@ class _ProfilePageState extends State<ProfilePage> {
           Navigator.push(
             context,
             PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => destinationPage,
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              pageBuilder:
+                  (context, animation, secondaryAnimation) => destinationPage,
+              transitionsBuilder: (
+                context,
+                animation,
+                secondaryAnimation,
+                child,
+              ) {
                 const begin = Offset(1.0, 0.0); // Slide in from the right
                 const end = Offset.zero; // End at the current position
                 const curve = Curves.easeInOut;
 
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                var tween = Tween(
+                  begin: begin,
+                  end: end,
+                ).chain(CurveTween(curve: curve));
                 var offsetAnimation = animation.drive(tween);
 
-                return SlideTransition(
-                  position: offsetAnimation,
-                  child: child,
-                );
+                return SlideTransition(position: offsetAnimation, child: child);
               },
             ),
           );

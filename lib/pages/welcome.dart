@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
 import "package:shuffle_native/pages/auth/signin.dart";
 import "package:shuffle_native/pages/auth/signup.dart";
-import "package:shuffle_native/widget/buttons/primary_button.dart";
-import "package:shuffle_native/widget/logos/app_logo.dart";
+import "package:shuffle_native/widgets/buttons/primary_button.dart";
+import "package:shuffle_native/widgets/logos/app_logo.dart";
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});

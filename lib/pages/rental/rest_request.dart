@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shuffle_native/models/booking.dart';
 import 'package:shuffle_native/services/api_service.dart';
-import 'package:shuffle_native/widget/cards/rent_request_card.dart';
+import 'package:shuffle_native/widgets/cards/rent_request_card.dart';
 
 class RentRequestsPage extends StatefulWidget {
   const RentRequestsPage({super.key});

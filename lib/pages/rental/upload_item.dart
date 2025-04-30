@@ -76,7 +76,9 @@ class _UploadItemPageState extends State<UploadItemPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF087272)),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         title: Row(
           children: [

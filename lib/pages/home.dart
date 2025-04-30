@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shuffle_native/pages/map.dart';
-import 'package:shuffle_native/providers/auth_provider.dart';
-import 'package:shuffle_native/widget/indicators/pacman_loading_indicator.dart';
-import 'package:shuffle_native/widget/logos/app_logo.dart';
-import 'package:shuffle_native/widget/rent_card.dart'; // Import the RentCard widget
+import 'package:shuffle_native/widgets/logos/app_logo.dart';
+import 'package:shuffle_native/widgets/rent_card.dart'; // Import the RentCard widget
 import 'package:shuffle_native/models/item.dart'; // Import the shared RentItem class
 import 'package:shuffle_native/services/location_service.dart'; // Import the LocationService
 import 'package:geocoding/geocoding.dart'; // Import the geocoding package
@@ -20,7 +17,6 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  String _currentLocation = 'Fetching location...';
   String _currentAddress = 'Fetching address...';
   List<Item> _items = []; // Update to make it dynamic
   final ApiService _apiService = ApiService(); // Initialize ApiService
@@ -45,11 +41,8 @@ class _HomepageState extends State<Homepage> {
       print(
         "Location data: ${locationData.latitude}, ${locationData.longitude}",
       );
-      final latitude = locationData.latitude;
-      final longitude = locationData.longitude;
 
       setState(() {
-        _currentLocation = 'Fetching address...';
       });
 
       try {
@@ -84,7 +77,6 @@ class _HomepageState extends State<Homepage> {
       }
     } else {
       setState(() {
-        _currentLocation = 'Unable to fetch location';
         _currentAddress = 'Unable to fetch address';
       });
     }
