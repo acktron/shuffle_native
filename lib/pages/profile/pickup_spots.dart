@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:implicitly_animated_reorderable_list_2/transitions.dart';
 import 'package:shuffle_native/models/address.dart';
-import 'package:shuffle_native/widget/cards/pickup_spot_card.dart';
+import 'package:shuffle_native/widgets/cards/pickup_spot_card.dart';
 import 'package:shuffle_native/services/api_service.dart';
-import 'package:shuffle_native/widget/shimmers/address_card_shirmmer.dart';
+import 'package:shuffle_native/widgets/shimmers/address_card_shirmmer.dart';
 import 'package:shuffle_native/pages/profile/add_pickup_spot.dart';
 import 'package:implicitly_animated_reorderable_list_2/implicitly_animated_reorderable_list_2.dart';
 

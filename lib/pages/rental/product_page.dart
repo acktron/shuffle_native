@@ -3,8 +3,8 @@ import 'package:shuffle_native/pages/rental/my_rentals.dart';
 import 'package:shuffle_native/utils/constants.dart';
 import 'package:shuffle_native/models/item.dart';
 import 'package:shuffle_native/services/api_service.dart';
-import 'package:shuffle_native/widget/buttons/secondary_button.dart';
-import 'package:shuffle_native/widget/logos/app_logo.dart';
+import 'package:shuffle_native/widgets/buttons/secondary_button.dart';
+import 'package:shuffle_native/widgets/logos/app_logo.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final Item item;

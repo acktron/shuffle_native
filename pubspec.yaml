@@ -50,6 +50,7 @@ dependencies:
   logger: ^2.5.0
   shimmer: ^3.0.0
   implicitly_animated_reorderable_list_2: ^0.6.0
+  google_sign_in: ^6.3.0
 
 dev_dependencies:
   flutter_test:

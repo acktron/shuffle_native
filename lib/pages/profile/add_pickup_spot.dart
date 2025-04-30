@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shuffle_native/models/address.dart';
 import 'package:shuffle_native/pages/profile/pickup_spots.dart';
 import 'package:shuffle_native/services/api_service.dart';
-import 'package:shuffle_native/widget/inputs/text_input.dart';
-import 'package:shuffle_native/widget/logos/app_logo.dart';
+import 'package:shuffle_native/widgets/inputs/text_input.dart';
+import 'package:shuffle_native/widgets/logos/app_logo.dart';
 
 class AddPickupSpot extends StatefulWidget {
   final Address? pickupSpot;
