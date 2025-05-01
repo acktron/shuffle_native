@@ -51,6 +51,9 @@ dependencies:
   shimmer: ^3.0.0
   implicitly_animated_reorderable_list_2: ^0.6.0
   google_sign_in: ^6.3.0
+  flutter_local_notifications: ^19.1.0
+  firebase_core: ^3.13.0
+  firebase_messaging: ^15.2.5
 
 dev_dependencies:
   flutter_test:
