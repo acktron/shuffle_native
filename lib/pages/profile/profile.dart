@@ -94,7 +94,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 _buildProfileOption(
                   context,
                   Icons.image,
-                  "My Rentals",
+                  "Rented Items",
                   destinationPage: RentedItemsPage(),
                 ),
                 _buildProfileOption(
@@ -106,20 +106,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 _buildProfileOption(
                   context,
                   Icons.location_on_outlined,
-                  "My Address",
+                  "Pickup Spots",
                   destinationPage: const MyPickupSpots(),
                   onPressed:
                       () {}, // No action needed since destinationPage is provided
                 ),
-                _buildProfileOption(
-                  context,
-                  Icons.lock_outline,
-                  "Change Password",
-                  destinationPage: const ChangePasswordPage(),
-                  // onPressed: () {
-                  //   Navigator.pushNamed(context, '/change-password');
-                  // },
-                ),
+                // _buildProfileOption(
+                //   context,
+                //   Icons.lock_outline,
+                //   "Change Password",
+                //   destinationPage: const ChangePasswordPage(),
+                //   // onPressed: () {
+                //   //   Navigator.pushNamed(context, '/change-password');
+                //   // },
+                // ),
                 _buildProfileOption(
                   context,
                   Icons.support_agent,

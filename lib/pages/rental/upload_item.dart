@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:shuffle_native/models/location.dart';
+import 'package:shuffle_native/pages/rental/rented_page.dart';
 import 'package:shuffle_native/services/api_service.dart';
 import 'package:shuffle_native/services/location_service.dart';
+import 'package:shuffle_native/widgets/main_scaffold.dart';
 
 void main() {
   runApp(const MyApp());
@@ -111,7 +113,10 @@ class _UploadItemPageState extends State<UploadItemPage> {
                   children: [
                     const Text(
                       'Upload Item',
-                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 24),
 
@@ -186,9 +191,8 @@ class _UploadItemPageState extends State<UploadItemPage> {
                                     child:
                                         _imageFile != null
                                             ? ClipRRect(
-                                              borderRadius: BorderRadius.circular(
-                                                8,
-                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                               child: Image.file(
                                                 _imageFile!,
                                                 fit: BoxFit.cover,
@@ -432,61 +436,78 @@ class _UploadItemPageState extends State<UploadItemPage> {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: _isLoading
-                            ? null
-                            : () async {
-                                if (_formKey.currentState!.validate()) {
-                                  setState(() {
-                                    _isLoading = true; // Show loader
-                                  });
+                        onPressed:
+                            _isLoading
+                                ? null
+                                : () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    setState(() {
+                                      _isLoading = true; // Show loader
+                                    });
 
-                                  final locationService = LocationService();
-                                  final locationData =
-                                      await locationService.getLocation();
+                                    final locationService = LocationService();
+                                    final locationData =
+                                        await locationService.getLocation();
 
-                                  print("Location Data: $locationData");
+                                    print("Location Data: $locationData");
 
-                                    
-                                  if (locationData == null) {
+                                    if (locationData == null) {
+                                      setState(() {
+                                        _isLoading = false; // Hide loader
+                                      });
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Location permission denied',
+                                          ),
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    final success = await _apiService
+                                        .listNewItem(
+                                          name: _nameController.text,
+                                          description:
+                                              _descriptionController.text,
+                                          pricePerDay: _priceController.text,
+                                          depositAmount:
+                                              _depositController.text,
+                                          image: _imageFile,
+                                          conditionNotes: _noteController.text,
+                                          location: Location("Point", [
+                                            locationData.longitude,
+                                            locationData.latitude,
+                                          ]),
+                                        );
+
                                     setState(() {
                                       _isLoading = false; // Hide loader
                                     });
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Location permission denied'),
-                                      ),
-                                    );
-                                    return;
+
+                                    if (success) {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => RentedItemsPage(),
+                                        ),
+                                      );
+                                    } else {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Failed to upload item',
+                                          ),
+                                        ),
+                                      );
+                                    }
                                   }
-
-                                  final success = await _apiService.listNewItem(
-                                    name: _nameController.text,
-                                    description: _descriptionController.text,
-                                    pricePerDay: _priceController.text,
-                                    depositAmount: _depositController.text,
-                                    image: _imageFile,
-                                    conditionNotes: _noteController.text,
-                                    location: Location("Point", [
-                                      locationData.longitude,
-                                      locationData.latitude,
-                                    ]),
-                                  );
-
-                                  setState(() {
-                                    _isLoading = false; // Hide loader
-                                  });
-
-                                  if (success) {
-                                    Navigator.pushNamed(context, '/homepage');
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Failed to upload item'),
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
+                                },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF087272),
                           shape: RoundedRectangleBorder(
@@ -512,9 +533,7 @@ class _UploadItemPageState extends State<UploadItemPage> {
             Container(
               color: Colors.black.withOpacity(0.5),
               child: const Center(
-                child: CircularProgressIndicator(
-                  color: Color(0xFF087272),
-                ),
+                child: CircularProgressIndicator(color: Color(0xFF087272)),
               ),
             ),
         ],

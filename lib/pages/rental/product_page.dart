@@ -116,12 +116,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   const SizedBox(height: 16),
 
                   // Rent Now button
-                  SecondaryButton(
-                    text: "Rent Now",
-                    onPressed: () {
-                      _showBottomModalSheet(context);
-                    },
-                  ),
+                  widget.item.isAvailable
+                      ? SecondaryButton(
+                        text: "Rent Now",
+                        onPressed: () {
+                          _showBottomModalSheet(context);
+                        },
+                      )
+                      : Text(
+                        'Currently Unavailable',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                   const SizedBox(height: 16),
 
                   // Description section
@@ -281,11 +290,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                   );
 
                                   Navigator.pop(context);
-                                  Navigator.push(context, 
+                                  Navigator.push(
+                                    context,
                                     MaterialPageRoute(
-                                      builder: (context) => MyRentalsPage(
-                                        selectedStatus: 'PENDING',
-                                      )
+                                      builder:
+                                          (context) => MyRentalsPage(
+                                            selectedStatus: 'PENDING',
+                                          ),
                                     ),
                                   );
                                 }

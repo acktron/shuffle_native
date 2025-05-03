@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:shuffle_native/models/booking.dart';
 import 'package:shuffle_native/services/api_service.dart';
+import 'package:shuffle_native/utils/constants.dart';
+import 'package:shuffle_native/widgets/indicators/pacman_loading_indicator.dart';
 
 class CheckoutPage extends StatefulWidget {
   final int bookingId;
@@ -15,12 +18,71 @@ class _CheckoutPageState extends State<CheckoutPage> {
   Booking? booking; // Nullable booking object
   bool isLoading = true; // Loading state
   String? errorMessage; // Error message state
+  final _razorpay = Razorpay();
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    // Handle payment success
+    print("Payment successful: ${response.paymentId}");
+
+    // Add your logic here
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    // Handle payment error
+    print("Payment failed: ${response.code} - ${response.message}");
+    // Add your logic here
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    // Handle external wallet selection
+    print("External wallet selected: ${response.walletName}");
+    // Add your logic here
+  }
 
   @override
   void initState() {
     super.initState();
     _fetchBooking(); // Fetch booking on init
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
   }
+
+  Future<void> createOrder() async {
+    try {
+      final response = await _apiService.createPayment(
+        booking!.total_price,
+        booking!.id,
+      );
+
+      // Initialize Razorpay with the order ID
+      var options = {
+        'key': response.razorpayKey,
+        'amount': (double.parse(booking!.total_price) * 100).toInt(),
+        'currency': 'INR',
+        'name': booking!.item.name,
+        'description': 'Payment for booking ID: ${booking!.id}',
+        'order_id': response.orderId, // Use the order ID from the API response
+      };
+      _razorpay.open(options); // Open Razorpay payment gateway
+      // Handle successful order creation
+      print('Order created successfully: $response');
+    } catch (e) {
+      // Handle error
+      print('Error creating order: $e');
+    }
+  }
+
+  // Future<void> verifyOrder(String razorpayOrderId) async {
+  //   try {
+  //     final response = await _apiService.verifyPayment(razorpayOrderId);
+  //     // Handle successful verification
+  //     print('Payment verified successfully: $response');
+  //   } catch (e) {
+  //     // Handle error
+  //     print('Error verifying payment: $e');
+  //   }
+  // }
 
   Future<void> _fetchBooking() async {
     try {
@@ -39,258 +101,248 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
-    int totalPrice = 0;
-    int depositAmount = 0;
+    double totalPrice = 0;
+    double depositAmount = 0;
+    double platformFee = 0;
 
     if (booking != null) {
-      totalPrice = double.parse(booking!.total_price).toInt();
-      depositAmount = double.parse(booking!.item.depositAmount).toInt();
+      totalPrice = double.parse(booking!.total_price);
+      depositAmount = double.parse(booking!.item.depositAmount);
+      platformFee = 0.1 * totalPrice; // 10% platform fee
     }
 
-    // Remove the default Material styling
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(0),
         child: AppBar(elevation: 0, backgroundColor: Colors.white),
       ),
-      body: SafeArea(
-        child:
-            isLoading
+      body: Stack(
+        children: [
+          SafeArea(
+            child: isLoading
                 ? const Center(
-                  child: CircularProgressIndicator(),
-                ) // Show loader
+                    child: CircularProgressIndicator(),
+                  ) // Show loader
                 : errorMessage != null
-                ? Center(child: Text(errorMessage!)) // Show error message
-                : Padding(
-                  padding: const EdgeInsets.all(0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Back navigation with title
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: 20,
-                          top: 20,
-                          bottom: 10,
-                        ),
-                        child: Row(
+                    ? Center(child: Text(errorMessage!)) // Show error message
+                    : Padding(
+                        padding: const EdgeInsets.all(0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(
-                              Icons.arrow_back_ios,
-                              color: const Color(0xFF26C6B7),
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Confirm & Pay',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
+                            // Back navigation with title
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                left: 20,
+                                top: 20,
+                                bottom: 10,
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.arrow_back_ios,
+                                    color: const Color(0xFF26C6B7),
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    'Confirm & Pay',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                      ),
 
-                      // Main content with scrolling
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Product card
-                                Container(
-                                  margin: const EdgeInsets.only(
-                                    top: 10,
-                                    bottom: 20,
-                                  ),
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFF9F9F9),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Row(
+                            // Main content with scrolling
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: SingleChildScrollView(
+                                  child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      // Product image
+                                      // Product card
                                       Container(
-                                        width: 70,
-                                        height: 70,
-                                        decoration: BoxDecoration(
-                                          color: Colors.black,
-                                          borderRadius: BorderRadius.circular(
-                                            4,
-                                          ),
+                                        margin: const EdgeInsets.only(
+                                          top: 10,
+                                          bottom: 20,
                                         ),
-                                      ),
-                                      const SizedBox(width: 15),
-                                      // Product details
-                                      Expanded(
-                                        child: Column(
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFF9F9F9),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Row(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text(
-                                              booking!.item.name,
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600,
+                                            // Product image
+                                            Image.network(
+                                              "$baseUrl${booking!.item.image}",
+                                              height: 80,
+                                              width: 80,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error,
+                                                      stackTrace) =>
+                                                  const Icon(
+                                                Icons.broken_image,
+                                                color: Colors.grey,
+                                                size: 40,
                                               ),
                                             ),
-                                            const SizedBox(height: 2),
-                                            // Text(
-                                            //   booking!.,
-                                            //   style: const TextStyle(
-                                            //     fontSize: 14,
-                                            //     color: Color(0xFF666666),
-                                            //   ),
-                                            // ),
-                                            const SizedBox(height: 2),
-                                            Text(
-                                              'Rs ${booking!.item.pricePerDay}/day',
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 2),
-                                            Text(
-                                              'From ${booking!.start_date} to ${booking!.end_date}',
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                                color: Color(0xFF666666),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 2),
-                                            Text(
-                                              'Owner: ${booking!.item.owner_name}',
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                                color: Color(0xFF666666),
+                                            const SizedBox(width: 15),
+                                            // Product details
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    booking!.item.name,
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 2),
+                                                  // Text(
+                                                  //   booking!.,
+                                                  //   style: const TextStyle(
+                                                  //     fontSize: 14,
+                                                  //     color: Color(0xFF666666),
+                                                  //   ),
+                                                  // ),
+                                                  const SizedBox(height: 2),
+                                                  Text(
+                                                    'Rs ${booking!.item.pricePerDay}/day',
+                                                    style: const TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 2),
+                                                  Text(
+                                                    'From ${booking!.start_date} to ${booking!.end_date}',
+                                                    style: const TextStyle(
+                                                      fontSize: 14,
+                                                      color: Color(0xFF666666),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 2),
+                                                  Text(
+                                                    'Owner: ${booking!.item.owner_name}',
+                                                    style: const TextStyle(
+                                                      fontSize: 14,
+                                                      color: Color(0xFF666666),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ],
                                         ),
                                       ),
+
+                                      // Order Summary
+                                      const Text(
+                                        'Order Summary',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+
+                                      // Summary rows
+                                      buildSummaryRow(
+                                        'Rental Charge',
+                                        '₹ ${booking!.total_price}',
+                                      ),
+                                      buildSummaryRow(
+                                        'Deposit',
+                                        '₹ ${booking!.item.depositAmount}',
+                                      ),
+
+                                      buildSummaryRow(
+                                        'Platform Fee',
+                                        '₹ ${(0.1 * totalPrice).toStringAsFixed(2)}',
+                                      ),
+                                      const Divider(
+                                        height: 32,
+                                        color: Color(0xFFEEEEEE),
+                                      ),
+
+                                      // Total amount
+                                      buildTotalRow(
+                                        'Total Amount',
+                                        '₹ ${totalPrice + depositAmount + platformFee}',
+                                      ),
+
+                                      const SizedBox(height: 24),
+
+                                      // Payment method
+                                      const Text(
+                                        'Online Payment',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+
+                                      const SizedBox(height: 24),
+
+                                      // Confirm button
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          createOrder(); // Call createOrder on press
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              const Color(0xFF26C6B7),
+                                          foregroundColor: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 16,
+                                          ),
+                                          minimumSize: const Size(
+                                            double.infinity,
+                                            56,
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Confirm Order',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 24),
                                     ],
                                   ),
                                 ),
-
-                                // Order Summary
-                                const Text(
-                                  'Order Summary',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-
-                                // Summary rows
-                                buildSummaryRow(
-                                  'Rental Charge',
-                                  '₹ ${booking!.total_price}',
-                                ),
-                                buildSummaryRow(
-                                  'Deposit',
-                                  '₹ ${booking!.item.depositAmount}',
-                                ),
-
-                                buildSummaryRow('Platform Fee', '₹ ${(0.1 * totalPrice).toStringAsFixed(2)}'),
-                                const Divider(
-                                  height: 32,
-                                  color: Color(0xFFEEEEEE),
-                                ),
-
-                                // Total amount
-                                buildTotalRow(
-                                  'Total Amount',
-                                  '₹ ${totalPrice + depositAmount}',
-                                ),
-
-                                const SizedBox(height: 24),
-
-                                // Payment method
-                                const Text(
-                                  'Online Payment',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-
-                                // Razorpay option
-                                Container(
-                                  height: 60,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: const Color(0xFFE0E0E0),
-                                    ),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Center(
-                                    child: Image.asset(
-                                      'assets/razorpay_logo.png',
-                                      height: 30,
-                                      // If you don't have the asset, use a placeholder
-                                      errorBuilder:
-                                          (context, error, stackTrace) =>
-                                              const Text(
-                                                'Razorpay',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                    ),
-                                  ),
-                                ),
-
-                                const SizedBox(height: 24),
-
-                                // Confirm button
-                                ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF26C6B7),
-                                    foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 16,
-                                    ),
-                                    minimumSize: const Size(
-                                      double.infinity,
-                                      56,
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'Confirm Order',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-
-                                const SizedBox(height: 24),
-                              ],
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
+          ),
+          if (isLoading) const PacmanLoadingIndicator(),
+        ],
       ),
     );
   }

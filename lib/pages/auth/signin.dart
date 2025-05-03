@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:shuffle_native/app.dart';
+import 'package:shuffle_native/pages/home.dart';
 // import 'package:shuffle_native/pages/auth/forgot_password.dart';
 import 'package:shuffle_native/providers/auth_provider.dart';
 import 'package:shuffle_native/widgets/buttons/primary_button.dart';
@@ -10,6 +11,7 @@ import 'package:shuffle_native/widgets/indicators/pacman_loading_indicator.dart'
 // import 'package:shuffle_native/widgets/inputs/email_input.dart';
 // import 'package:shuffle_native/widgets/inputs/password_input.dart';
 import 'package:shuffle_native/widgets/logos/app_logo.dart';
+import 'package:shuffle_native/widgets/main_scaffold.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -21,11 +23,20 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
-    serverClientId: "431947796542-v5n1pf7srtpfifdqsvf8jvjia32c3ejg.apps.googleusercontent.com"
+    serverClientId:
+        "431947796542-v5n1pf7srtpfifdqsvf8jvjia32c3ejg.apps.googleusercontent.com",
   );
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  bool isLoading = false; // Add a state variable for loading
+  bool isLoading = false;
+
+  @override
+  void dispose() {
+    // Dispose controllers to free up resources
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   void _login() async {
     // Close the keyboard
@@ -83,6 +94,102 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
+  Future<void> _googleLogin() async {
+    try {
+      await _googleSignIn.signOut();
+    } catch (error) {
+      showDialog(
+        context: context,
+        builder:
+            (context) => CustomAlertDialog(
+              icon: Icons.error,
+              iconColor: Colors.red,
+              title: 'Google Sign-Out Failed',
+              message: 'Please try again later.',
+              buttonText: 'OK',
+              onButtonPressed: () {
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+      );
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final result = await _googleSignIn.signIn();
+      if (result == null) {
+        setState(() {
+          isLoading = false;
+        });
+        return;
+      }
+
+      final googleKey = await result.authentication;
+
+      final success = await Provider.of<AuthProvider>(
+        context,
+        listen: false,
+      ).googleLogin(googleKey.idToken!);
+
+      setState(() {
+        isLoading = false;
+      });
+
+      if (success) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainScaffold()),
+        );
+      } else {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder:
+              (context) => CustomAlertDialog(
+                icon: Icons.error,
+                iconColor: Colors.green,
+                title: 'Login Failed',
+                message: 'Invalid email or password.',
+                buttonText: 'Try Again',
+                onButtonPressed: () {
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                  }
+                },
+              ),
+        );
+      }
+    } catch (error) {
+      if (mounted && context.mounted) {
+        setState(() {
+          isLoading = false;
+        });
+        showDialog(
+          context: context,
+          builder:
+              (context) => CustomAlertDialog(
+                icon: Icons.error,
+                iconColor: Colors.red,
+                title: 'Google Sign-In Failed',
+                message: 'Please try again later.',
+                buttonText: 'OK',
+                onButtonPressed: () {
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                  }
+                },
+              ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -136,104 +243,7 @@ class _SignInPageState extends State<SignInPage> {
                   // PrimaryButton(text: "Sign in", onPressed: _login),
                   PrimaryButton(
                     text: "Sign in with Google",
-                    onPressed: () async {
-                      try {
-                        await _googleSignIn.signOut();
-                      } catch (error) {
-                        if (mounted && context.mounted) {
-                          showDialog(
-                            context: context,
-                            builder: (context) => CustomAlertDialog(
-                              icon: Icons.error,
-                              iconColor: Colors.red,
-                              title: 'Google Sign-Out Failed',
-                              message: 'Please try again later.',
-                              buttonText: 'OK',
-                              onButtonPressed: () {
-                                if (context.mounted) {
-                                  Navigator.of(context).pop();
-                                }
-                              },
-                            ),
-                          );
-                        }
-                        return;
-                      }
-
-                      setState(() {
-                        isLoading = true;
-                      });
-
-                      try {
-                        final result = await _googleSignIn.signIn();
-                        if (result == null) {
-                          if (mounted) {
-                            setState(() {
-                              isLoading = false;
-                            });
-                          }
-                          return;
-                        }
-
-                        final googleKey = await result.authentication;
-
-                        final success = await Provider.of<AuthProvider>(
-                          context,
-                          listen: false,
-                        ).googleLogin(googleKey.idToken!);
-
-                        if (mounted && context.mounted) {
-                          setState(() {
-                            isLoading = false;
-                          });
-
-                          if (success) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) => App()),
-                            );
-                          } else {
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) => CustomAlertDialog(
-                                icon: Icons.error,
-                                iconColor: Colors.green,
-                                title: 'Login Failed',
-                                message: 'Invalid email or password.',
-                                buttonText: 'Try Again',
-                                onButtonPressed: () {
-                                  if (context.mounted) {
-                                    Navigator.of(context).pop();
-                                  }
-                                },
-                              ),
-                            );
-                          }
-                        }
-                      } catch (error) {
-                        if (mounted && context.mounted) {
-                          setState(() {
-                            isLoading = false;
-                          });
-                          showDialog(
-                            context: context,
-                            builder: (context) => CustomAlertDialog(
-                              icon: Icons.error,
-                              iconColor: Colors.red,
-                              title: 'Google Sign-In Failed',
-                              message: 'Please try again later.',
-                              buttonText: 'OK',
-                              onButtonPressed: () {
-                                if (context.mounted) {
-                                  Navigator.of(context).pop();
-                                }
-                              },
-                            ),
-                          );
-                        }
-                      }
-                    },
+                    onPressed: _googleLogin,
                   ),
                   const SizedBox(height: 24),
                   Row(
@@ -260,7 +270,7 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ),
           ),
-          if (isLoading) PacmanLoadingIndicator(),
+          if (isLoading) const PacmanLoadingIndicator(),
         ],
       ),
     );

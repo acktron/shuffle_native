@@ -11,6 +11,7 @@ class AuthProvider with ChangeNotifier {
   Future<void> checkLoginStatus() async {
     final token = await TokenStorage().getAccessToken();
     _isLoggedIn = token != null;
+    print('checkLoginStatus: isLoggedIn = $_isLoggedIn');
     notifyListeners();
   }
 

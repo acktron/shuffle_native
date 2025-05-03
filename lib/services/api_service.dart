@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:shuffle_native/models/address.dart';
 import 'package:shuffle_native/models/booking.dart';
+import 'package:shuffle_native/models/create_payment_response.dart';
 import 'package:shuffle_native/models/item.dart';
 import 'package:shuffle_native/models/location.dart';
 import 'api_client.dart';
 
 class ApiService {
   final Dio _dio = ApiClient.instance;
+
 
   Future<void> sendFCMToken(String token) async {
     print('Sending FCM token to API: $token');
@@ -20,6 +22,24 @@ class ApiService {
       print('FCM token sent successfully');
     } else {
       print('Failed to send FCM token');
+    }
+  }
+
+  
+
+  Future<CreatePaymentResponse> createPayment(
+    String amount,
+    int bookingId,
+  ) async {
+    print('Creating payment with amount: $amount and booking ID: $bookingId');
+    final response = await _dio.post(
+      '/api/payments/create-order/',
+      data: {'amount': amount, 'booking_id': bookingId},
+    );
+    if (response.statusCode == 201) {
+      return CreatePaymentResponse.fromJson(response.data);
+    } else {
+      throw Exception('Failed to create payment');
     }
   }
 
@@ -53,7 +73,10 @@ class ApiService {
   }
 
   Future<bool> addAddress(Address address) async {
-    final response = await _dio.post('/api/users/address/', data: address.toJson());
+    final response = await _dio.post(
+      '/api/users/address/',
+      data: address.toJson(),
+    );
     return response.statusCode == 201;
   }
 
@@ -202,6 +225,21 @@ class ApiService {
         });
   }
 
+  Future<List<Item>> getUserItems() async {
+    final response = await _dio.get('/api/rentals/my-items/');
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data;
+      print('Got items from API: $data');
+
+      // Map the API response to a list of Item objects
+      return data.map((item) {
+        return Item.fromJson(item);
+      }).toList();
+    } else {
+      throw Exception('Failed to fetch user items');
+    }
+  }
+
   Future<List<Booking>> getItemPendingBookings() async {
     final response = await _dio.get('/api/rentals/booking/requests/');
     if (response.statusCode == 200) {
@@ -271,6 +309,4 @@ class ApiService {
       'pincode': '62704',
     };
   }
-
-
 }
