@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shuffle_native/models/booking.dart';
+import 'package:shuffle_native/pages/rental/approve_page.dart';
 import 'package:shuffle_native/pages/rental/payment.dart';
 import 'package:shuffle_native/utils/constants.dart';
 
@@ -12,12 +13,34 @@ class RentalItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CheckoutPage(bookingId: booking.id),
-          ),
-        );
+        print("Tapped on booking: ${booking.id}");
+        Widget? targetPage;
+        switch (booking.status) {
+          case "APPROVED":
+            targetPage = CheckoutPage(
+              bookingId: booking.id,
+            ); // Replace with actual page
+            break;
+          case "PENDING":
+            targetPage = RentRequestDetailsPage(booking: booking); // Replace with actual page
+            break;
+          // case "APPROVED":
+          //   targetPage = ApprovedPage(bookingId: booking.id); // Replace with actual page
+          //   break;
+          // case "REJECTED":
+          //   targetPage = RejectedPage(bookingId: booking.id); // Replace with actual page
+          //   break;
+          // case "COMPLETED":
+          //   targetPage = CompletedPage(bookingId: booking.id); // Replace with actual page
+          //   break;
+        }
+        if (targetPage != null) {
+          print("Navigating to target page: ${targetPage.runtimeType}");
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => targetPage!),
+          );
+        }
       },
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -66,21 +89,25 @@ class RentalItemCard extends StatelessWidget {
               const SizedBox(width: 8),
               Chip(
                 label: Text("${booking.status} !"),
-                backgroundColor: {
-                  "ACTIVE": Colors.green.shade100,
-                  "PENDING": Colors.orange.shade100,
-                  "APPROVED": Colors.blue.shade100,
-                  "REJECTED": Colors.red.shade100,
-                  "COMPLETED": Colors.purple.shade100,
-                }[booking.status] ?? Colors.grey.shade100,
+                backgroundColor:
+                    {
+                      "ACTIVE": Colors.green.shade100,
+                      "PENDING": Colors.orange.shade100,
+                      "APPROVED": Colors.blue.shade100,
+                      "REJECTED": Colors.red.shade100,
+                      "COMPLETED": Colors.purple.shade100,
+                    }[booking.status] ??
+                    Colors.grey.shade100,
                 labelStyle: TextStyle(
-                  color: {
-                    "ACTIVE": Colors.green.shade800,
-                    "PENDING": Colors.orange.shade800,
-                    "APPROVED": Colors.blue.shade800,
-                    "REJECTED": Colors.red.shade800,
-                    "COMPLETED": Colors.purple.shade800,
-                  }[booking.status] ?? Colors.grey.shade800,
+                  color:
+                      {
+                        "ACTIVE": Colors.green.shade800,
+                        "PENDING": Colors.orange.shade800,
+                        "APPROVED": Colors.blue.shade800,
+                        "REJECTED": Colors.red.shade800,
+                        "COMPLETED": Colors.purple.shade800,
+                      }[booking.status] ??
+                      Colors.grey.shade800,
                   fontWeight: FontWeight.w600,
                 ),
               ),

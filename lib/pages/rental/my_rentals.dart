@@ -11,7 +11,7 @@ class MyRentalsPage extends StatefulWidget {
 
   MyRentalsPage({
     super.key,
-    this.selectedStatus = "Active",
+    this.selectedStatus = "PENDING",
     this.showAppBar = true,
   });
 
@@ -51,7 +51,7 @@ class _MyRentalsPageState extends State<MyRentalsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Rented Items",
+          "Rentals Items",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,

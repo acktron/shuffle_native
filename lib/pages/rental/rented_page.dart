@@ -1,24 +1,9 @@
 import 'package:flutter/material.dart';
-
-class RentalItem {
-  final String name;
-  final String category;
-  final double pricePerDay;
-  final int rentedDays;
-  final String returnDate;
-  final String imageUrl;
-  final bool isActive;
-
-  RentalItem({
-    required this.name,
-    required this.category,
-    required this.pricePerDay,
-    required this.rentedDays,
-    required this.returnDate,
-    required this.imageUrl,
-    this.isActive = true,
-  });
-}
+import 'package:shuffle_native/models/item.dart';
+import 'package:shuffle_native/pages/rental/product_page.dart';
+import 'package:shuffle_native/services/api_service.dart';
+import 'package:shuffle_native/utils/constants.dart';
+import 'package:shimmer/shimmer.dart';
 
 class RentedItemsPage extends StatefulWidget {
   const RentedItemsPage({super.key});
@@ -28,40 +13,41 @@ class RentedItemsPage extends StatefulWidget {
 }
 
 class _RentedItemsPageState extends State<RentedItemsPage> {
-  List<RentalItem> rentedItems = [
-    RentalItem(
-      name: 'Casio FX-991MS',
-      category: 'Scientific Calculator',
-      pricePerDay: 10.0,
-      rentedDays: 3,
-      returnDate: 'March 10',
-      imageUrl: 'assesets/images/test_img.png',
-    ),
-    RentalItem(
-      name: 'Casio FX-991MS',
-      category: 'Scientific Calculator',
-      pricePerDay: 10.0,
-      rentedDays: 3,
-      returnDate: 'March 10',
-      imageUrl: 'assesets/images/test_img.png',
-    ),
-    RentalItem(
-      name: 'Casio FX-991MS',
-      category: 'Scientific Calculator',
-      pricePerDay: 10.0,
-      rentedDays: 3,
-      returnDate: 'March 10',
-      imageUrl: 'assesets/images/test_img.png',
-    ),
-    // Add more items as needed
-  ];
+  List<Item> rentedItems = [];
+  final ApiService _apiService = ApiService(); // Initialize ApiService
+
+  void _fetchRentedItems() async {
+    setState(() {
+      rentedItems = []; // Clear the list before fetching
+    });
+
+    try {
+      final items = await _apiService.getUserItems();
+      setState(() {
+        rentedItems = items;
+      });
+    } catch (error) {
+      // Handle error
+      print('Error fetching rented items: $error');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchRentedItems();
+  }
 
   Future<void> _refreshItems() async {
-    // Simulate a network call or data refresh
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() {
-      rentedItems = List.from(rentedItems); // Replace with updated data
-    });
+    try {
+      final items = await _apiService.getUserItems();
+      setState(() {
+        rentedItems = items;
+      });
+    } catch (error) {
+      // Handle error if needed
+      print('Error refreshing rented items: $error');
+    }
   }
 
   @override
@@ -108,17 +94,74 @@ class _RentedItemsPageState extends State<RentedItemsPage> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: _refreshItems,
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 8.0,
-                ),
-                itemCount: rentedItems.length,
-                itemBuilder: (context, index) {
-                  final item = rentedItems[index];
-                  return RentedItemCard(item: item);
-                },
-              ),
+              child: rentedItems.isEmpty
+                  ? ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
+                      itemCount: 6, // Number of shimmer placeholders
+                      itemBuilder: (context, index) {
+                        return Shimmer.fromColors(
+                          baseColor: Colors.grey.shade300,
+                          highlightColor: Colors.grey.shade100,
+                          child: Card(
+                            margin: const EdgeInsets.only(bottom: 16.0),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 80,
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[300],
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16.0),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          height: 16.0,
+                                          width: double.infinity,
+                                          color: Colors.grey[300],
+                                        ),
+                                        const SizedBox(height: 8.0),
+                                        Container(
+                                          height: 16.0,
+                                          width: 100.0,
+                                          color: Colors.grey[300],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
+                      itemCount: rentedItems.length,
+                      itemBuilder: (context, index) {
+                        final item = rentedItems[index];
+                        return RentedItemCard(item: item);
+                      },
+                    ),
             ),
           ),
         ],
@@ -128,140 +171,112 @@ class _RentedItemsPageState extends State<RentedItemsPage> {
 }
 
 class RentedItemCard extends StatelessWidget {
-  final RentalItem item;
+  final Item item;
 
   const RentedItemCard({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16.0),
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      child: Padding(
-        
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Item Image
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: Image.asset(
-                item.imageUrl,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Icon(
-                    Icons.broken_image,
-                    color: Colors.grey,
-                    size: 40,
-                  ); // Fallback icon for missing images
-                },
-              ),
-            ),
-            const SizedBox(width: 16.0),
-
-            // Item Details
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: () {
+        // Handle onTap action here
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetailPage(item: item),
+          ),
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 16.0),
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Item Image with Hero
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12.0),
+                  child: Hero(
+                    tag: "image-hero-${item.id}", // Unique tag for Hero animation
+                    child: Image.network(
+                      "$baseUrl${item.image}",
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(
+                          Icons.broken_image,
+                          color: Colors.grey,
+                          size: 40,
+                        ); // Fallback icon for missing images
+                      },
                     ),
                   ),
-                  Text(
-                    item.category,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(width: 16.0),
+
+              // Item Details
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.name,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4.0),
-                  Text(
-                    'Rs ${item.pricePerDay.toInt()}/day',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                    const SizedBox(height: 8.0),
+                    Text(
+                      'Rs ${item.pricePerDay.toString()}/day',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black54,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4.0),
-                  Text(
-                    'Rented for ${item.rentedDays} days',
-                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                  ),
-                  Text(
-                    'Return by ${item.returnDate}',
-                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
 
-            // Active Status
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12.0,
-                vertical: 6.0,
-              ),
-              decoration: BoxDecoration(
-                color: const Color(0x1A4CAF50),
-                borderRadius: BorderRadius.circular(4.0),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Text(
-                    'Active !',
-                    style: TextStyle(
-                      color: Color(0xFF4CAF50),
-                      fontWeight: FontWeight.bold,
-                    ),
+              // Active Status
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12.0,
+                  vertical: 6.0,
+                ),
+                decoration: BoxDecoration(
+                  color: item.isAvailable
+                      ? const Color(0x1A4CAF50)
+                      : const Color(0x1AF44336),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Text(
+                  item.isAvailable ? 'Available' : 'Rented',
+                  style: TextStyle(
+                    color: item.isAvailable
+                        ? const Color(0xFF4CAF50)
+                        : const Color(0xFFF44336),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class NavBarItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isSelected;
-
-  const NavBarItem({
-    super.key,
-    required this.icon,
-    required this.label,
-    this.isSelected = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, color: isSelected ? const Color(0xFF26C6DA) : Colors.grey),
-        Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? const Color(0xFF26C6DA) : Colors.grey,
-            fontSize: 12,
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }
