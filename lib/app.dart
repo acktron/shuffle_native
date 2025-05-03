@@ -6,6 +6,9 @@ import 'package:shuffle_native/providers/auth_provider.dart';
 import 'package:shuffle_native/utils/routes.dart';
 import 'package:shuffle_native/widgets/main_scaffold.dart';
 
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+
 class App extends StatefulWidget {
   const App({super.key});
 
@@ -34,6 +37,7 @@ class _AppState extends State<App> {
       debugShowCheckedModeBanner: false,
       home: authProvider.isLoggedIn ? const MainScaffold() : const WelcomePage(),
       routes: appRoutes,
+      navigatorKey: navigatorKey,
     );
   }
 }

@@ -4,7 +4,6 @@ import 'package:shuffle_native/app.dart';
 import 'package:shuffle_native/providers/auth_provider.dart';
 import 'package:shuffle_native/services/api_client.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shuffle_native/services/notification_service.dart';
 
 Future<void> main() async {
