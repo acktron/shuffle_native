@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shuffle_native/pages/auth/change_password.dart';
 import 'package:shuffle_native/pages/contact_us.dart';
+import 'package:shuffle_native/pages/profile/edit_profile.dart';
 import 'package:shuffle_native/pages/profile/pickup_spots.dart';
 import 'package:shuffle_native/pages/rental/rented_page.dart';
 import 'package:shuffle_native/pages/rental/rest_request.dart';
@@ -72,7 +73,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 4),
                 GestureDetector(
                   onTap: () {
-                    // Edit profile logic
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditProfilePage(),
+                      ),
+                    );
                   },
                   child: const Text(
                     "Edit Profile",

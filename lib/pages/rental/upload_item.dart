@@ -41,6 +41,7 @@ class _UploadItemPageState extends State<UploadItemPage> {
   final ImagePicker _picker = ImagePicker();
   final ApiService _apiService = ApiService();
   bool _isLoading = false;
+  String? selectedAddress;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -48,7 +49,7 @@ class _UploadItemPageState extends State<UploadItemPage> {
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _depositController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
-
+  
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
@@ -300,6 +301,135 @@ class _UploadItemPageState extends State<UploadItemPage> {
                       keyboardType: TextInputType.number,
                       prefix: 'Rs ',
                     ),
+                    // Select Address Section
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      margin: const EdgeInsets.only(bottom: 16),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: const [
+                                Icon(Icons.location_on, color: Color(0xFF087272)),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Pickup Address',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+
+                            if (selectedAddress == null)
+                              ElevatedButton(
+                                onPressed: () async {
+                                  final address = await showDialog<String>(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: const Text('Choose Address'),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            ListTile(
+                                              title: const Text('Hostel A, IIIT Delhi'),
+                                              onTap: () => Navigator.pop(context, 'Hostel A, IIIT Delhi'),
+                                            ),
+                                            ListTile(
+                                              title: const Text('Library, IIIT Delhi'),
+                                              onTap: () => Navigator.pop(context, 'Library, IIIT Delhi'),
+                                            ),
+                                            ListTile(
+                                              title: const Text('Academic Block, IIIT Delhi'),
+                                              onTap: () => Navigator.pop(context, 'Academic Block, IIIT Delhi'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  );
+                                  if (address != null) {
+                                    setState(() {
+                                      selectedAddress = address;
+                                    });
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF087272),
+                                ),
+                                child: const Text('Select Address', 
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              )
+                            else
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    selectedAddress!,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  TextButton(
+                                    onPressed: () async {
+                                      final address = await showDialog<String>(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: const Text('Choose Address'),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                ListTile(
+                                                  title: const Text('Hostel A, IIIT Delhi'),
+                                                  onTap: () => Navigator.pop(context, 'Hostel A, IIIT Delhi'),
+                                                ),
+                                                ListTile(
+                                                  title: const Text('Library, IIIT Delhi'),
+                                                  onTap: () => Navigator.pop(context, 'Library, IIIT Delhi'),
+                                                ),
+                                                ListTile(
+                                                  title: const Text('Academic Block, IIIT Delhi'),
+                                                  onTap: () => Navigator.pop(context, 'Academic Block, IIIT Delhi'),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      );
+                                      if (address != null) {
+                                        setState(() {
+                                          selectedAddress = address;
+                                        });
+                                      }
+                                    },
+                                    child: const Text(
+                                      'Change',
+                                      style: TextStyle(color: Color(0xFF087272)),
+                                    ),
+                                  )
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
 
                     // Upload Button
                     SizedBox(
@@ -419,6 +549,7 @@ class _UploadItemPageState extends State<UploadItemPage> {
     int maxLines = 1,
     TextInputType keyboardType = TextInputType.text,
     String? prefix,
+    
   }) {
     return Container(
       width: double.infinity,
@@ -488,6 +619,7 @@ class NavBarItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool isSelected;
+  
 
   const NavBarItem({
     super.key,
