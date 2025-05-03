@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shuffle_native/models/booking.dart';
 import 'package:shuffle_native/pages/rental/approve_page.dart';
 import 'package:shuffle_native/pages/rental/payment.dart';
+import 'package:shuffle_native/pages/rental/receivepage.dart';
 import 'package:shuffle_native/utils/constants.dart';
 
 class RentalItemCard extends StatelessWidget {
@@ -17,12 +18,14 @@ class RentalItemCard extends StatelessWidget {
         Widget? targetPage;
         switch (booking.status) {
           case "APPROVED":
-            targetPage = CheckoutPage(
-              bookingId: booking.id,
+            targetPage = ReceivePage(
+              booking: booking,
             ); // Replace with actual page
             break;
           case "PENDING":
-            targetPage = RentRequestDetailsPage(booking: booking); // Replace with actual page
+            targetPage = RentRequestDetailsPage(
+              booking: booking,
+            ); // Replace with actual page
             break;
           // case "APPROVED":
           //   targetPage = ApprovedPage(bookingId: booking.id); // Replace with actual page
