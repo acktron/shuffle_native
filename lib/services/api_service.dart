@@ -10,6 +10,19 @@ import 'api_client.dart';
 class ApiService {
   final Dio _dio = ApiClient.instance;
 
+  Future<void> sendFCMToken(String token) async {
+    print('Sending FCM token to API: $token');
+    final response = await _dio.post(
+      '/api/users/fcm_token/',
+      data: {'fcm_token': token},
+    );
+    if (response.statusCode == 200) {
+      print('FCM token sent successfully');
+    } else {
+      print('Failed to send FCM token');
+    }
+  }
+
   Future<List<Address>> getAddresses() async {
     final response = await _dio.get('/api/users/address/');
     if (response.statusCode == 200) {
