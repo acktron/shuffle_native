@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:shuffle_native/models/booking.dart';
+import 'package:shuffle_native/pages/rental/receipt_page.dart';
 import 'package:shuffle_native/services/api_service.dart';
 import 'package:shuffle_native/utils/constants.dart';
 import 'package:shuffle_native/widgets/indicators/pacman_loading_indicator.dart';
@@ -23,40 +24,25 @@ class _CheckoutPageState extends State<CheckoutPage> {
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     // Handle payment success
     print("Payment successful: ${response.paymentId}");
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Row(
-            children: const [
-              Icon(Icons.check_circle, color: Colors.green),
-              SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Payment Successful',
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-          content: const Text(
-            'Your payment has been processed successfully. Thank you for your order!',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                Navigator.of(context).pop(); // Navigate back
-                Navigator.of(context).pop(); // Navigate back
-
-              },
-              child: const Text('OK'),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => ReceiptPage(
+              itemName: "Canon EOS 1500D DSLR Camera",
+              imageUrl:
+                  "https://images.pexels.com/photos/243757/pexels-photo-243757.jpeg", // Updated image URL
+              rentalCharge: 1500.00,
+              deposit: 5000.00,
+              platformFee: 150.00,
+              totalAmount: 6650.00,
+              fromDate: "2024-01-20",
+              toDate: "2024-01-25",
+              owner: "John Doe",
+              orderId: "ORD123456",
             ),
-          ],
-        );
-      },
+      ),
     );
-    final success = _apiService.manageBooking(booking!.id, "ACTIVE");
 
     // Add your logic here
   }
