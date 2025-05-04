@@ -3,6 +3,7 @@ import 'package:shuffle_native/models/booking.dart';
 import 'package:shuffle_native/pages/rental/approve_page.dart';
 import 'package:shuffle_native/pages/rental/payment.dart';
 import 'package:shuffle_native/pages/rental/receivepage.dart';
+import 'package:shuffle_native/pages/rental/rejectedpage.dart';
 import 'package:shuffle_native/utils/constants.dart';
 
 class RentalItemCard extends StatelessWidget {
@@ -30,9 +31,9 @@ class RentalItemCard extends StatelessWidget {
           // case "APPROVED":
           //   targetPage = ApprovedPage(bookingId: booking.id); // Replace with actual page
           //   break;
-          // case "REJECTED":
-          //   targetPage = RejectedPage(bookingId: booking.id); // Replace with actual page
-          //   break;
+          case "REJECTED":
+            targetPage = RejectedPage(booking: booking); // Replace with actual page
+            break;
           // case "COMPLETED":
           //   targetPage = CompletedPage(bookingId: booking.id); // Replace with actual page
           //   break;
