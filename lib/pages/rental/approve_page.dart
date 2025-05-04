@@ -13,6 +13,8 @@ class RentRequestDetailsPage extends StatefulWidget {
 
 class _RentRequestDetailsPageState extends State<RentRequestDetailsPage> {
   final ApiService _apiService = ApiService(); // Initialize ApiService
+  final TextEditingController _declineReasonController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -135,26 +137,7 @@ class _RentRequestDetailsPageState extends State<RentRequestDetailsPage> {
 
   Widget _buildDeclineButton(BuildContext context) {
     return OutlinedButton(
-      onPressed:
-      // () => _showDialog(
-      //   context,
-      //   icon: Icons.cancel,
-      //   color: Colors.red,
-      //   message: 'Declined!',
-      // ),
-      () async {
-        final success = await _apiService.manageBooking(widget.booking.id, "REJECTED");
-        if (success) {
-          // Handle error
-          _showDialog(
-            context,
-            icon: Icons.cancel,
-            color: Colors.red,
-            message: 'Declined!',
-          );
-          return;
-        }
-      },
+      onPressed: () => _showDeclineReasonDialog(context),
       style: OutlinedButton.styleFrom(
         foregroundColor: Colors.red,
         side: const BorderSide(color: Colors.red),
@@ -162,6 +145,99 @@ class _RentRequestDetailsPageState extends State<RentRequestDetailsPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       child: const Text('Decline'),
+    );
+  }
+
+  void _showDeclineReasonDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Reason for Decline',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _declineReasonController,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter reason for declining...',
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                  ),
+                  maxLines: 3,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        _declineReasonController.clear();
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                    const SizedBox(width: 8),
+                    TextButton(
+                      onPressed: () async {
+                        if (_declineReasonController.text.trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please enter a reason'),
+                            ),
+                          );
+                          return;
+                        }
+
+                        // Make the API call first
+                        try {
+                          final success = await _apiService.manageBooking(
+                            widget.booking.id,
+                            "REJECTED",
+                          );
+
+                          if (success) {
+                            // Close the reason dialog first
+                            Navigator.pop(context);
+
+                            // Then show the decline animation
+                            _showDialog(
+                              context,
+                              icon: Icons.cancel,
+                              color: Colors.red,
+                              message: 'Declined!',
+                            );
+                          }
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: ${e.toString()}')),
+                          );
+                        }
+                        _declineReasonController.clear();
+                      },
+                      style: TextButton.styleFrom(foregroundColor: Colors.red),
+                      child: const Text('Decline'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -175,7 +251,10 @@ class _RentRequestDetailsPageState extends State<RentRequestDetailsPage> {
       //   message: 'Approved!',
       // ),
       () async {
-        final success = await _apiService.manageBooking(widget.booking.id, "APPROVED");
+        final success = await _apiService.manageBooking(
+          widget.booking.id,
+          "APPROVED",
+        );
         if (success) {
           _showDialog(
             context,
@@ -214,7 +293,10 @@ class _RentRequestDetailsPageState extends State<RentRequestDetailsPage> {
       builder: (BuildContext context) {
         Future.delayed(const Duration(seconds: 2), () {
           Navigator.of(context).pop(); // Close the dialog
-          Navigator.pushReplacementNamed(context, "/requestpage"); // Return to the previous page
+          Navigator.pushReplacementNamed(
+            context,
+            "/requestpage",
+          ); // Return to the previous page
         });
 
         return Center(
